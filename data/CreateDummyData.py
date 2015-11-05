@@ -7,7 +7,7 @@ Version: 20150608
 Description: Creates dummy data for to test results for MovieFilenameFixer.py
 '''
 
-from HelperFunctions import *
+from Helper_Functions import *
 
 fileCounter = 0
 
@@ -75,8 +75,7 @@ if __name__ == '__main__':
 	folderName = 'Fake_Directory'
 	filetypes = ['avi', 'mov', 'mp4', 'txt', 'dat', 'nfo', 'jpg', 'png']
 	fileNames = [
-				'[ www.Speed.Cd ] - The.Bay.2012.LiMiTED.BRRip.XviD.RoSubbed-playXD', 
-				'[www.Cpasbien.me] John.Dies.At.The.End.2012.FANSUB.VOSTFR.HDRiP.XviD.AC3-NIKOo', 
+				'[ www.Speed.Cd ] - The.Bay.2012.LiMiTED.BRRip.XviD.RoSubbed-playXD', 				
 				'22.Jump.Street.2014.1080p.BluRay.x264.anoXmous', 
 				'30 Days Of Night[2007]', 
 				'\'71 (2014) [1080p]',
