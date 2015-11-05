@@ -38,7 +38,6 @@ class Folderizer():
 		given a list of file_names.
 		Will create the folder if it does not already exist.
 		'''
-
 		for fName in file_names:			
 			file_name, fileExt = splitext(fName) # Extract the file_name from the extension			
 			if not exists(join(self.cwd, file_name)): # If the folder doesn't already exist:
@@ -69,5 +68,6 @@ class Folderizer():
 		#TODO
 		pass
 
-cwd = join(getcwd(),'data', 'Fake_Directory')
-fs = Folderizer(directory=cwd, verbose=True)
+if __name__ == '__main__':
+	cwd = join(getcwd(),'data', 'Fake_Directory')
+	fs = Folderizer(directory=cwd, verbose=True)
