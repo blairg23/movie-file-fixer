@@ -12,6 +12,8 @@ from Helper_Functions import *
 
 class Folderizer():
 	def __init__(self, directory=None, verbose=False):
+		if verbose:
+			print '[CURRENT ACTION: MOVING SINGLETON FILES TO FOLDERS]\n'
 		self.directory = directory
 		self.verbose = verbose
 		self.action_counter = 0		

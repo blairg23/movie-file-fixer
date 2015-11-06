@@ -75,12 +75,16 @@ if __name__ == '__main__':
 	folderName = 'Fake_Directory'
 	filetypes = ['avi', 'mov', 'mp4', 'txt', 'dat', 'nfo', 'jpg', 'png']
 	fileNames = [
-				'[ www.Speed.Cd ] - The.Bay.2012.LiMiTED.BRRip.XviD.RoSubbed-playXD', 				
+				'The.Bay.2012.LiMiTED.BRRip.XviD.RoSubbed-playXD', 				
 				'22.Jump.Street.2014.1080p.BluRay.x264.anoXmous', 
 				'30 Days Of Night[2007]', 
 				'\'71 (2014) [1080p]',
 				'Sherlock Holmes A Game of Shadows (2011) DVDRip XviD-MAXSPEED',
-				'Snatch.2000.1080p.BluRay.x264.anoXmous'
+				'Snatch.2000.1080p.BluRay.x264.anoXmous',
+				'Hansel.&.Gretel.Witch.Hunters.2013.DVDRip.XviD-P2P',
+				'Ordinary Decent Criminal.DVDRip_devilwarez.pl',
+				'Kick-Ass (2010) R5 XViD-MAXSPEED',
+				'Kick-Ass 2 (2013) [1080p]'
 				]
 
 
