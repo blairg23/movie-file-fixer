@@ -4,7 +4,7 @@ from Helper_Functions import *
 import re
 
 class Formatter():
-	def __init__(self, directory=None, verbose=True):
+	def __init__(self, directory=None, format_type='Movies', verbose=True):
 		if verbose:
 			print '[CURRENT ACTION: FORMATTING MOVIE TITLES]\n'
 		self.populate_dictionaries()
@@ -80,27 +80,37 @@ class Formatter():
 					print '[FAILED] new search terms: {search_terms}'.format(search_terms=search_terms)
 				return self.search(search_terms=search_terms) # And recursively try again				
 
+
 	def format(self, directory=None, verbose=False):
 		'''
 		Formats every folder/filename in the given directory according to the movie title closest to the folder/filename.
 		'''		
 		for title in listdir(directory):
 			if str(title) != 'titles.json' and title not in self.indexed_titles['Titles']: # Let's not process the titles.json file or duplicate our work
-				new_title = " ".join(map(str.title, re.findall(r"\w+", title)))			
-				results = self.search(search_terms=new_title, verbose=verbose)
+				new_title = " ".join(map(str.title, re.findall(r"\w+'\w+|\w+-\w+|\w+", title)))
+				if "_" in new_title:
+					new_title = new_title.replace("_", " ")
+				try:
+					results = self.search(search_terms=new_title, verbose=verbose)
+				except Exception as e:
+					print "[ERROR]", e
+					print '[FAILED] search terms: {search_terms}'.format(search_terms=title)
 				final_title = results['Title'] + ' [' + results['Year'] + ']'
+				final_title = final_title.replace(':', '') # Remove non-viable folder characters
 				if verbose:				
 					print 'Old Title: {title}'.format(title=title)
 					print 'New Title: {new_title}'.format(new_title=new_title)
 					print 'Final Title: {final_title}\n'.format(final_title=final_title)								
-				self.append_data(directory=directory, new_title=final_title)
+					print 'renaming {old_title} to {new_title}'.format(old_title=join(directory, title), new_title=join(directory, final_title))				
+				self.append_data(directory=directory, new_title=final_title) # Add the current formatted title to our "titles.json" index file
+				rename(join(directory, title), join(directory, final_title)) # Renames the folder
 
 
 if __name__ == '__main__':
 	from datetime import datetime
 	start = datetime.now()
 	directory = join(getcwd(), 'data', 'Fake_Directory')
-	directory = 'J:\Films'
+	#directory = 'J:\Films'
 	f = Formatter(directory=directory, verbose=False)
 	finish = datetime.now() - start
 	print "Finished in {total_time} seconds".format(total_time=finish)

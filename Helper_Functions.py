@@ -16,6 +16,7 @@ from os import sep as divider # the os specific folder separator
 from os import getcwd # Current working directory
 from os import chdir # Change the current working directory
 from os import remove # Remove the specified file
+from os import rename # Renames a given file
 
 # Path-specific functions
 from os.path import isfile, isdir, join # For comparing file_names

@@ -64,10 +64,10 @@ def createDummyData(filePrefix='fake.file', folderName='Fake_Directory', filetyp
 		createInnerFoldersAndFiles(filePrefix=filePrefix, innerFolderNames=fileNames, filetypes=filetypes)
 
 	# Create outer files based on the file names and file types:
-	for fName in fileNames:
-		# Create a new file prefix for that file name:
-		fPrefix = '{fPrefix}.{fName}'.format(fPrefix=filePrefix, fName=fName)
-		createNewFiles(filePrefix=fPrefix, folderName=folderName, filetypes=filetypes)
+	# for fName in fileNames:
+	# 	# Create a new file prefix for that file name:
+	# 	fPrefix = '{fPrefix}.{fName}'.format(fPrefix=filePrefix, fName=fName)
+	# 	createNewFiles(filePrefix=fPrefix, folderName=folderName, filetypes=filetypes)
 
 
 if __name__ == '__main__':
@@ -75,16 +75,31 @@ if __name__ == '__main__':
 	folderName = 'Fake_Directory'
 	filetypes = ['avi', 'mov', 'mp4', 'txt', 'dat', 'nfo', 'jpg', 'png']
 	fileNames = [
-				'The.Bay.2012.LiMiTED.BRRip.XviD.RoSubbed-playXD', 				
-				'22.Jump.Street.2014.1080p.BluRay.x264.anoXmous', 
-				'30 Days Of Night[2007]', 
+				'The.Bay.2012.LiMiTED.BRRip.XviD.RoSubbed-playXD',
+				'22.Jump.Street.2014.1080p.BluRay.x264.anoXmous',
+				'30 Days Of Night[2007]',
 				'\'71 (2014) [1080p]',
 				'Sherlock Holmes A Game of Shadows (2011) DVDRip XviD-MAXSPEED',
-				'Snatch.2000.1080p.BluRay.x264.anoXmous',
 				'Hansel.&.Gretel.Witch.Hunters.2013.DVDRip.XviD-P2P',
-				'Ordinary Decent Criminal.DVDRip_devilwarez.pl',
+				'Ordinary_Decent_Criminal.DVDRip_devilwarez.pl',
 				'Kick-Ass (2010) R5 XViD-MAXSPEED',
-				'Kick-Ass 2 (2013) [1080p]'
+				'Kick-Ass 2 (2013) [1080p]',
+				
+				# For testing titles that have purposeful periods in them:
+				'Snatch.2000.1080p.BluRay.x264.anoXmous',
+				'W.[2008]DvDrip-aXXo',
+
+				# For testing titles with colons in them:
+				'Avengers Age of Ultron (2015) [1080p]',
+				'Abraham.Lincoln.Vampire.Hunter.2012.DVDRip.XviD-ALLiANCE',
+
+
+				# For testing duplicate names:
+				'Red Dawn {2012} DVDRIP. Jaybob',
+				'Red.Dawn.1984.720p.BrRip.x264.Obit11.ThumperDC',
+
+				# For testing crazy punctuation in titles:
+				'What the #$! Do We (K)now!'
 				]
 
 
