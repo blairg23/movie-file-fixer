@@ -7,7 +7,6 @@ class Formatter():
 	def __init__(self, directory=None, format_type='Movies', verbose=True):
 		if verbose:
 			print '[CURRENT ACTION: FORMATTING MOVIE TITLES]\n'
-		self.populate_dictionaries()
 		# If we haven't already created a titles index file, create one:
 		if not exists(join(directory, 'titles.json')): 
 			self.initialize_file(directory=directory, filename='titles.json')
@@ -42,22 +41,6 @@ class Formatter():
 			# Write that updated list to the existing file:
 			json.dump(titles_index, outfile)
 
-	def populate_dictionaries(self):
-		'''
-		Populates a set of dictionaries to be used to 
-		'''
-		# Populate our commonword dictionary wordlist:
-		with open('dictionaries/dictionary.txt', 'r+') as infile:
-			self.wordlist = [line.rstrip().lower() for line in infile]	
-
-		# Populate our propername dictionary wordlist:
-		with open('dictionaries/proper_names.txt', 'r+') as infile:
-			self.proper_names = [line.rstrip().lower() for line in infile]
-
-		# Populate our connectives dictionary wordlist:
-		with open('dictionaries/connectives.txt', 'r+') as infile:
-			self.connectives = [line.rstrip().lower() for line in infile]
-
 	def search(self, url='http://www.omdbapi.com/', search_terms='', verbose=False):
 		'''
 		Searches OMDB api for a movie title closest to the given string.
@@ -80,14 +63,21 @@ class Formatter():
 					print '[FAILED] new search terms: {search_terms}'.format(search_terms=search_terms)
 				return self.search(search_terms=search_terms) # And recursively try again				
 
-
+	def strip_bad_chars(self, title=None):
+		'''
+		Strips the given title of any characters that aren't allowed in folder/file names.
+		'''
+		return re.sub(r'[(<>:"/\\|?*)]', '', title)
+		
 	def format(self, directory=None, verbose=False):
 		'''
 		Formats every folder/filename in the given directory according to the movie title closest to the folder/filename.
 		'''		
 		for title in listdir(directory):
 			if str(title) != 'titles.json' and title not in self.indexed_titles['Titles']: # Let's not process the titles.json file or duplicate our work
-				new_title = " ".join(map(str.title, re.findall(r"\w+'\w+|\w+-\w+|\w+", title)))
+				new_title = " ".join(map(str.title, re.findall(r"\w+|\w+'\w+|\w+-\w+|\w+|[(#$!)]+|'\w+", title)))
+				# print title, new_title
+				# release_year = 
 				if "_" in new_title:
 					new_title = new_title.replace("_", " ")
 				try:
