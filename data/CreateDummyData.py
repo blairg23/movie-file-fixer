@@ -79,33 +79,52 @@ class CreateDummyData():
 	def run(self, directory='Fake_Directory'):
 		filePrefix='single.file'
 		folderName = directory
-		filetypes = ['avi', 'mov', 'mp4', 'txt', 'dat', 'nfo', 'jpg', 'png']
+		filetypes = ['avi', 'mov', 'mp4', 'txt', 'dat', 'nfo', 'jpg', 'png', 'mkv']
 		fileNames = [
-					'The.Bay.2012.LiMiTED.BRRip.XviD.RoSubbed-playXD',
+
+					# Normal title:
+					'The.Bay.2012.LiMiTED.BRRip.XviD.RoSubbed-playXD',										
+					'Hansel.&.Gretel.Witch.Hunters.2013.DVDRip.XviD-P2P',
+
+					# For testing folder names with underscores in them
+					'Ordinary_Decent_Criminal.DVDRip_devilwarez.pl',
+
+					# For testing titles with hyphens in the name:
+					'Kick-Ass (2010) R5 XViD-MAXSPEED',
+					'Kick-Ass 2 (2013) [1080p]',
+					'Bio-Dome (1996) - DVD Rip - XVID',
+
+					# For testing titles that have numbers in them:
 					'22.Jump.Street.2014.1080p.BluRay.x264.anoXmous',
 					'30 Days Of Night[2007]',
 					'\'71 (2014) [1080p]',
-					'Sherlock Holmes A Game of Shadows (2011) DVDRip XviD-MAXSPEED',
-					'Hansel.&.Gretel.Witch.Hunters.2013.DVDRip.XviD-P2P',
-					'Ordinary_Decent_Criminal.DVDRip_devilwarez.pl',
-					'Kick-Ass (2010) R5 XViD-MAXSPEED',
-					'Kick-Ass 2 (2013) [1080p]',
 					
 					# For testing titles that have purposeful periods in them:
 					'Snatch.2000.1080p.BluRay.x264.anoXmous',
-					'W.[2008]DvDrip-aXXo',
+					#'Fantastic.Mr.Fox.DVDRip.XviD-MOViERUSH', # Can't fix this yet
+					# 'W.[2008]DvDrip-aXXo', # Can't fix this yet
 
 					# For testing titles with colons in them:
 					'Avengers Age of Ultron (2015) [1080p]',
-					'Abraham.Lincoln.Vampire.Hunter.2012.DVDRip.XviD-ALLiANCE',
+					#'Abraham.Lincoln.Vampire.Hunter.2012.DVDRip.XviD-ALLiANCE', # Can't fix this yet
+					'Sherlock Holmes A Game of Shadows (2011) DVDRip XviD-MAXSPEED',
 
+					# For testing titles with years (or numbers) as the title:
+					'2012 (2009) DVDRip XviD-MAXSPEED',
+					'1408[2007]DvDrip[Eng]-aXXo',
+					'300[2006]DvDrip[Eng]-aXXo',
 
 					# For testing duplicate names:
 					'Red Dawn {2012} DVDRIP. Jaybob',
 					'Red.Dawn.1984.720p.BrRip.x264.Obit11.ThumperDC',
-
+					'Poltergeist (1982) [1080p]',
+					'Poltergeist 2015 1080p HDRip x264 AC3-JYK',
+					'The.Girl.With.The.Dragon.Tattoo-[www.speed.cd ]-[2009]DvDrip-aXXo',
+					'The Girl With The Dragon Tattoo (2011) (HD)',
+					
 					# For testing crazy punctuation in titles:
-					'What the #$! Do We (K)now!'
+					'What the #$! Do We (K)now!',
+					'Fired Up! (2009)'
 					]
 
 
