@@ -27,7 +27,7 @@ class TestFormatterMethods(unittest.TestCase):
 		truth_data = []
 		truth_data.append(test_title == test_dict['Titles'][0]['title'])
 		truth_data.append(test_poster_url == test_dict['Titles'][0]['poster'])
-		truth_data.append(test_imdb_id == test_dict['Titles'][0]['id'])		
+		truth_data.append(test_imdb_id == test_dict['Titles'][0]['imdb_id'])		
 		self.assertTrue(all(truth_data))
 
 	def test_search_title_no_year(self):

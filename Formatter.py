@@ -38,7 +38,7 @@ class Formatter():
 			# Append the new data to the titles index list:
 			new_entry = {
 				'title': new_title,
-				'id': imdb_id,
+				'imdb_id': imdb_id,
 				'poster': poster_url
 			}
 			titles_index['Titles'].append(new_entry)
@@ -146,7 +146,7 @@ class Formatter():
 					print 'Final Title: {final_title}'.format(final_title=final_title)								
 					print 'Release Year: {release_year}'.format(release_year=release_year)
 					print '[RENAMING {old_title} to {new_title}]\n'.format(old_title=join(directory, title), new_title=join(directory, final_title))				
-		 		self.append_data(directory=directory, new_title=final_title) # Add the current formatted title to our "titles.json" index file
+		 		self.append_data(directory=directory, new_title=final_title, poster_url=results['Poster'], imdb_id=results['imdbID']) # Add the current formatted title to our "titles.json" index file
 		 		try:
 					rename(join(directory, title), join(directory, final_title)) # Renames the folder
 				except Exception as error:
