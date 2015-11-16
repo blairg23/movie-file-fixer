@@ -128,7 +128,7 @@ class Formatter():
 		Formats every folder/filename in the given directory according to the movie title closest to the folder/filename.
 		'''				
 		for title in listdir(directory):
-			if str(title) not in data_files and title not in self.indexed_titles['Titles']: # Let's not process the titles.json file or duplicate our work
+			if str(title) not in data_files and title not in [entry['title'] for entry in self.indexed_titles['Titles']]: # Let's not process the titles.json file or duplicate our work
 				new_title = " ".join(map(str.title, re.findall(r"\w+|\w+'\w+|\w+-\w+|\w+|[(#$!)]+|'\w+", title)))				
 				release_year = self.find_release_year(title=title)
 				if "_" in new_title:
