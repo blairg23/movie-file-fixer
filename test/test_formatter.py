@@ -1,7 +1,7 @@
 import unittest
 import os
 import json
-from Formatter import Formatter
+from ..Formatter import Formatter
 
 
 class TestFormatterMethods(unittest.TestCase):
