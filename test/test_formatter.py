@@ -1,13 +1,21 @@
 import unittest
 import os
 import json
-from ..Formatter import Formatter
 
+from ..Formatter import Formatter
+from data.CreateDummyData import CreateDummyData
 
 class TestFormatterMethods(unittest.TestCase):
 
-	def setUp(self):
-		self.fake_directory_path = os.path.join(os.getcwd(),'data', 'Fake_Directory')
+	def setUp(self):		
+		current_path, filename= os.path.split(os.path.abspath(__file__)) # To start us in the correct directory		
+		self.fake_directory_path = os.path.join(current_path, 'data', 'Fake_Directory')
+
+		# If the fake test directory hasn't been created yet, create it:
+		if not os.path.exists(self.fake_directory_path):			
+			CDD = CreateDummyData(directory=self.fake_directory_path)
+			CDD.run(directory=self.fake_directory_path)		
+
 		self.test_file_name = 'test_file.json'
 		self.data_files = ['titles.json', self.test_file_name]
 		self.test_file_path = os.path.join(self.fake_directory_path, self.test_file_name)
@@ -23,7 +31,7 @@ class TestFormatterMethods(unittest.TestCase):
 		test_imdb_id = '1234'
 		self.formatter.append_data(directory=self.fake_directory_path, filename=self.test_file_name, new_title=test_title, poster_url=test_poster_url, imdb_id=test_imdb_id)
 		with open(self.test_file_path) as infile:
-			test_dict = json.load(infile)
+			test_dict = json.load(infile)		
 		truth_data = []
 		truth_data.append(test_title == test_dict['Titles'][0]['title'])
 		truth_data.append(test_poster_url == test_dict['Titles'][0]['poster'])
@@ -63,7 +71,8 @@ class TestFormatterMethods(unittest.TestCase):
 
 	def test_format(self):
 		# Read in a list of the test titles, properly formatted:
-		path = os.path.join('data', 'good_titles.txt') 
+		current_path, filename= os.path.split(os.path.abspath(__file__)) # To start us in the correct directory
+		path = os.path.join(current_path, 'data', 'good_titles.txt') 
 		with open(path, mode='r') as infile:
 			good_titles = infile.read().splitlines()
 		# Run format (This step has already been completed):

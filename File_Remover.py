@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+'''
+Name: File_Remover.py
+Author: Blair Gemmer
+Version: 20151122
+
+Description: Removes any files with unwanted extensions like ".txt" or ".dat".
+'''
+
 import requests
 import json
 from Helper_Functions import *

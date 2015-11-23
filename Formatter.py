@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+'''
+Name: Formatter.py
+Author: Blair Gemmer
+Version: 20151122
+
+Description: Formats all the files and folders in a given directory based on their movie title 
+and creates a title directory called "titles.json", which also contains poster information.
+'''
+
 import requests
 import json
 from Helper_Functions import *

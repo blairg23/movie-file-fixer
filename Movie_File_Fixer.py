@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+'''
+Name: Movie_File_Fixer.py
+Author: Blair Gemmer
+Version: 20151122
+
+Description: 
+
+Executes a four part movie folder formatting system for a given directory. The system is as follows:
+
+1. [Folderizer] Searches a directory and puts all singleton files into a directory of their namesake.
+
+2. [File_Remover] Removes any files with unwanted extensions like ".txt" or ".dat".
+
+3. [Formatter] Formats all the files and folders in a given directory based on their movie title 
+and creates a title directory called "titles.json", which also contains poster information.
+
+4. [Poster_Finder] Reads that "titles.json" file and downloads the poster for each title.
+
+'''
 from Folderizer import Folderizer
 from Formatter import Formatter
 from Poster_Finder import Poster_Finder

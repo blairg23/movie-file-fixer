@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+'''
+Name: Poster_Finder.py
+Author: Blair Gemmer
+Version: 20151122
+
+Description: Reads the "titles.json" file and downloads the poster for each title.
+'''
+
 import requests
 import json
 from Helper_Functions import *

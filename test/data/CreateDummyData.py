@@ -13,7 +13,7 @@ fileCounter = 0
 
 class CreateDummyData():
 
-	def __init__(self, verbose=True):
+	def __init__(self, directory=None, verbose=False):
 		self.verbose=verbose
 
 	def createDummyData(self, filePrefix='fake.file', folderName='Fake_Directory', filetypes=['avi'] ,fileNames=['1', '2', '3', '4', '5']):
