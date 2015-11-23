@@ -166,7 +166,7 @@ class Formatter():
 if __name__ == '__main__':
 	from datetime import datetime
 	start = datetime.now()
-	directory = join(getcwd(), 'data', 'Fake_Directory')
+	directory = join(getcwd(), 'test', 'data', 'Fake_Directory')
 	#directory = 'J:\Films'
 	f = Formatter(directory=directory, verbose=True)
 	finish = datetime.now() - start

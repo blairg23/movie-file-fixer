@@ -1,6 +1,8 @@
 import unittest
 import os
 import json
+import shutil
+
 from ..File_Remover import File_Remover
 
 class TestFileRemoverMethods(unittest.TestCase):
@@ -13,10 +15,10 @@ class TestFileRemoverMethods(unittest.TestCase):
 
 		# Creates some test files:
 		for ext in self.extensions:			
-			directory = os.path.join(self.fake_directory_path, 'test_path')
-			if not os.path.exists(directory):
-				os.makedirs(directory)
-			with open(os.path.join(directory, 'test_file'+ext), 'w+') as infile:
+			self.test_directory = os.path.join(self.fake_directory_path, 'test_path')
+			if not os.path.exists(self.test_directory):
+				os.makedirs(self.test_directory)
+			with open(os.path.join(self.test_directory, 'test_file'+ext), 'w+') as infile:
 				pass
 
 	def test_remove_files(self):
@@ -27,7 +29,8 @@ class TestFileRemoverMethods(unittest.TestCase):
 		for root, dirs, files in os.walk(self.fake_directory_path):
 			for current_file in files:
 				if any(current_file.lower().endswith(ext) for ext in self.extensions):
-					truth_value = False
+					truth_value = False		
+		shutil.rmtree(self.test_directory) # Cleanup		
 		self.assertTrue(truth_value)
 
 if __name__ == '__main__':

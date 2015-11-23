@@ -57,7 +57,7 @@ class Movie_File_Fixer():
 			b. Download the movie poster and name the file poster.<extension> 
 			(where <extension> is the original extension of the poster file)
 		'''
-		Poster_Finder(directory=directory, verbose=verbose)
+		Poster_Finder(directory=directory, filename='titles.json', verbose=verbose)
 
 
 
