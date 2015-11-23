@@ -7,4 +7,5 @@
 *.mov
 *.mp4
 *.dat
-/data/Fake_Directory/*
+*.mkv
+/test/data/Fake_Directory/*
