@@ -2,9 +2,9 @@
 '''
 Name: CreateDummyData
 Author: Blair Gemmer
-Version: 20150608
+Version: 20151123
 
-Description: Creates dummy data for to test results for MovieFilenameFixer.py
+Description: Creates dummy data to test results with MovieFilenameFixer.py
 '''
 
 from Helper_Functions import *

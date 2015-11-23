@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+'''
+Name: cleanup.py
+Author: Blair Gemmer
+Version: 20151123
+
+Description: Cleans up the Fake_Directory test directory after Unit Testing is complete.
+'''
+
 import os
 import shutil
 

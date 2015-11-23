@@ -2,7 +2,7 @@
 '''
 Name: Movie_File_Fixer.py
 Author: Blair Gemmer
-Version: 20151122
+Version: 20151123
 
 Description: 
 
@@ -27,9 +27,9 @@ from Helper_Functions import *
 import json
 
 class Movie_File_Fixer():
-	def __init__(self, directory=None, verbose=True):
-		self.folderize(directory=directory, verbose=verbose)
-		self.cleanup(directory=directory, verbose=verbose)
+	def __init__(self, directory=None, extensions=['.nfo', '.dat', '.jpg', '.png', '.txt'], verbose=True):		
+		self.folderize(directory=directory, verbose=verbose)		
+		self.cleanup(directory=directory, extensions=extensions, verbose=verbose)
 		self.format(directory=directory, verbose=verbose)
 		self.get_posters(directory=directory, verbose=verbose)		
 
@@ -63,4 +63,4 @@ class Movie_File_Fixer():
 
 
 if __name__ == '__main__':
-	Movie_File_Fixer(directory=join(getcwd(), 'data', 'Fake_Directory'), verbose=True)
+	Movie_File_Fixer(directory=join(getcwd(), 'test', 'data', 'Fake_Directory'), verbose=True)

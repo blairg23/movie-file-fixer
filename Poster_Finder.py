@@ -2,7 +2,7 @@
 '''
 Name: Poster_Finder.py
 Author: Blair Gemmer
-Version: 20151122
+Version: 20151123
 
 Description: Reads the "titles.json" file and downloads the poster for each title.
 '''
@@ -38,4 +38,4 @@ class Poster_Finder():
 
 if __name__ == '__main__':
 	current_path = join(getcwd(), 'test', 'data', 'Fake_Directory')	
-	pf = Poster_Finder(directory=current_path)
+	pf = Poster_Finder(directory=current_path, filename='titles.json')

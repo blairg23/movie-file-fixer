@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+'''
+Name: test_poster_finder.py
+Author: Blair Gemmer
+Version: 20151123
+
+Description: Unit Testing for Poster_Finder module
+'''
+
 import unittest
 import os
 import json

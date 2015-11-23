@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+'''
+Name: test_file_remover.py
+Author: Blair Gemmer
+Version: 20151123
+
+Description: Unit Testing for File_Remover module
+'''
+
 import unittest
 import os
 import json

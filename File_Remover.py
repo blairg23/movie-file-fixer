@@ -2,7 +2,7 @@
 '''
 Name: File_Remover.py
 Author: Blair Gemmer
-Version: 20151122
+Version: 20151123
 
 Description: Removes any files with unwanted extensions like ".txt" or ".dat".
 '''
@@ -36,5 +36,5 @@ class File_Remover():
 
 if __name__ == '__main__':
 	bad_extensions=['.nfo', '.dat', '.jpg', '.png', '.txt']
-	directory = join('data', 'Fake_Directory')
-	File_Remover(directory=directory, extensions=bad_extensions)
+	directory = join(getcwd(), 'test', 'data', 'Fake_Directory')
+	File_Remover(directory=directory, extensions=bad_extensions, verbose=True)

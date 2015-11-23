@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+'''
+Name: test_formatter.py
+Author: Blair Gemmer
+Version: 20151123
+
+Description: Unit Testing for Formatter module
+'''
+
 import unittest
 import os
 import json

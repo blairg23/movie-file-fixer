@@ -2,7 +2,7 @@
 '''
 Name: Formatter.py
 Author: Blair Gemmer
-Version: 20151122
+Version: 20151123
 
 Description: Formats all the files and folders in a given directory based on their movie title 
 and creates a title directory called "titles.json", which also contains poster information.
@@ -158,7 +158,25 @@ class Formatter():
 					print '[RENAMING {old_title} to {new_title}]\n'.format(old_title=join(directory, title), new_title=join(directory, final_title))				
 		 		self.append_data(directory=directory, new_title=final_title, poster_url=results['Poster'], imdb_id=results['imdbID']) # Add the current formatted title to our "titles.json" index file
 		 		try:
-					rename(join(directory, title), join(directory, final_title)) # Renames the folder
+		 			# Rename the folders to our newly formatted title:
+					old_path = join(directory, title)
+					new_path = join(directory, final_title)
+					rename(old_path, new_path) 
+
+					# Now, check the folder for files inside it and rename those too:
+					single_files = [f for f in listdir(new_path) if isfile(join(new_path,f))]
+					for single_file in single_files:
+						old_file_path = join(new_path, single_file)
+						old_filename, ext = splitext(single_file)
+						new_filename = final_title + ext
+						new_file_path = join(new_path, new_filename)
+						rename(old_file_path, new_file_path)
+						if verbose:
+							print 'Old Filename: {old_filename}'.format(old_filename=old_filename)
+							print 'Old Filepath: {old_file_path}'.format(old_file_path=old_file_path)
+							print 'New Filename: {new_filename}'.format(new_filename=new_filename)
+							print 'New Filepath: {new_file_path}\n'.format(new_file_path=new_file_path)
+
 				except Exception as error:
 					print error
 
@@ -168,6 +186,6 @@ if __name__ == '__main__':
 	start = datetime.now()
 	directory = join(getcwd(), 'test', 'data', 'Fake_Directory')
 	#directory = 'J:\Films'
-	f = Formatter(directory=directory, verbose=True)
+	f = Formatter(directory=directory, verbose=False)
 	finish = datetime.now() - start
 	print "Finished in {total_time} seconds".format(total_time=finish)

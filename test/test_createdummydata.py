@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+'''
+Name: test_createdummydata.py
+Author: Blair Gemmer
+Version: 20151123
+
+Description: Unit Testing for CreateDummyData module
+'''
+
 import unittest
 import os
 import shutil
