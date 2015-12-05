@@ -14,7 +14,8 @@ from Helper_Functions import *
 import re
 
 class Formatter():
-	def __init__(self, directory=None, format_type='Movies', data_files=['titles.json'], verbose=True):
+	def __init__(self, directory=None, format_type='Movies', data_files=['titles.json'], debug=False, verbose=True):
+		self.debug = debug
 		if verbose:
 			print '[CURRENT ACTION: FORMATTING MOVIE TITLES]\n'
 		# If we haven't already created a titles index file, create one:
@@ -31,8 +32,8 @@ class Formatter():
 		Initialize a JSON file to contain an index of all our new filenames.
 		'''
 		self.indexed_titles = {'Titles': [], 'Total': 0}
-		with open(join(directory, filename), mode='w') as infile:
-			json.dump(self.indexed_titles, infile)
+		with open(join(directory, filename), mode='w') as outfile:
+			json.dump(self.indexed_titles, outfile)
 
 
 	def append_data(self, directory=None, filename='titles.json', new_title=None, imdb_id=None, poster_url=None):
@@ -140,52 +141,58 @@ class Formatter():
 		for title in listdir(directory):
 			if str(title) not in data_files and title not in [entry['title'] for entry in self.indexed_titles['Titles']]: # Let's not process the titles.json file or duplicate our work
 				new_title = " ".join(map(str.title, re.findall(r"\w+|\w+'\w+|\w+-\w+|\w+|[(#$!)]+|'\w+", title)))				
-				release_year = self.find_release_year(title=title)
+				# Limit the size of the new title to 5 words:
+				if len(new_title.split(' ')) > 9:
+					new_title = " ".join(new_title.split(' ')[0:5])					
+				release_year = self.find_release_year(title=title, verbose=False)
 				if "_" in new_title:
 					new_title = new_title.replace("_", " ")
+				if " '" in new_title: # Fixes possessive issue
+					new_title = new_title.replace(" '", "'")
 				try:
-					results = self.search_title(search_terms=new_title, release_year=release_year, verbose=verbose)
-				except Exception as error:
-					print "[ERROR]", error
-					print '[FAILED] search terms: {search_terms}'.format(search_terms=title)
-				final_title = results['Title'] + ' [' + results['Year'] + ']'
-				final_title = self.strip_bad_chars(title=final_title) # Remove non-viable folder characters
-				if verbose:				
-					print 'Old Title: {title}'.format(title=title)
-					print 'New Title: {new_title}'.format(new_title=new_title)
-					print 'Final Title: {final_title}'.format(final_title=final_title)								
-					print 'Release Year: {release_year}'.format(release_year=release_year)
-					print '[RENAMING {old_title} to {new_title}]\n'.format(old_title=join(directory, title), new_title=join(directory, final_title))				
-		 		self.append_data(directory=directory, new_title=final_title, poster_url=results['Poster'], imdb_id=results['imdbID']) # Add the current formatted title to our "titles.json" index file
-		 		try:
-		 			# Rename the folders to our newly formatted title:
-					old_path = join(directory, title)
-					new_path = join(directory, final_title)
-					rename(old_path, new_path) 
+					results = self.search_title(search_terms=new_title, release_year=release_year, verbose=verbose)				
+					final_title = results['Title'] + ' [' + results['Year'] + ']'
+					final_title = self.strip_bad_chars(title=final_title) # Remove non-viable folder characters
+					if verbose:				
+						print 'Old Title: {title}'.format(title=title)
+						print 'New Title: {new_title}'.format(new_title=new_title)
+						print 'Final Title: {final_title}'.format(final_title=final_title)								
+						print 'Release Year: {release_year}'.format(release_year=release_year)
+						print '[RENAMING {old_title} to {new_title}]\n'.format(old_title=join(directory, title), new_title=join(directory, final_title))				
+			 		self.append_data(directory=directory, new_title=final_title, poster_url=results['Poster'], imdb_id=results['imdbID']) # Add the current formatted title to our "titles.json" index file
+			 	except Exception as error:
+						print '[ERROR]', error
+		 		if not self.debug:
+			 		try:
+			 			# Rename the folders to our newly formatted title:
+						old_path = join(directory, title)
+						new_path = join(directory, final_title)
+						rename(old_path, new_path) 
 
-					# Now, check the folder for files inside it and rename those too:
-					single_files = [f for f in listdir(new_path) if isfile(join(new_path,f))]
-					for single_file in single_files:
-						old_file_path = join(new_path, single_file)
-						old_filename, ext = splitext(single_file)
-						new_filename = final_title + ext
-						new_file_path = join(new_path, new_filename)
-						rename(old_file_path, new_file_path)
-						if verbose:
-							print 'Old Filename: {old_filename}'.format(old_filename=old_filename)
-							print 'Old Filepath: {old_file_path}'.format(old_file_path=old_file_path)
-							print 'New Filename: {new_filename}'.format(new_filename=new_filename)
-							print 'New Filepath: {new_file_path}\n'.format(new_file_path=new_file_path)
+						# Now, check the folder for files inside it and rename those too:
+						single_files = [f for f in listdir(new_path) if isfile(join(new_path,f))]
+						for single_file in single_files:
+							old_file_path = join(new_path, single_file)
+							old_filename, ext = splitext(single_file)
+							new_filename = final_title + ext
+							new_file_path = join(new_path, new_filename)
+							rename(old_file_path, new_file_path)
+							if verbose:
+								print 'Old Filename: {old_filename}'.format(old_filename=old_filename)
+								print 'Old Filepath: {old_file_path}'.format(old_file_path=old_file_path)
+								print 'New Filename: {new_filename}'.format(new_filename=new_filename)
+								print 'New Filepath: {new_file_path}\n'.format(new_file_path=new_file_path)
 
-				except Exception as error:
-					print error
+					except Exception as error:
+						print '[ERROR]', error
 
 
 if __name__ == '__main__':
 	from datetime import datetime
 	start = datetime.now()
 	directory = join(getcwd(), 'test', 'data', 'Fake_Directory')
-	#directory = 'J:\Films'
-	f = Formatter(directory=directory, verbose=False)
+	f = Formatter(directory=directory, debug=False, verbose=True)
+	# directory = 'J:\Films'
+	# f = Formatter(directory=directory, debug=True, verbose=False)
 	finish = datetime.now() - start
 	print "Finished in {total_time} seconds".format(total_time=finish)

@@ -22,18 +22,21 @@ class CreateDummyData():
 			global fileCounter
 			'''Creates files to match the given folder name and a list of file types.
 			'''
-			for fType in filetypes: # For each of the file types:
-				# Create a new file name with that file prefix and file type:
-				newFileName = '{fPrefix}.{fType}'.format(fPrefix=filePrefix, fType=fType) 
-				if exists(newFileName):
-					if self.verbose:
-						print '[{fileCounter}] [Skipping File] \"{fileName}\" already exists in [Folder] \"{folderName}\"'.format(fileCounter=fileCounter, fileName=newFileName, folderName=folderName)
-					fileCounter += 1
-				else:
-					with open(newFileName, 'a+') as newFile: # And create the new dummy file in that folder
+			try:
+				for fType in filetypes: # For each of the file types:
+					# Create a new file name with that file prefix and file type:
+					newFileName = '{fPrefix}.{fType}'.format(fPrefix=filePrefix, fType=fType) 
+					if exists(newFileName):
 						if self.verbose:
-							print '[{fileCounter}] [Writing File] \"{fileName}\" to [Folder] \"{folderName}\"'.format(fileCounter=fileCounter, fileName=newFileName, folderName=folderName)
+							print '[{fileCounter}] [Skipping File] \"{fileName}\" already exists in [Folder] \"{folderName}\"'.format(fileCounter=fileCounter, fileName=newFileName, folderName=folderName)
 						fileCounter += 1
+					else:
+						with open(newFileName, 'a+') as newFile: # And create the new dummy file in that folder
+							if self.verbose:
+								print '[{fileCounter}] [Writing File] \"{fileName}\" to [Folder] \"{folderName}\"'.format(fileCounter=fileCounter, fileName=newFileName, folderName=folderName)
+							fileCounter += 1
+			except Exception as e:
+				print '[ERROR]', e
 
 		def createInnerFoldersAndFiles(filePrefix, innerFolderNames, filetypes):
 			'''Creates the inner folders from the list of folder names
@@ -42,34 +45,38 @@ class CreateDummyData():
 			'''		
 			# Create a new file prefix implying we're in an inner folder:
 			filePrefix = '{fPrefix}.from.folder'.format(fPrefix=filePrefix)
+			try:
+				for fName in innerFolderNames: # For each of the inner folder names,
+					# Create a new file prefix for that folder name:
+					fPrefix = '{fPrefix}.{fName}'.format(fPrefix=filePrefix, fName=fName)
 
-			for fName in innerFolderNames: # For each of the inner folder names,
-				# Create a new file prefix for that folder name:
-				fPrefix = '{fPrefix}.{fName}'.format(fPrefix=filePrefix, fName=fName)
-
-				if not exists (fName): # If the folder doesn't exist,
-					mkdir(fName) # Create it
-					chdir(fName) # Change it to the current working directory
-					# and create files based on that folder name and list of file types:
-					createNewFiles(filePrefix=fPrefix, folderName=fName, filetypes=filetypes)
-				else: # If the folder does exist,
-					chdir(fName) # Change it to the current working directory
-					# and create files based on the current folder name and list of file types:
-					createNewFiles(filePrefix=fPrefix, folderName=fName, filetypes=filetypes)
-				chdir('..') # Don't forget to move back up to the original directory!
+					if not exists (fName): # If the folder doesn't exist,
+						mkdir(fName) # Create it
+						chdir(fName) # Change it to the current working directory
+						# and create files based on that folder name and list of file types:
+						createNewFiles(filePrefix=fPrefix, folderName=fName, filetypes=filetypes)
+					else: # If the folder does exist,
+						chdir(fName) # Change it to the current working directory
+						# and create files based on the current folder name and list of file types:
+						createNewFiles(filePrefix=fPrefix, folderName=fName, filetypes=filetypes)
+					chdir('..') # Don't forget to move back up to the original directory!
+			except Exception as e:
+				print '[ERROR]', e
 
 		
 		# Create the new folder:
-		if not exists(folderName): # If the folder doesn't exist,	
-			mkdir(folderName) # Create it
-			chdir(folderName) # and change it to the current working directory		
-			# Finally, create those inner folders and files:
-			createInnerFoldersAndFiles(filePrefix=filePrefix, innerFolderNames=fileNames, filetypes=filetypes)
-		else: # If the folder does exist,
-			chdir(folderName) # Change it to the current working directory
-			# Finally, create those inner folders and files:
-			createInnerFoldersAndFiles(filePrefix=filePrefix, innerFolderNames=fileNames, filetypes=filetypes)
-
+		try:
+			if not exists(folderName): # If the folder doesn't exist,	
+				mkdir(folderName) # Create it
+				chdir(folderName) # and change it to the current working directory		
+				# Finally, create those inner folders and files:
+				createInnerFoldersAndFiles(filePrefix=filePrefix, innerFolderNames=fileNames, filetypes=filetypes)
+			else: # If the folder does exist,
+				chdir(folderName) # Change it to the current working directory
+				# Finally, create those inner folders and files:
+				createInnerFoldersAndFiles(filePrefix=filePrefix, innerFolderNames=fileNames, filetypes=filetypes)
+		except Exception as e:
+				print '[ERROR]', e
 		# Create outer files based on the file names and file types:
 		# for fName in fileNames:
 		# 	# Create a new file prefix for that file name:
@@ -100,6 +107,8 @@ class CreateDummyData():
 					'\'71 (2014) [1080p]',
 					
 					# For testing titles that have purposeful periods in them:
+					#'G.I.Joe.The.Rise.of.Cobra.2009.HDRip', # Can't fix this yet
+					#'G.I. Joe Retaliation (2013) [1080p]', # Can't fix this yet.
 					'Snatch.2000.1080p.BluRay.x264.anoXmous',
 					#'Fantastic.Mr.Fox.DVDRip.XviD-MOViERUSH', # Can't fix this yet
 					# 'W.[2008]DvDrip-aXXo', # Can't fix this yet
@@ -124,7 +133,13 @@ class CreateDummyData():
 					
 					# For testing crazy punctuation in titles:
 					'What the #$! Do We (K)now!',
-					'Fired Up! (2009)'
+					'Fired Up! (2009)',
+					'Ferris Bueller\'s Day Off (1986) [1080p]',
+
+					# Random known issues:
+					'Howl\'s Moving Castle (2004) 720p',
+					'I Hope They Serve Beer In Hell [2009] DvDrip H.264 AAC',
+					'Rocketman 1997 DvDrip[Eng]'					
 					]
 
 
