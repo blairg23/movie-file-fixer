@@ -161,7 +161,8 @@ class Formatter():
 						print '[RENAMING {old_title} to {new_title}]\n'.format(old_title=join(directory, title), new_title=join(directory, final_title))				
 			 		self.append_data(directory=directory, new_title=final_title, poster_url=results['Poster'], imdb_id=results['imdbID']) # Add the current formatted title to our "titles.json" index file
 			 	except Exception as error:
-						print '[ERROR]', error
+					print "[ERROR]", error
+					print '[FAILED] search terms: {search_terms}'.format(search_terms=new_title)
 		 		if not self.debug:
 			 		try:
 			 			# Rename the folders to our newly formatted title:
