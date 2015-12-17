@@ -30,11 +30,12 @@ class Poster_Finder():
 			for title in titles_index['Titles']:
 				new_path = join(directory, str(title['title']), 'poster.jpg')
 				if verbose:
-					print '[PROCESSING TITLE: {title}]'.format(title=str(title['title']))								
+					print '[PROCESSING TITLE: {title}]'.format(title=str(title['title']))												
 				poster_url = title['poster']
-				if verbose:
-					print '[ADDING POSTER URL: {poster_url}]\n'.format(poster_url=poster_url)
-				urllib.urlretrieve(poster_url, new_path)
+				if poster_url != 'N/A':
+					if verbose:
+						print '[ADDING POSTER URL: {poster_url}]\n'.format(poster_url=poster_url)
+					urllib.urlretrieve(poster_url, new_path)
 
 if __name__ == '__main__':
 	current_path = join(getcwd(), 'test', 'data', 'Fake_Directory')	

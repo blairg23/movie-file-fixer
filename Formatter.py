@@ -14,18 +14,21 @@ from Helper_Functions import *
 import re
 
 class Formatter():
-	def __init__(self, directory=None, format_type='Movies', data_files=['titles.json'], debug=False, verbose=True):
+	def __init__(self, directory=None, format_type='Movies', data_files=['titles.json'], debug=False, verbose=False):
 		self.debug = debug
-		if verbose:
-			print '[CURRENT ACTION: FORMATTING MOVIE TITLES]\n'
-		# If we haven't already created a titles index file, create one:
-		if not exists(join(directory, 'titles.json')): 
-			self.initialize_file(directory=directory, filename='titles.json')
-		else: # However, if it does exist, 
-			#Let's keep track of the files we've already indexed, so we don't duplicate our work:
-			with open(join(directory, 'titles.json')) as infile:
-				self.indexed_titles = json.load(infile)		
-		self.format(directory=directory, data_files=data_files, verbose=verbose)
+		if directory != None:
+			if verbose:
+				print '[CURRENT ACTION: FORMATTING MOVIE TITLES]\n'
+			# If we haven't already created a titles index file, create one:
+			if not exists(join(directory, 'titles.json')): 
+				self.initialize_file(directory=directory, filename='titles.json')
+			else: # However, if it does exist, 
+				#Let's keep track of the files we've already indexed, so we don't duplicate our work:
+				with open(join(directory, 'titles.json')) as infile:
+					self.indexed_titles = json.load(infile)		
+			self.format(directory=directory, data_files=data_files, verbose=verbose)
+		else:
+			print '[ERROR] Need to specify a directory to work on.'
 
 	def initialize_file(self, directory=None, filename=None):
 		'''
@@ -78,8 +81,8 @@ class Formatter():
 			else: # Otherwise, remove the last word from the title (in case it's a junk word or a year of release),
 				search_terms = ' '.join(search_terms.split(' ')[:-1])
 				if verbose:
-					print '[FAILED] new search terms: {search_terms}'.format(search_terms=search_terms)
-				return self.search_title(search_terms=search_terms, release_year=release_year) # And recursively try again				
+					print '[FAILED] new search terms: {search_terms}\n'.format(search_terms=search_terms)
+				return self.search_title(search_terms=search_terms, release_year=release_year, verbose=verbose) # And recursively try again				
 
 	def search_id(self, url='http://www.omdbapi.com/', imdb_id='', verbose=False):
 		'''
@@ -141,16 +144,17 @@ class Formatter():
 		for title in listdir(directory):
 			if str(title) not in data_files and title not in [entry['title'] for entry in self.indexed_titles['Titles']]: # Let's not process the titles.json file or duplicate our work
 				new_title = " ".join(map(str.title, re.findall(r"\w+|\w+'\w+|\w+-\w+|\w+|[(#$!)]+|'\w+", title)))				
-				# Limit the size of the new title to 5 words:
-				if len(new_title.split(' ')) > 9:
-					new_title = " ".join(new_title.split(' ')[0:5])					
+				# Limit the size of the new title to max words:
+				max_size = 8
+				if len(new_title.split(' ')) > max_size:
+					new_title = " ".join(new_title.split(' ')[0:max_size])					
 				release_year = self.find_release_year(title=title, verbose=False)
 				if "_" in new_title:
 					new_title = new_title.replace("_", " ")
-				if " '" in new_title: # Fixes possessive issue
-					new_title = new_title.replace(" '", "'")
+				if " \'S" in new_title: # Fixes possessive issue
+					new_title = new_title.replace(" \'S", "\'s")				
 				try:
-					results = self.search_title(search_terms=new_title, release_year=release_year, verbose=verbose)				
+					results = self.search_title(search_terms=new_title, release_year=release_year, verbose=verbose)
 					final_title = results['Title'] + ' [' + results['Year'] + ']'
 					final_title = self.strip_bad_chars(title=final_title) # Remove non-viable folder characters
 					if verbose:				
@@ -159,13 +163,13 @@ class Formatter():
 						print 'Final Title: {final_title}'.format(final_title=final_title)								
 						print 'Release Year: {release_year}'.format(release_year=release_year)
 						print '[RENAMING {old_title} to {new_title}]\n'.format(old_title=join(directory, title), new_title=join(directory, final_title))				
-			 		self.append_data(directory=directory, new_title=final_title, poster_url=results['Poster'], imdb_id=results['imdbID']) # Add the current formatted title to our "titles.json" index file
-			 	except Exception as error:
+					self.append_data(directory=directory, new_title=final_title, poster_url=results['Poster'], imdb_id=results['imdbID']) # Add the current formatted title to our "titles.json" index file
+				except Exception as error:
 					print "[ERROR]", error
-					print '[FAILED] search terms: {search_terms}'.format(search_terms=new_title)
-		 		if not self.debug:
-			 		try:
-			 			# Rename the folders to our newly formatted title:
+					print '[FAILED] search terms: {search_terms}\n'.format(search_terms=new_title)
+				if not self.debug:
+					try:
+						# Rename the folders to our newly formatted title:
 						old_path = join(directory, title)
 						new_path = join(directory, final_title)
 						rename(old_path, new_path) 
@@ -191,9 +195,9 @@ class Formatter():
 if __name__ == '__main__':
 	from datetime import datetime
 	start = datetime.now()
-	directory = join(getcwd(), 'test', 'data', 'Fake_Directory')
-	f = Formatter(directory=directory, debug=False, verbose=True)
-	# directory = 'J:\Films'
-	# f = Formatter(directory=directory, debug=True, verbose=False)
+	# directory = join(getcwd(), 'test', 'data', 'Fake_Directory')
+	# f = Formatter(directory=directory, debug=False, verbose=True)
+	directory = 'J:\Films'
+	f = Formatter(directory=directory, debug=True, verbose=False)
 	finish = datetime.now() - start
 	print "Finished in {total_time} seconds".format(total_time=finish)
