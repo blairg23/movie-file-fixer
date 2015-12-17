@@ -152,7 +152,9 @@ class Formatter():
 				if "_" in new_title:
 					new_title = new_title.replace("_", " ")
 				if " \'S" in new_title: # Fixes possessive issue
-					new_title = new_title.replace(" \'S", "\'s")				
+					new_title = new_title.replace(" \'S", "\'s")
+				if " \'T" in new_title: # Fixes titles with the word "don't" in them.
+					new_title = new_title.replace(" \'T", "\'t")				
 				try:
 					results = self.search_title(search_terms=new_title, release_year=release_year, verbose=verbose)
 					final_title = results['Title'] + ' [' + results['Year'] + ']'
@@ -195,9 +197,9 @@ class Formatter():
 if __name__ == '__main__':
 	from datetime import datetime
 	start = datetime.now()
-	# directory = join(getcwd(), 'test', 'data', 'Fake_Directory')
-	# f = Formatter(directory=directory, debug=False, verbose=True)
-	directory = 'J:\Films'
-	f = Formatter(directory=directory, debug=True, verbose=False)
+	directory = join(getcwd(), 'test', 'data', 'Fake_Directory')
+	f = Formatter(directory=directory, debug=False, verbose=True)
+	# directory = 'J:\Films'
+	# f = Formatter(directory=directory, debug=True, verbose=False)
 	finish = datetime.now() - start
 	print "Finished in {total_time} seconds".format(total_time=finish)

@@ -52,20 +52,27 @@ def find_release_year(title=None, verbose=False):
 titles = [
 			'Howl\'s Moving Castle (2004) 720p', 
 			'Ferris Bueller\'s Day Off (1986) [1080p]',
-			'I Hope They Serve Beer In Hell [2009] DvDrip H.264 AAC'
+			'I Hope They Serve Beer In Hell [2009] DvDrip H.264 AAC',
+			"You.Don't.Mess.With.The.Zohan[2008][Unrated.Edition]DvDrip-aXXo"
 ]
 
 
 final_titles = []
 for title in titles:
-	print title	
-	print search_title(search_terms=title, verbose=True), '\n'
+	print 'Old Title', title
+	#print search_title(search_terms=title, verbose=True), '\n'
 	release_year = find_release_year(title=title)
 	new_title = " ".join(map(str.title, re.findall(r"\w+|\w+'\w+|\w+-\w+|\w+|[(#$!)]+|'\w+", title)))
+	max_size = 8
+	if len(new_title.split(' ')) > max_size:
+		new_title = " ".join(new_title.split(' ')[0:max_size])	
 	if " \'S" in new_title:
 		new_title = new_title.replace(" \'S", "\'s")
-	print new_title
+	if " \'T" in new_title:
+		new_title = new_title.replace(" \'T", "\'t")
+	print 'New Title', new_title
 	searched_title = search_title(search_terms=new_title, release_year=release_year, verbose=True)		
-	print searched_title['Title']
+	#print searched_title['Title']
+	print 'Final Title', searched_title
 	final_titles.append(searched_title['Title'] + '[' + release_year + ']')
 print final_titles

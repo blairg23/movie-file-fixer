@@ -135,6 +135,7 @@ class CreateDummyData():
 					'What the #$! Do We (K)now!',
 					'Fired Up! (2009)',
 					'Ferris Bueller\'s Day Off (1986) [1080p]',
+					'You.Don\'t.Mess.With.The.Zohan[2008][Unrated.Edition]DvDrip-aXXo',
 
 					# Random known issues:
 					'Howl\'s Moving Castle (2004) 720p',
