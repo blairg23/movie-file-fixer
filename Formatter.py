@@ -140,7 +140,19 @@ class Formatter():
 	def format(self, directory=None, data_files=[], verbose=False):
 		'''
 		Formats every folder/filename in the given directory according to the movie title closest to the folder/filename.
-		'''				
+		'''
+		def cleanup(title):
+			'''
+			Fixes some problems with titles, like contractions and possessive.
+			'''
+			if " \'S" in title: # Fixes possessive issue
+				title = title.replace(" \'S", "\'s")
+			if " \'T" in title: # Fixes titles with the word "don't" in them.
+				title = title.replace(" \'T", "\'t")
+			if " \'R" in title: # Fixes titles with the word "we're" in them.
+				title = title.replace(" \'R", "\'r")pc
+			return title
+
 		for title in listdir(directory):
 			if str(title) not in data_files and title not in [entry['title'] for entry in self.indexed_titles['Titles']]: # Let's not process the titles.json file or duplicate our work
 				new_title = " ".join(map(str.title, re.findall(r"\w+|\w+'\w+|\w+-\w+|\w+|[(#$!)]+|'\w+", title)))				
@@ -149,12 +161,7 @@ class Formatter():
 				if len(new_title.split(' ')) > max_size:
 					new_title = " ".join(new_title.split(' ')[0:max_size])					
 				release_year = self.find_release_year(title=title, verbose=False)
-				if "_" in new_title:
-					new_title = new_title.replace("_", " ")
-				if " \'S" in new_title: # Fixes possessive issue
-					new_title = new_title.replace(" \'S", "\'s")
-				if " \'T" in new_title: # Fixes titles with the word "don't" in them.
-					new_title = new_title.replace(" \'T", "\'t")				
+				new_title = cleanup(new_title) # Some additional cleanup to the title
 				try:
 					results = self.search_title(search_terms=new_title, release_year=release_year, verbose=verbose)
 					final_title = results['Title'] + ' [' + results['Year'] + ']'
@@ -197,9 +204,9 @@ class Formatter():
 if __name__ == '__main__':
 	from datetime import datetime
 	start = datetime.now()
-	directory = join(getcwd(), 'test', 'data', 'Fake_Directory')
-	f = Formatter(directory=directory, debug=False, verbose=True)
-	# directory = 'J:\Films'
-	# f = Formatter(directory=directory, debug=True, verbose=False)
+	# directory = join(getcwd(), 'test', 'data', 'Fake_Directory')
+	# f = Formatter(directory=directory, debug=False, verbose=True)
+	directory = 'J:\Films'
+	f = Formatter(directory=directory, debug=True, verbose=False)
 	finish = datetime.now() - start
 	print "Finished in {total_time} seconds".format(total_time=finish)
