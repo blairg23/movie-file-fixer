@@ -145,12 +145,14 @@ class Formatter():
 			'''
 			Fixes some problems with titles, like contractions and possessive.
 			'''
+			if "_" in title: # Fixes underscore issue
+				title = title.replace("_", " ")
 			if " \'S" in title: # Fixes possessive issue
 				title = title.replace(" \'S", "\'s")
 			if " \'T" in title: # Fixes titles with the word "don't" in them.
 				title = title.replace(" \'T", "\'t")
 			if " \'R" in title: # Fixes titles with the word "we're" in them.
-				title = title.replace(" \'R", "\'r")pc
+				title = title.replace(" \'R", "\'r")
 			return title
 
 		for title in listdir(directory):
@@ -204,9 +206,9 @@ class Formatter():
 if __name__ == '__main__':
 	from datetime import datetime
 	start = datetime.now()
-	# directory = join(getcwd(), 'test', 'data', 'Fake_Directory')
-	# f = Formatter(directory=directory, debug=False, verbose=True)
-	directory = 'J:\Films'
-	f = Formatter(directory=directory, debug=True, verbose=False)
+	directory = join(getcwd(), 'test', 'data', 'Fake_Directory')
+	f = Formatter(directory=directory, debug=False, verbose=True)
+	#directory = 'J:\Films'
+	#f = Formatter(directory=directory, debug=True, verbose=False)
 	finish = datetime.now() - start
 	print "Finished in {total_time} seconds".format(total_time=finish)

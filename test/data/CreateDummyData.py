@@ -97,7 +97,7 @@ class CreateDummyData():
 					'Ordinary_Decent_Criminal.DVDRip_devilwarez.pl',
 
 					# For testing titles with hyphens in the name:
-					'Kick-Ass (2010) R5 XViD-MAXSPEED',
+					#'Kick-Ass (2010) R5 XViD-MAXSPEED',
 					'Kick-Ass 2 (2013) [1080p]',
 					'Bio-Dome (1996) - DVD Rip - XVID',
 

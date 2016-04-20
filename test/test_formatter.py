@@ -85,11 +85,11 @@ class TestFormatterMethods(unittest.TestCase):
 		with open(path, mode='r') as infile:
 			good_titles = infile.read().splitlines()
 		# Run format (This step has already been completed):
-		#self.formatter.format(directory=self.fake_directory_path, data_files=self.data_files) 
+		self.formatter.format(directory=self.fake_directory_path, data_files=self.data_files) 
 		list_of_folders = os.listdir(self.fake_directory_path) # Check the directory listing
 		for filename in self.data_files:
 			list_of_folders.remove(filename) # Remove 'test_file.json' and 'titles.json'			
-		# Should return True if all the titles have been renamed:		
+		# Should return True if all the titles have been renamed (make sure to check capitalization when debugging this function):
 		self.assertTrue(all([filename in good_titles for filename in list_of_folders])) 
 
 
