@@ -24,7 +24,7 @@ class TestPosterFinderMethods(unittest.TestCase):
 		self.test_title = 'test_title'
 		self.test_imdb_id = 1234
 		self.test_poster_url = 'http://globalgamejam.org/sites/default/files/styles/game_sidebar__normal/public/game/featured_image/promo_5.png'
-
+		self.test_poster_path = os.path.join(self.fake_directory_path, self.test_title, 'poster.jpg')
 		# Create a test folder:
 		self.test_folder_path = os.path.join(self.fake_directory_path, self.test_title)
 		if not os.path.exists(self.test_folder_path):
@@ -54,8 +54,8 @@ class TestPosterFinderMethods(unittest.TestCase):
 		self.poster_finder = Poster_Finder(directory=self.fake_directory_path, filename=self.test_file_name, verbose=False)		
 
 	def test_find_poster(self):
-		self.poster_finder.get_posters(directory=self.fake_directory_path, filename=self.test_file_name, verbose=False)
-		#self.assertTrue(os.path.exists(os.path.join(directory, filename)))
+		self.poster_finder.get_posters(directory=self.fake_directory_path, filename=self.test_file_name, verbose=False)		
+		self.assertTrue(os.path.exists(self.test_poster_path))
 
 if __name__ == '__main__':
 	unittest.main()
