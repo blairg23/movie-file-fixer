@@ -2,13 +2,14 @@
 '''
 Name: Folderizer
 Author: Blair Gemmer
-Version: 20150608
+Version: 20160618
 
 Description: Searches a directory and puts all singleton files into
 a directory of their namesake.
 '''
 
-from Helper_Functions import *
+import os
+import shutil
 
 class Folderizer():
 	def __init__(self, directory=None, verbose=False):
@@ -19,38 +20,38 @@ class Folderizer():
 		self.action_counter = 0		
 		# If the directory has been provided:
 		if self.directory != None:
-			self.cwd = directory			
 			self.folderize(self.directory)
 
-	def find_single_files(self, directory):
+	def find_single_files(self, directory=None):
 		'''
 		Finds all the files without a folder within a given directory.
 		'''		
 		# And find all the single files:
 		if self.verbose:
-			print '\n[{counter}] Finding files in {path}.'.format(counter=self.action_counter, path=self.cwd)		
-		single_files = [f for f in listdir(directory) if isfile(join(directory,f))]
+			print '\n[{counter}] Finding files in {path}.'.format(counter=self.action_counter, path=directory)		
+		single_files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory,f))]
+		
 		self.action_counter += 1
 		return single_files
 
 
-	def move_files_into_folders(self, file_names):
+	def move_files_into_folders(self, file_names=[], directory=None):
 		'''
 		Moves a group of files into their respective folders, 
 		given a list of file_names.
 		Will create the folder if it does not already exist.
 		'''
-		for fName in file_names:			
-			file_name, fileExt = splitext(fName) # Extract the file_name from the extension			
-			if not exists(join(self.cwd, file_name)): # If the folder doesn't already exist:
-				print join(self.cwd,file_name)
-			 	mkdir(join(self.cwd, file_name)) # Then create it
+		for fName in file_names:
+			old_file_path = os.path.join(directory, fName)		
+			file_name, file_ext = os.path.splitext(fName) # Extract the file_name from the extension
+			new_file_path = os.path.join(directory, file_name)
+			if not os.path.exists(new_file_path): # If the folder doesn't already exist:				
+			 	os.mkdir(new_file_path) # Then create it
 			 	if self.verbose:
 			 		print '[{action_counter}] [Created Folder] \"{folder_name}\" [successfully]'.format(action_counter=self.action_counter, folder_name=file_name)
-			 	self.action_counter += 1
-			old_path = join(self.cwd, fName)			
-			new_path = join(self.cwd, file_name, fName)			
-			move(old_path, new_path)
+			 	self.action_counter += 1			
+			
+			shutil.move(old_file_path, new_file_path)
 			if self.verbose:
 				print '[{action_counter}] [Moved File] \"{file_name}\" to [Folder] \"{folder_name}\" [successfully]'.format(action_counter=self.action_counter, file_name=fName, folder_name=file_name)
 			self.action_counter += 1
@@ -59,8 +60,8 @@ class Folderizer():
 		'''
 		Puts all singleton files from a directory into a folder of its namesake.
 		'''		
-		file_names = self.find_single_files(directory) # Get all file_names in the given directory					
-		self.move_files_into_folders(file_names) # And move those into folders, based on the same names
+		file_names = self.find_single_files(directory=directory) # Get all file_names in the given directory					
+		self.move_files_into_folders(file_names=file_names, directory=directory) # And move those into folders, based on the same names
 
 	def unfolderize(self, directory):
 		'''
@@ -71,5 +72,5 @@ class Folderizer():
 		pass
 
 if __name__ == '__main__':
-	cwd = join(getcwd(),'data', 'Fake_Directory')
-	fs = Folderizer(directory=cwd, verbose=True)
+	directory = os.path.join('test', 'data', 'Fake_Directory')
+	fs = Folderizer(directory=directory, verbose=True)

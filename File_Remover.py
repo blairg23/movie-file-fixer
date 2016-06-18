@@ -2,14 +2,14 @@
 '''
 Name: File_Remover.py
 Author: Blair Gemmer
-Version: 20151123
+Version: 20160618
 
-Description: Removes any files with unwanted extensions like ".txt" or ".dat".
+Description: os.removes any files with unwanted extensions like ".txt" or ".dat".
 '''
 
 import requests
 import json
-from Helper_Functions import *
+import os
 
 class File_Remover():
 	def __init__(self, directory=None, extensions=None, verbose=True):
@@ -18,12 +18,12 @@ class File_Remover():
 		self.remove_files(directory=directory, extensions=extensions, verbose=verbose)
 
 	def remove_files(self, directory=None, extensions=None, verbose=False):
-		for root, dirs, files in walk(directory):
+		for root, dirs, files in os.walk(directory):
 			for current_file in files:
 				if verbose:
 					print '[PROCESSING FILE: {filename}]'.format(filename=current_file)
 				if any(current_file.lower().endswith(ext) for ext in extensions):
-					remove(join(root, current_file))
+					os.remove(os.path.join(root, current_file))
 					if verbose:
 						print '[RESULT: REMOVED]\n'
 				else:
@@ -32,9 +32,9 @@ class File_Remover():
 				# This is not as fast:
 				# filename, ext = splitext(current_file)
 				# if ext in extensions:
-				# 	os.remove(join(root, current_file))
+				# 	os.os.remove(os.path.join(root, current_file))
 
 if __name__ == '__main__':
 	bad_extensions=['.nfo', '.dat', '.jpg', '.png', '.txt']
-	directory = join(getcwd(), 'test', 'data', 'Fake_Directory')
+	directory = os.path.join('test', 'data', 'Fake_Directory')
 	File_Remover(directory=directory, extensions=bad_extensions, verbose=True)
