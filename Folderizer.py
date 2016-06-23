@@ -29,7 +29,7 @@ class Folderizer():
 		# And find all the single files:
 		if self.verbose:
 			print '\n[{counter}] Finding files in {path}.'.format(counter=self.action_counter, path=directory)		
-		single_files = [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory,f))]
+		single_files = [f for f in os.listdir(directory) if os.path.isfile("\\\\?\\" + os.path.join(os.getcwd(), directory,f))]
 		
 		self.action_counter += 1
 		return single_files
@@ -42,9 +42,9 @@ class Folderizer():
 		Will create the folder if it does not already exist.
 		'''
 		for fName in file_names:
-			old_file_path = os.path.join(directory, fName)		
+			old_file_path = "\\\\?\\" + os.path.join(os.getcwd(), directory, fName)		
 			file_name, file_ext = os.path.splitext(fName) # Extract the file_name from the extension
-			new_file_path = os.path.join(directory, file_name)
+			new_file_path = "\\\\?\\" + os.path.join(os.getcwd(), directory, file_name)
 			if not os.path.exists(new_file_path): # If the folder doesn't already exist:				
 			 	os.mkdir(new_file_path) # Then create it
 			 	if self.verbose:

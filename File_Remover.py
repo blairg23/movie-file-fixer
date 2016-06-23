@@ -23,7 +23,7 @@ class File_Remover():
 				if verbose:
 					print '[PROCESSING FILE: {filename}]'.format(filename=current_file)
 				if any(current_file.lower().endswith(ext) for ext in extensions):
-					os.remove(os.path.join(root, current_file))
+					os.remove("\\\\?\\" + os.path.join(os.getcwd(), root, current_file))
 					if verbose:
 						print '[RESULT: REMOVED]\n'
 				else:

@@ -229,7 +229,7 @@ class Formatter():
 							print 'New Title: {new_title}'.format(new_title=new_title)
 							print 'Final Title: {final_title}'.format(final_title=final_title)								
 							print 'Release Year: {release_year}'.format(release_year=release_year)
-							print '[RENAMING {old_title} to {new_title}]\n'.format(old_title=os.path.join(directory, title), new_title=os.path.join(directory, final_title))				
+							print '[RENAMING {old_title} to {new_title}]\n'.format(old_title="\\\\?\\" + os.path.join(os.getcwd(), directory, title), new_title="\\\\?\\" + os.path.join(os.getcwd(), directory, final_title))				
 						new_title = {
 							'original_filename': title,
 							'title': final_title,
@@ -243,16 +243,16 @@ class Formatter():
 						if not self.debug:
 							# os.rename the folders to our newly formatted title:
 							old_path = os.path.join(directory, title)
-							new_path = os.path.join(directory, final_title)
+							new_path = "\\\\?\\" + os.path.join(os.getcwd(), directory, final_title)
 							os.rename(old_path, new_path)
 							# print '{old_name} -> {new_name}'.format(old_name=title, new_name=final_title)
 							# Now, check the folder for files inside it and os.rename those too:
-							single_files = [f for f in os.listdir(new_path) if os.path.isfile(os.path.join(new_path,f))]
+							single_files = [f for f in os.listdir(new_path) if os.path.isfile("\\\\?\\" + os.path.join(os.getcwd(), new_path,f))]
 							for single_file in single_files:
-								old_file_path = os.path.join(new_path, single_file)
+								old_file_path = "\\\\?\\" + os.path.join(os.getcwd(), new_path, single_file)
 								old_filename, ext = os.path.splitext(single_file)
 								new_filename = final_title + ext
-								new_file_path = os.path.join(new_path, new_filename)
+								new_file_path = "\\\\?\\" + os.path.join(os.getcwd(), new_path, new_filename)
 								os.rename(old_file_path, new_file_path)
 								if verbose:
 									print 'Old Filename: {old_filename}'.format(old_filename=old_filename)

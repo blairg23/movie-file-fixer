@@ -26,7 +26,7 @@ class CreateDummyData():
 				for fType in filetypes: # For each of the file types:
 					# Create a new file name with that file prefix and file type:
 					newFileName = '{fPrefix}.{fType}'.format(fPrefix=filePrefix, fType=fType) 
-					newFilePath = os.path.join(directory, newFileName)
+					newFilePath = "\\\\?\\" + os.path.join(os.getcwd(), directory, newFileName)
 					if os.path.exists(newFilePath):
 						if self.verbose:
 							print '[{fileCounter}] [Skipping File] \"{fileName}\" already exists in [Folder] \"{directory}\"'.format(fileCounter=fileCounter, fileName=newFileName, directory=directory)
@@ -38,6 +38,7 @@ class CreateDummyData():
 							fileCounter += 1
 			except Exception as e:
 				print '[ERROR]', e
+				print 'Size of Path:', len(os.path.join(os.getcwd(), newFilePath))
 
 		def createInnerFoldersAndFiles(filePrefix=None, directory=None, innerFolderNames=None, filetypes=None):
 			'''Creates the inner folders from the list of folder names
@@ -60,6 +61,7 @@ class CreateDummyData():
 						createNewFiles(filePrefix=fPrefix, directory=fPath, filetypes=filetypes)					
 			except Exception as e:
 				print '[ERROR]', e
+				print 'Size of Path:', len(os.path.join(os.getcwd(), fPath))
 
 		
 		# Create the new folder:
@@ -126,7 +128,7 @@ class CreateDummyData():
 						'Red.Dawn.1984.720p.BrRip.x264.Obit11.ThumperDC',
 						'Poltergeist (1982) [1080p]',
 						'Poltergeist 2015 1080p HDRip x264 AC3-JYK',
-						'The.Girl.With.The.Dragon.Tattoo-[www.speed.cd ]-[2009]DvDrip-aXXo',
+						'The.Girl.With.The.Dragon.Tattoo[2009]',
 						'The Girl With The Dragon Tattoo (2011) (HD)',
 						
 						# For testing crazy punctuation in titles:
@@ -148,5 +150,5 @@ if __name__ == '__main__':
 	CDD = CreateDummyData()
 	# If you want to close a real directory to test it out:
 	real_directory = 'J:\Films'
-	#CDD.run(real_directory=real_directory)
-	CDD.run()
+	CDD.run(real_directory=real_directory)
+	#CDD.run()

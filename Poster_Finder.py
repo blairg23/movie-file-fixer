@@ -28,7 +28,7 @@ class Poster_Finder():
 				# Load existing data into titles index list:
 				titles_index = json.load(infile)
 			for title in titles_index['Titles']:
-				new_path = os.path.join(directory, title['title'], 'poster.jpg')
+				new_path = "\\\\?\\" + os.path.join(os.getcwd(), directory, title['title'], 'poster.jpg')
 				if verbose:
 					print '[PROCESSING TITLE: {title}]'.format(title=str(title['title']))												
 				poster_url = title['poster']
