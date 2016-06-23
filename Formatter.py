@@ -12,7 +12,6 @@ import requests
 import json
 import os
 import re
-import string
 
 class Formatter():
 	def __init__(self, directory=None, format_type='Movies', data_files=['contents.json', 'errors.json'], debug=False, verbose=False):
@@ -149,24 +148,25 @@ class Formatter():
 		'''
 		Returns the best candidate for the release year for the given title by removing the improbable candidates.
 		'''		
-		year_list = re.findall(r"\d{4}", title) # Find all possible "release year" candidates
-
+		year_list = re.findall(r"\d{4}", title) # Find all possible "release year" candidates		
 		if len(year_list) > 0: # If we found any results:
 			if verbose:
 				print 'Release Year Candidates: {year_list}'.format(year_list=year_list)
 			removal_list = []
 			for year in year_list:
 				if int(year) < 1900: # We won't be dealing with movies before the 1900's
-					removal_list.append(str(year))
-			for remove_string in removal_list: # For each string that matches the removal process,
-				year_list.remove(remove_string) # Remove that string		
+					# For each string that matches the removal process,
+					year_list.remove(str(year))# Remove that string			
 
-			# Add only the last one as that is the most likely candidate of a real candidate (this won't be true when resolutions are at 4K)		
-			release_year = year_list[-1] # This will also be the only candidate if there is only one candidate
+			# Add only the last one as that is the most likely candidate of a real candidate (this won't be true when resolutions are at 4K)
+			if len(year_list) > 0: # Make sure there is still at least one candidate
+				release_year = year_list[-1] # This will also be the only candidate if there is only one candidate
 
-			if verbose:
-				print 'Best Guess for Release Year: {release_year}'.format(release_year=release_year)
-			return release_year
+				if verbose:
+					print 'Best Guess for Release Year: {release_year}'.format(release_year=release_year)
+				return release_year
+			else:
+				return ''
 		else:
 			return ''
 
@@ -198,8 +198,7 @@ class Formatter():
 			return re.sub(r'[(<>:"/\\|?*)]', '', title)
 
 		#s = ''.os.path.join(ch for ch in s if ch not in exclude)
-		for title in os.listdir(directory):
-			print title
+		for title in os.listdir(directory):			
 			# Let's not process the contents.json file or duplicate our work:			
 			if str(title) not in data_files and title not in [entry['title'] if entry != [] else [] for entry in self.indexed_titles['Titles']]:
 				new_title = cleanup(title=title)
@@ -217,11 +216,11 @@ class Formatter():
 					# If we got an error code:
 					if results == -1:
 						new_title = {
-							'title': title
+							'original_filename': title,
+							'title': new_title
 						}
 						if title not in [entry['title'] if entry != [] else [] for entry in self.error_titles['Titles']]:
 							self.append_content_data(directory=directory, filename='errors.json', new_content=new_title, content_key='Titles')
-						break
 					else:
 						final_title = results['Title'] + ' [' + results['Year'] + ']'						
 						final_title = strip_bad_chars(title=final_title) # Remove non-viable folder characters
@@ -232,6 +231,7 @@ class Formatter():
 							print 'Release Year: {release_year}'.format(release_year=release_year)
 							print '[RENAMING {old_title} to {new_title}]\n'.format(old_title=os.path.join(directory, title), new_title=os.path.join(directory, final_title))				
 						new_title = {
+							'original_filename': title,
 							'title': final_title,
 							'imdb_id': results['imdbID'],
 							'poster': results['Poster']
@@ -240,37 +240,34 @@ class Formatter():
 						self.append_content_data(directory=directory, filename='contents.json', new_content=new_title, content_key='Titles')
 						# Add the current full IMDb metadata to our "contents.json" index file:
 						self.append_content_data(directory=directory, filename='contents.json', new_content=results, content_key='Metadata')
+						if not self.debug:
+							# os.rename the folders to our newly formatted title:
+							old_path = os.path.join(directory, title)
+							new_path = os.path.join(directory, final_title)
+							os.rename(old_path, new_path)
+							# print '{old_name} -> {new_name}'.format(old_name=title, new_name=final_title)
+							# Now, check the folder for files inside it and os.rename those too:
+							single_files = [f for f in os.listdir(new_path) if os.path.isfile(os.path.join(new_path,f))]
+							for single_file in single_files:
+								old_file_path = os.path.join(new_path, single_file)
+								old_filename, ext = os.path.splitext(single_file)
+								new_filename = final_title + ext
+								new_file_path = os.path.join(new_path, new_filename)
+								os.rename(old_file_path, new_file_path)
+								if verbose:
+									print 'Old Filename: {old_filename}'.format(old_filename=old_filename)
+									print 'Old Filepath: {old_file_path}'.format(old_file_path=old_file_path)
+									print 'New Filename: {new_filename}'.format(new_filename=new_filename)
+									print 'New Filepath: {new_file_path}\n'.format(new_file_path=new_file_path)
 				except Exception as error:
 					print "[ERROR]", error
 					print '[FAILED] search terms: {search_terms}\n'.format(search_terms=new_title)
 					new_title = {
-						'title': title
+						'original_filename': title,
+						'title': new_title
 					}
 					if title not in [entry['title'] if entry != [] else [] for entry in self.error_titles['Titles']]:
 						self.append_content_data(directory=directory, filename='errors.json', new_content=new_title, content_key='Titles')
-					break
-				if not self.debug:
-					try:
-						# os.rename the folders to our newly formatted title:
-						old_path = os.path.join(directory, title)
-						new_path = os.path.join(directory, final_title)
-						os.rename(old_path, new_path)
-
-						# Now, check the folder for files inside it and os.rename those too:
-						single_files = [f for f in os.listdir(new_path) if os.path.isfile(os.path.join(new_path,f))]
-						for single_file in single_files:
-							old_file_path = os.path.join(new_path, single_file)
-							old_filename, ext = os.path.splitext(single_file)
-							new_filename = final_title + ext
-							new_file_path = os.path.join(new_path, new_filename)
-							os.rename(old_file_path, new_file_path)
-							if verbose:
-								print 'Old Filename: {old_filename}'.format(old_filename=old_filename)
-								print 'Old Filepath: {old_file_path}'.format(old_file_path=old_file_path)
-								print 'New Filename: {new_filename}'.format(new_filename=new_filename)
-								print 'New Filepath: {new_file_path}\n'.format(new_file_path=new_file_path)
-					except Exception as error:
-						print '[ERROR]', error
 
 if __name__ == '__main__':
 	from datetime import datetime

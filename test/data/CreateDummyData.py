@@ -80,7 +80,7 @@ class CreateDummyData():
 		# 	createNewFiles(filePrefix=fPrefix, directory=directory, filetypes=filetypes)
 
 	def run(self, directory='Fake_Directory', real_directory=None):
-		filePrefix='single.file'		
+		filePrefix = 'single.file'		
 		filetypes = ['avi', 'mov', 'mp4', 'txt', 'dat', 'nfo', 'jpg', 'png', 'mkv']
 		if real_directory != None:
 			fileNames = os.listdir(real_directory)
@@ -148,4 +148,5 @@ if __name__ == '__main__':
 	CDD = CreateDummyData()
 	# If you want to close a real directory to test it out:
 	real_directory = 'J:\Films'
-	CDD.run(real_directory=real_directory)
+	#CDD.run(real_directory=real_directory)
+	CDD.run()
