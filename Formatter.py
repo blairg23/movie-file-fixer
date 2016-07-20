@@ -13,6 +13,8 @@ import json
 import os
 import re
 
+import sys
+
 class Formatter():
 	def __init__(self, directory=None, format_type='Movies', data_files=['contents.json', 'errors.json'], debug=False, verbose=False):
 		self.debug = debug
@@ -243,17 +245,23 @@ class Formatter():
 						if not self.debug:
 							# os.rename the folders to our newly formatted title:
 							old_path = os.path.join(directory, title)
-							new_path = "\\\\?\\" + os.path.join(os.getcwd(), directory, final_title)
+							new_path = "\\\\?\\" + os.path.join(directory, final_title)
 							os.rename(old_path, new_path)
-							# print '{old_name} -> {new_name}'.format(old_name=title, new_name=final_title)
-							# Now, check the folder for files inside it and os.rename those too:
-							single_files = [f for f in os.listdir(new_path) if os.path.isfile("\\\\?\\" + os.path.join(os.getcwd(), new_path,f))]
+							print '{old_name} -> {new_name}'.format(old_name=title, new_name=final_title)
+							# Now, check the folder for files inside it and os.rename those too:							
+							single_files = [f for f in os.listdir(new_path) if os.path.isfile(os.path.join(new_path,f))]
+							print single_files							
 							for single_file in single_files:
-								old_file_path = "\\\\?\\" + os.path.join(os.getcwd(), new_path, single_file)
+								old_file_path = os.path.join(new_path, single_file)
+								print old_file_path
 								old_filename, ext = os.path.splitext(single_file)
+								print old_filename
 								new_filename = final_title + ext
-								new_file_path = "\\\\?\\" + os.path.join(os.getcwd(), new_path, new_filename)
-								os.rename(old_file_path, new_file_path)
+								print new_filename
+								new_file_path = os.path.join(new_path, new_filename)
+								print new_file_path
+								os.rename(old_file_path, new_file_path)								
+								print 'renaming {old_path} to {new_path}....'.format(old_path=old_file_path, new_path=new_file_path)
 								if verbose:
 									print 'Old Filename: {old_filename}'.format(old_filename=old_filename)
 									print 'Old Filepath: {old_file_path}'.format(old_file_path=old_file_path)
@@ -272,7 +280,8 @@ class Formatter():
 if __name__ == '__main__':
 	from datetime import datetime
 	start = datetime.now()
-	directory = os.path.join('test', 'data', 'Fake_Directory')
+	directory = os.path.join(os.getcwd(), 'test', 'data', 'Fake_Directory')
+	directory = 'J:\\to_sort'
 	f = Formatter(directory=directory, debug=False, verbose=False)
 	#directory = 'J:\Films'
 	#f = Formatter(directory=directory, debug=True, verbose=False)

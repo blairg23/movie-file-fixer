@@ -37,4 +37,4 @@ class File_Remover():
 if __name__ == '__main__':
 	bad_extensions=['.nfo', '.dat', '.jpg', '.png', '.txt']
 	directory = os.path.join('test', 'data', 'Fake_Directory')
-	File_Remover(directory=directory, extensions=bad_extensions, verbose=True)
+	File_Remover(directory=directory, extensions=bad_extensions, verbose=False)

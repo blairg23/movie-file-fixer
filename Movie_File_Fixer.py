@@ -13,9 +13,9 @@ Executes a four part movie folder formatting system for a given directory. The s
 2. [File_Remover] Removes any files with unwanted extensions like ".txt" or ".dat".
 
 3. [Formatter] Formats all the files and folders in a given directory based on their movie title 
-and creates a title directory called "titles.json", which also contains poster information.
+and creates a title directory called "contents.json", which also contains poster information.
 
-4. [Poster_Finder] Reads that "titles.json" file and downloads the poster for each title.
+4. [Poster_Finder] Reads that "contents.json" file and downloads the poster for each title.
 
 '''
 from Folderizer import Folderizer
@@ -23,21 +23,21 @@ from Formatter import Formatter
 from Poster_Finder import Poster_Finder
 from File_Remover import File_Remover
 
-from Helper_Functions import *
 import json
+import os
 
 class Movie_File_Fixer():
-	def __init__(self, directory=None, extensions=['.nfo', '.dat', '.jpg', '.png', '.txt'], verbose=True):		
-		self.folderize(directory=directory, verbose=verbose)		
+	def __init__(self, directory=None, extensions=['.nfo', '.dat', '.jpg', '.png', '.txt'], data_files=['contents.json', 'errors.json'], verbose=True):		
+		self.folderize(directory=directory, data_files=data_files, verbose=verbose)		
 		self.cleanup(directory=directory, extensions=extensions, verbose=verbose)
 		self.format(directory=directory, verbose=verbose)
-		self.get_posters(directory=directory, verbose=verbose)		
+		self.get_posters(directory=directory, data_files=data_files, verbose=verbose)		
 
-	def folderize(self, directory=None, verbose=False):
+	def folderize(self, directory=None, data_files=None, verbose=False):
 		'''
 		1. Place all single files in folders of the same name.
 		'''
-		Folderizer(directory=directory, verbose=verbose)
+		Folderizer(directory=directory, data_files=data_files, verbose=verbose)
 
 	def cleanup(self, directory=None, extensions=None, verbose=False):
 		'''
@@ -52,15 +52,19 @@ class Movie_File_Fixer():
 		'''
 		Formatter(directory=directory, verbose=verbose)
 
-	def get_posters(self, directory=None, verbose=False):
+	def get_posters(self, directory=None, data_files=None, verbose=False):
 		'''
 			b. Download the movie poster and name the file poster.<extension> 
 			(where <extension> is the original extension of the poster file)
 		'''
-		Poster_Finder(directory=directory, filename='titles.json', verbose=verbose)
+		contents_file = data_files[0]
+		Poster_Finder(directory=directory, contents_file=contents_file, verbose=verbose)
 
 
 
 
 if __name__ == '__main__':
-	Movie_File_Fixer(directory=join(getcwd(), 'test', 'data', 'Fake_Directory'), verbose=True)
+	fake_directory = os.path.join(os.getcwd(), 'test', 'data', 'Fake_Directory')
+	directory = fake_directory
+	directory = 'J:\\to_sort'		
+	Movie_File_Fixer(directory=directory, data_files=['contents.json', 'errors.json'], verbose=False)
