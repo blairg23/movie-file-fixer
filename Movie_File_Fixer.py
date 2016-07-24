@@ -2,7 +2,7 @@
 '''
 Name: Movie_File_Fixer.py
 Author: Blair Gemmer
-Version: 20151123
+Version: 20160618
 
 Description: 
 
@@ -59,9 +59,6 @@ class Movie_File_Fixer():
 		'''
 		contents_file = data_files[0]
 		Poster_Finder(directory=directory, contents_file=contents_file, verbose=verbose)
-
-
-
 
 if __name__ == '__main__':
 	fake_directory = os.path.join(os.getcwd(), 'test', 'data', 'Fake_Directory')
