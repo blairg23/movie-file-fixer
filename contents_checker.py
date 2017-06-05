@@ -18,7 +18,7 @@ contents_filename = 'contents.json'
 contents_fullpath = os.path.join(contents_file_directory, contents_filename)
 
 films_directory = 'H:\Films'
-films_list = os.listdir(films_directory)
+films_list = [filename for filename in os.listdir(films_directory) if filename != contents_filename]
 film_titles = []
 
 with open(contents_fullpath, encoding='utf-8') as infile:
