@@ -2,7 +2,7 @@
 '''
 Name: Movie_File_Fixer.py
 Author: Blair Gemmer
-Version: 20160618
+Version: 20170604
 
 Description: 
 
@@ -63,5 +63,5 @@ class Movie_File_Fixer():
 if __name__ == '__main__':
 	fake_directory = os.path.join(os.getcwd(), 'test', 'data', 'Fake_Directory')
 	directory = fake_directory
-	directory = 'J:\\to_sort'		
+	directory = os.path.join(os.getcwd(), 'input')
 	Movie_File_Fixer(directory=directory, data_files=['contents.json', 'errors.json'], verbose=False)

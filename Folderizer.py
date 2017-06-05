@@ -14,7 +14,7 @@ import shutil
 class Folderizer():
 	def __init__(self, directory=None, data_files=['contents.json', 'errors.json'], verbose=False):
 		if verbose:
-			print '[CURRENT ACTION: MOVING SINGLETON FILES TO FOLDERS]\n'
+			print('[CURRENT ACTION: MOVING SINGLETON FILES TO FOLDERS]\n')
 		self.directory = directory
 		self.verbose = verbose
 		self.action_counter = 0		
@@ -28,7 +28,7 @@ class Folderizer():
 		'''		
 		# And find all the single files:
 		if self.verbose:
-			print '\n[{counter}] Finding files in {path}.'.format(counter=self.action_counter, path=directory)		
+			print('\n[{counter}] Finding files in {path}.'.format(counter=self.action_counter, path=directory)		)
 		single_files = [f for f in os.listdir(directory) if os.path.isfile("\\\\?\\" + os.path.join(os.getcwd(), directory,f))]
 		
 		self.action_counter += 1
@@ -49,12 +49,12 @@ class Folderizer():
 			if not os.path.exists(new_file_path): # If the folder doesn't already exist:				
 			 	os.mkdir(new_file_path) # Then create it
 			 	if self.verbose:
-			 		print '[{action_counter}] [Created Folder] \"{folder_name}\" [successfully]'.format(action_counter=self.action_counter, folder_name=file_name)
+			 		print('[{action_counter}] [Created Folder] \"{folder_name}\" [successfully]'.format(action_counter=self.action_counter, folder_name=file_name))
 			 	self.action_counter += 1			
 			
 			shutil.move(old_file_path, new_file_path)
 			if self.verbose:
-				print '[{action_counter}] [Moved File] \"{file_name}\" to [Folder] \"{folder_name}\" [successfully]'.format(action_counter=self.action_counter, file_name=fName, folder_name=file_name)
+				print('[{action_counter}] [Moved File] \"{file_name}\" to [Folder] \"{folder_name}\" [successfully]'.format(action_counter=self.action_counter, file_name=fName, folder_name=file_name))
 			self.action_counter += 1
 
 	def folderize(self, directory=None, data_files=None):		

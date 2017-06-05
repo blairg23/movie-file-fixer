@@ -63,8 +63,8 @@ def is_in_folder(folder_path=None, file_name=None):
 	'''
 	import os.path
 	if os.path.exists(folder_path):
-		print file_name in os.listdir(folder_path)
-	print os.listdir(folder_path)
+		print(file_name in os.listdir(folder_path))
+	print(os.listdir(folder_path))
 	
 def find_single_files(directory):
 	'''
