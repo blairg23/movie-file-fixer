@@ -27,13 +27,13 @@ class Formatter():
 				self.initialize_file(directory=directory, filename='contents.json', initial_data=self.indexed_titles)
 			else: # However, if it does exist, 
 				#Let's keep track of the files we've already indexed, so we don't duplicate our work:
-				with open(os.path.join(directory, 'contents.json')) as infile:
+				with open(os.path.join(directory, 'contents.json'), encoding='UTF-8') as infile:
 					self.indexed_titles = json.load(infile)
 			if not os.path.exists(os.path.join(directory, 'errors.json')): 
 				self.error_titles = {'Titles': [], 'Total': 0}
 				self.initialize_file(directory=directory, filename='errors.json', initial_data=self.error_titles)
 			else:
-				with open(os.path.join(directory, 'errors.json')) as infile:
+				with open(os.path.join(directory, 'errors.json'), encoding='UTF-8') as infile:
 					self.error_titles = json.load(infile)
 			self.format(directory=directory, data_files=data_files, verbose=verbose)
 		else:

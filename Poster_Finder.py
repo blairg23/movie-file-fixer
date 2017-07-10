@@ -32,7 +32,7 @@ class Poster_Finder():
             print('[PROCESSING FILE: {full_path}]'.format(full_path=full_path)      )
         if os.path.exists(full_path):           
             # Open file for reading:
-            with open(full_path, mode='r') as infile:
+            with open(full_path, mode='r', encoding='UTF-8') as infile:
                 # Load existing data into titles index list:
                 titles_index = json.load(infile)
             for title in titles_index['Titles']:
