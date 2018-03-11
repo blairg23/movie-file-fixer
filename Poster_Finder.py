@@ -26,7 +26,7 @@ class Poster_Finder():
         print('Downloading {url}'.format(url=url))
         return requests.get(url=url, headers=headers, cookies=cookies)
 
-    def get_posters(self, directory=None, contents_file=None, verbose=None):
+    def get_posters(self, directory=None, contents_file=None, api_key='967174e1', verbose=None):
         full_path = os.path.join(directory, contents_file)
         if verbose:
             print('[PROCESSING FILE: {full_path}]'.format(full_path=full_path)      )
@@ -42,7 +42,11 @@ class Poster_Finder():
                     if verbose:
                         print('[PROCESSING TITLE: {title}]'.format(title=str(title['title']))                                               )
                     poster_url = title['poster']
-                    if poster_url != 'N/A':
+                    # imdb_id = title['imdb_id']
+                    
+                    # if imdb_id not in ['', None, ' ', 'N/A']:
+                    if poster_url not in ['', None, ' ', 'N/A']:
+                    #     poster_url = 'http://img.omdbapi.com/?i={imdb_id}&h=600&apikey={api_key}'.format(imdb_id=imdb_id, api_key=api_key)
                         if verbose:
                             print('[ADDING POSTER URL: {poster_url}]\n'.format(poster_url=poster_url))
                         #urllib.urlretrieve(poster_url, new_path)
