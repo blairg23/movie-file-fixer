@@ -10,8 +10,8 @@ Checks the contents.json for any possible errors.
 
 '''
 
-import os
 import json
+import os
 
 contents_file_directory = 'H:\\Films'
 contents_filename = 'contents.json'
@@ -22,17 +22,16 @@ films_list = [filename for filename in os.listdir(films_directory) if filename !
 film_titles = []
 
 with open(contents_fullpath, encoding='utf-8') as infile:
-	indexed_titles = json.load(infile)
-
+    indexed_titles = json.load(infile)
 
 # First, check our contents file against our film directory:
 for indexed_title in indexed_titles['Titles']:
-	film_title = indexed_title['title']
-	film_titles.append(film_title)
-	if film_title not in films_list:
-		print(film_title)
+    film_title = indexed_title['title']
+    film_titles.append(film_title)
+    if film_title not in films_list:
+        print(film_title)
 
 # Second, check our film directory against our contents file:
 for film_title in films_list:
-	if film_title not in film_titles:
-		print(film_title)
+    if film_title not in film_titles:
+        print(film_title)

@@ -10,8 +10,9 @@ def return_movie_file(files=None):
             # If the chosen file is a movie:
             if file.endswith(file_type):
                 return file, True
-                #print(file)
+                # print(file)
     return files, False
+
 
 def return_weird_movie_file(files=None):
     weird_movie_file_types = ['.sub', '.m4v', '.divx', 'rmvb', '.AVI', '.VOB']
@@ -25,12 +26,13 @@ def return_weird_movie_file(files=None):
     else:
         return weird_files, False
 
+
 if __name__ == '__main__':
     counter = 0
     input_directory = 'H:\\Films'
-    
+
     bad_files = []
-    
+
     for file_folder in os.listdir(input_directory):
         try:
             current_folder = os.path.join(input_directory, file_folder)
@@ -44,7 +46,7 @@ if __name__ == '__main__':
                 else:
                     counter += 1
                     input_file = os.path.join(current_folder, movie_file)
-                #with open(input_file) as infile:
+                    # with open(input_file) as infile:
                     # BMP file:
                     # infile.seek(18)
 
@@ -58,16 +60,16 @@ if __name__ == '__main__':
                     video_capture = cv2.VideoCapture(input_file)
 
                     if video_capture.isOpened():
-                         # get vcap property 
-                        #width = video_capture.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)   # float
-                        #height = video_capture.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT) # float
+                        # get vcap property
+                        # width = video_capture.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)   # float
+                        # height = video_capture.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT) # float
 
                         # or
                         width = video_capture.get(3)  # float
-                        height = video_capture.get(4) # float
+                        height = video_capture.get(4)  # float
 
-                    # it gives me 0.0 :/
-                    #fps = video_capture.get(cv2.cv.CV_CAP_PROP_FPS)
+                        # it gives me 0.0 :/
+                        # fps = video_capture.get(cv2.cv.CV_CAP_PROP_FPS)
                         print('FILENAME:', input_file)
                         print('SIZE:{width}x{height}'.format(width=int(width), height=int(height)))
                         print('\n')

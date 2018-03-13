@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 '''
-Name: Formatter.py
+Name: formatter.py
 Author: Blair Gemmer
 Version: 20170604
 
@@ -8,28 +8,28 @@ Description: Formats all the files and folders in a given directory based on the
 and creates a title directory called "contents.json", which also contains poster information.
 '''
 
-import requests
 import json
 import os
 import re
 
-import sys
+import requests
 
-class Formatter():
+
+class Formatter:
     def __init__(self, directory=None, format_type='Movies', data_files=['contents.json', 'errors.json'], debug=False, verbose=False):
         self.debug = debug
         if directory != None:
             if verbose:
                 print('[CURRENT ACTION: FORMATTING MOVIE TITLES]\n')
             # If we haven't already created a table of contents file, create one:
-            if not os.path.exists(os.path.join(directory, 'contents.json')): 
+            if not os.path.exists(os.path.join(directory, 'contents.json')):
                 self.indexed_titles = {'Titles': [], 'Metadata': [], 'Total': 0}
                 self.initialize_file(directory=directory, filename='contents.json', initial_data=self.indexed_titles)
-            else: # However, if it does exist, 
-                #Let's keep track of the files we've already indexed, so we don't duplicate our work:
+            else:  # However, if it does exist,
+                # Let's keep track of the files we've already indexed, so we don't duplicate our work:
                 with open(os.path.join(directory, 'contents.json'), encoding='UTF-8') as infile:
                     self.indexed_titles = json.load(infile)
-            if not os.path.exists(os.path.join(directory, 'errors.json')): 
+            if not os.path.exists(os.path.join(directory, 'errors.json')):
                 self.error_titles = {'Titles': [], 'Total': 0}
                 self.initialize_file(directory=directory, filename='errors.json', initial_data=self.error_titles)
             else:
@@ -39,7 +39,6 @@ class Formatter():
         else:
             print('[ERROR] Need to specify a directory to work on.')
 
-
     def initialize_file(self, directory=None, filename=None, initial_data=None):
         '''
         Initialize a JSON file with some initial data
@@ -47,10 +46,9 @@ class Formatter():
         i.e., To contain an index of all our new filenames
 
         or all the files that errored out.
-        '''     
+        '''
         with open(os.path.join(directory, filename), mode='w') as outfile:
             json.dump(initial_data, outfile)
-
 
     def append_content_data(self, directory=None, filename='contents.json', new_content=None, content_key=None):
         '''
@@ -65,7 +63,7 @@ class Formatter():
             # Load existing data into titles index list:
             contents_file = json.load(infile)
         # Open file for writing:
-        with open(os.path.join(directory, filename), mode='w') as outfile:    
+        with open(os.path.join(directory, filename), mode='w') as outfile:
             # Append the new data to the titles index list:
             contents_file[content_key].append(new_content)
             # Only count the titles:
@@ -86,23 +84,23 @@ class Formatter():
             't': title,
             'plot': 'Full',
             'r': 'json',
-            'y': release_year, #if release_year != '' else ''
+            'y': release_year,  # if release_year != '' else ''
             'apikey': apikey
-        }       
+        }
         req = requests.get(url=url, params=payload, headers=headers)
         if req.status_code == 200:
-            response = req.json()           
-            if response['Response'] == "True": # If the response was successful (if we found a movie title)
+            response = req.json()
+            if response['Response'] == "True":  # If the response was successful (if we found a movie title)
                 if verbose:
                     print('[SUCCESSFUL]')
                     print(json.dumps(response, indent=4), '\n')
-                return response # Return the full response
-            else: # Otherwise, remove the last word from the title (in case it's a junk word or a year of release),
+                return response  # Return the full response
+            else:  # Otherwise, remove the last word from the title (in case it's a junk word or a year of release),
                 title = ' '.join(title.split(' ')[:-1])
-                if verbose:                 
+                if verbose:
                     print('[FAILED] new search terms: {search_terms}\n'.format(title=title))
                 if run_number < max_recurse:
-                    return self.search_title(title=title, release_year=release_year, run_number=run_number+1, verbose=verbose) # And recursively try again                
+                    return self.search_title(title=title, release_year=release_year, run_number=run_number + 1, verbose=verbose)  # And recursively try again
                 else:
                     raise Exception('ERROR: Max recursion depth.')
 
@@ -118,15 +116,15 @@ class Formatter():
             'plot': 'Full',
             'r': 'json',
             'apikey': apikey
-        }       
+        }
         req = requests.get(url=url, params=payload, headers=headers)
         if req.status_code == 200:
-            response = req.json()           
-            if response['Response'] == "True": # If the response was successful (if we found a movie title)
+            response = req.json()
+            if response['Response'] == "True":  # If the response was successful (if we found a movie title)
                 if verbose:
                     print('[SUCCESSFUL]')
                     print(json.dumps(response, indent=4), '\n')
-                return response # Return the full response
+                return response  # Return the full response
             else:
                 verbose = True
                 if verbose:
@@ -144,11 +142,11 @@ class Formatter():
             's': search_terms,
             'r': 'json',
             'apikey': apikey
-        }       
+        }
         req = requests.get(url=url, params=payload, headers=headers)
         if req.status_code == 200:
-            response = req.json()           
-            if response['Response'] == "True": # If the response was successful (if we found a movie title)
+            response = req.json()
+            if response['Response'] == "True":  # If the response was successful (if we found a movie title)
                 if verbose:
                     print('[SUCCESSFUL]')
                     print(json.dumps(response, indent=4), '\n')
@@ -162,7 +160,7 @@ class Formatter():
                         if all([self.strip_bad_chars(word) in search_terms for word in search_result['Title'].split(' ')]) and search_result['Year'] == release_year:
                             # Add it to the list of valid titles
                             valid_results.append(search_result)
-                            
+
                 if len(valid_results) == 1:
                     response = self.search_id(imdb_id=valid_results[0]['imdbID'])
                 else:
@@ -172,7 +170,7 @@ class Formatter():
                         print(json.dumps(valid_results, indent=4))
                     raise Exception('ERROR: More than one movie matched this search query.')
 
-                return response # Return the full response
+                return response  # Return the full response
             else:
                 verbose = True
                 if verbose:
@@ -191,35 +189,33 @@ class Formatter():
         req = requests.get(url=url, params=payload)
         if req.status_code == 200:
             response = req.json()
-            if response['Response'] == "True": # If the response was successful (if we found a movie matching that IMdb ID)
+            if response['Response'] == "True":  # If the response was successful (if we found a movie matching that IMdb ID)
                 if verbose:
                     print('[SUCCESSFUL]')
                     print(json.dumps(response, indent=4), '\n')
-                return response # Return the full response
-            else: # Otherwise, return the failed code -1
+                return response  # Return the full response
+            else:  # Otherwise, return the failed code -1
                 if verbose:
                     print('[FAILED] bad IMdb ID.')
                 return -1
 
-
-    
     def find_release_year(self, title=None, verbose=False):
         '''
         Returns the best candidate for the release year for the given title by removing the improbable candidates.
-        '''     
-        year_list = re.findall(r"\d{4}", title) # Find all possible "release year" candidates       
-        if len(year_list) > 0: # If we found any results:
+        '''
+        year_list = re.findall(r"\d{4}", title)  # Find all possible "release year" candidates
+        if len(year_list) > 0:  # If we found any results:
             if verbose:
                 print('Release Year Candidates: {year_list}'.format(year_list=year_list))
             removal_list = []
             for year in year_list:
-                if int(year) < 1900: # We won't be dealing with movies before the 1900's
+                if int(year) < 1900:  # We won't be dealing with movies before the 1900's
                     # For each string that matches the removal process,
-                    year_list.remove(str(year))# Remove that string         
+                    year_list.remove(str(year))  # Remove that string
 
             # Add only the last one as that is the most likely candidate of a real candidate (this won't be true when resolutions are at 4K)
-            if len(year_list) > 0: # Make sure there is still at least one candidate
-                release_year = year_list[-1] # This will also be the only candidate if there is only one candidate
+            if len(year_list) > 0:  # Make sure there is still at least one candidate
+                release_year = year_list[-1]  # This will also be the only candidate if there is only one candidate
 
                 if verbose:
                     print('Best Guess for Release Year: {release_year}'.format(release_year=release_year))
@@ -229,17 +225,17 @@ class Formatter():
         else:
             return ''
 
-
     def strip_bad_chars(self, title=None):
-            '''
-            Strips the given title of any characters that aren't allowed in folder/file names.
-            '''     
-            return re.sub(r'[(<>:"/\\|?*)]', '', title)
+        '''
+        Strips the given title of any characters that aren't allowed in folder/file names.
+        '''
+        return re.sub(r'[(<>:"/\\|?*)]', '', title)
 
     def format(self, directory=None, data_files=[], verbose=False, file_type='movie'):
         '''
         Formats every folder/filename in the given directory according to the movie title closest to the folder/filename.
         '''
+
         def cleanup(title=None):
             '''
             Fixes some problems with titles, like punctuation
@@ -247,40 +243,38 @@ class Formatter():
 
             Also, strips the given title of any characters that aren't allowed in folder/file names.
             '''
-            print('title:', title+'t')
-            new_title = re.sub(r"[^\$#! | ^\w\d'\s]+",' ',title).replace('_', ' ')
-            print('new_title:', new_title+'t')
+            print('title:', title + 't')
+            new_title = re.sub(r"[^\$#! | ^\w\d'\s]+", ' ', title).replace('_', ' ')
+            print('new_title:', new_title + 't')
             new_title = new_title.strip()
-            print('new_title:', new_title+'t')
-
+            print('new_title:', new_title + 't')
 
             # Not good, but might contain some regex we want later (LEAVE FOR NOW):
-            #new_title = join(map(str.title, re.findall(r"\w+|\w+'\w+|\w+-\w+|\w+|[(#$!)]+|'\w+", title)))
+            # new_title = join(map(str.title, re.findall(r"\w+|\w+'\w+|\w+-\w+|\w+|[(#$!)]+|'\w+", title)))
 
             # Not sure if we need this yet:
-            #new_title = re.sub(r'[(<>:"/\\|?*)]', '', new_title)
+            # new_title = re.sub(r'[(<>:"/\\|?*)]', '', new_title)
             return new_title
 
-        #s = ''.os.path.join(ch for ch in s if ch not in exclude)
-        for title in os.listdir(directory):         
+        # s = ''.os.path.join(ch for ch in s if ch not in exclude)
+        for title in os.listdir(directory):
             # Let's not process the contents.json file or duplicate our work:           
             if str(title) not in data_files and title not in [entry['title'] if entry != [] else [] for entry in self.indexed_titles['Titles']]:
                 new_title = cleanup(title=title)
-                
+
                 # Limit the size of the new title to max words:
                 max_size = 8
-                
 
                 if len(new_title.split(' ')) > max_size:
                     new_title = ' '.join(new_title.split(' ')[0:max_size])
                 release_year = self.find_release_year(title=title, verbose=False)
                 if release_year != '':
                     new_title = new_title.replace(release_year, '').strip()
-                #print(new_title, release_year)
+                # print(new_title, release_year)
                 try:
                     try:
                         # results = self.search_title(search_terms=new_title, release_year=release_year, verbose=verbose)
-                        print('new title:', new_title+'t')
+                        print('new title:', new_title + 't')
                         results = self.search_movies(search_terms=new_title, release_year=release_year, verbose=verbose)
                     except Exception as e:
                         print(e)
@@ -291,14 +285,14 @@ class Formatter():
                         if title not in [entry['title'] if entry != [] else [] for entry in self.error_titles['Titles']]:
                             self.append_content_data(directory=directory, filename='errors.json', new_content=new_title, content_key='Titles')
                     else:
-                        final_title = results['Title'] + ' [' + results['Year'] + ']'                       
-                        final_title = self.strip_bad_chars(title=final_title) # Remove non-viable folder characters
-                        if verbose:             
+                        final_title = results['Title'] + ' [' + results['Year'] + ']'
+                        final_title = self.strip_bad_chars(title=final_title)  # Remove non-viable folder characters
+                        if verbose:
                             print('Old Title: {title}'.format(title=title))
                             print('New Title: {new_title}'.format(new_title=new_title))
-                            print('Final Title: {final_title}'.format(final_title=final_title)                              )
+                            print('Final Title: {final_title}'.format(final_title=final_title))
                             print('Release Year: {release_year}'.format(release_year=release_year))
-                            print('[RENAMING {old_title} to {new_title}]\n'.format(old_title="\\\\?\\" + os.path.join(os.getcwd(), directory, title), new_title="\\\\?\\" + os.path.join(os.getcwd(), directory, final_title))              )
+                            print('[RENAMING {old_title} to {new_title}]\n'.format(old_title=os.path.join(os.getcwd(), directory, title), new_title=os.path.join(os.getcwd(), directory, final_title)))
                         new_title = {
                             'original_filename': title,
                             'title': final_title,
@@ -312,11 +306,11 @@ class Formatter():
                         if not self.debug:
                             # os.rename the folders to our newly formatted title:
                             old_path = os.path.join(directory, title)
-                            new_path = "\\\\?\\" + os.path.join(directory, final_title)
+                            new_path = os.path.join(directory, final_title)
                             os.rename(old_path, new_path)
                             print('{old_name} -> {new_name}'.format(old_name=title, new_name=final_title))
                             # Now, check the folder for files inside it and os.rename those too:                            
-                            single_files = [f for f in os.listdir(new_path) if os.path.isfile(os.path.join(new_path,f))]
+                            single_files = [f for f in os.listdir(new_path) if os.path.isfile(os.path.join(new_path, f))]
                             print(single_files)
                             for single_file in single_files:
                                 old_file_path = os.path.join(new_path, single_file)
@@ -327,7 +321,7 @@ class Formatter():
                                 print(new_filename)
                                 new_file_path = os.path.join(new_path, new_filename)
                                 print(new_file_path)
-                                os.rename(old_file_path, new_file_path)                             
+                                os.rename(old_file_path, new_file_path)
                                 print('renaming {old_path} to {new_path}....'.format(old_path=old_file_path, new_path=new_file_path))
                                 if verbose:
                                     print('Old Filename: {old_filename}'.format(old_filename=old_filename))
@@ -344,13 +338,15 @@ class Formatter():
                     if title not in [entry['title'] if entry != [] else [] for entry in self.error_titles['Titles']]:
                         self.append_content_data(directory=directory, filename='errors.json', new_content=new_title, content_key='Titles')
 
+
 if __name__ == '__main__':
     from datetime import datetime
+
     start = datetime.now()
     directory = os.path.join(os.getcwd(), 'test', 'data', 'Fake_Directory')
     directory = os.path.join(os.getcwd(), 'input')
     f = Formatter(directory=directory, debug=False, verbose=False)
-    #directory = 'J:\Films'
-    #f = Formatter(directory=directory, debug=True, verbose=False)
+    # directory = 'J:\Films'
+    # f = Formatter(directory=directory, debug=True, verbose=False)
     finish = datetime.now() - start
     print("Finished in {total_time} seconds".format(total_time=finish))
