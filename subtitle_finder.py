@@ -41,7 +41,7 @@ class SubtitleFinder():
 
         return hashlib.md5(data).hexdigest()
 
-    def perform_request(self, url='http://sandbox.thesubdb.com/', payload=None, cookies=None):
+    def perform_request(self, url='http://api.thesubdb.com/', payload=None, cookies=None):
         headers = {
             'User-Agent': 'SubDB/1.0 (Windows; U; Windows NT 5.1; it; rv:1.8.1.11) Gecko/20071127 Firefox/2.0.0.11; https://github.com/blairg23/movie-file-fixer'
         }
@@ -93,8 +93,7 @@ class SubtitleFinder():
                             file_path = os.path.join(title_path, filename)
 
                     if file_path is not None:
-                        if verbose:
-                            print('[PROCESSING TITLE: {title}]\n'.format(title=str(title['title'])))
+                        print('[PROCESSING TITLE: {title}]\n'.format(title=str(title['title'])))
 
                         try:
                             hashcode = self.get_hash(filepath=file_path)
@@ -103,23 +102,26 @@ class SubtitleFinder():
                             print(e)
                             print('\n')
 
-                        subtitles_available = self.search_subtitles(hashcode=hashcode)
+                        subtitle_path = os.path.join(directory, title['title'], '{language}_subtitles.srt'.format(language=language))
+                        if not os.path.exists(subtitle_path):
+                            subtitles_available = self.search_subtitles(hashcode=hashcode)
 
-                        if subtitles_available not in ['', None, ' '] and language in subtitles_available:
-                            if verbose:
-                                print('[ADDING SUBTITLE FILE: {language}_subtitles.srt]\n'.format(language=language))
+                            if subtitles_available not in ['', None, ' '] and language in subtitles_available:
+                                if verbose:
+                                    print('[ADDING SUBTITLE FILE: {language}_subtitles.srt]\n'.format(language=language))
 
-                            try:
-                                subtitles = self.download_subtitles(language=language, hashcode=hashcode)
-                                subtitle_path = os.path.join(directory, title['title'], '{language}_subtitles.srt'.format(language=language))
-                                print('[DOWNLOAD COMPLETE]\n')
-                                print('[WRITING FILE] -> {filepath}...\n'.format(filepath=subtitle_path))
-                                with open(subtitle_path, 'w+', encoding='UTF-8') as outfile:
-                                    outfile.writelines(subtitles)
-                            except Exception as e:
-                                print(e)
+                                try:
+                                    subtitles = self.download_subtitles(language=language, hashcode=hashcode)
+                                    print('[DOWNLOAD COMPLETE]\n')
+                                    print('[WRITING FILE] -> {filepath}...\n'.format(filepath=subtitle_path))
+                                    with open(subtitle_path, 'w+', encoding='UTF-8') as outfile:
+                                        outfile.writelines(subtitles)
+                                except Exception as e:
+                                    print(e)
+                            else:
+                                print('[ERROR] No Subtitles Available for that language ({language}).\n'.format(language=language))
                         else:
-                            print('[ERROR] No Subtitles Available for that language ({language}).\n'.format(language=language))
+                            print('Subtitle already exists. Skipping...')
                     else:
                         print('[ERROR] No movie file exists.\n')
 
@@ -131,6 +133,7 @@ if __name__ == '__main__':
     # directory = os.path.join('test', 'data', 'Fake_Directory')  
     # directory = "C:/Users/Neophile/Desktop/sandboxes/python/movie-file-fixer/input/"
     directory = os.path.join(os.getcwd(), 'input')
+    directory = "H:\Films"
     SubtitleFinder(directory=directory, contents_file='contents.json')
 
     # hashcode = pf.get_hash(filename="C:/Users/Neophile/Desktop/sandboxes/python/movie-file-fixer/input/Flatliners [2017]/FLatliners [2017].mp4")
