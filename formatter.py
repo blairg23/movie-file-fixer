@@ -153,7 +153,7 @@ class Formatter:
 
                 valid_results = []
                 # If more than one movie matched the search query:
-                if len(response['Search']) > 1:
+                if len(response['Search']) > 0:
                     # Iterate through all the movies
                     for search_result in response['Search']:
                         # If all the words in the title of the current movie are in the search query,
@@ -243,11 +243,8 @@ class Formatter:
 
             Also, strips the given title of any characters that aren't allowed in folder/file names.
             '''
-            print('title:', title + 't')
             new_title = re.sub(r"[^\$#! | ^\w\d'\s]+", ' ', title).replace('_', ' ')
-            print('new_title:', new_title + 't')
             new_title = new_title.strip()
-            print('new_title:', new_title + 't')
 
             # Not good, but might contain some regex we want later (LEAVE FOR NOW):
             # new_title = join(map(str.title, re.findall(r"\w+|\w+'\w+|\w+-\w+|\w+|[(#$!)]+|'\w+", title)))
@@ -263,7 +260,7 @@ class Formatter:
                 new_title = cleanup(title=title)
 
                 # Limit the size of the new title to max words:
-                max_size = 8
+                max_size = 9
 
                 if len(new_title.split(' ')) > max_size:
                     new_title = ' '.join(new_title.split(' ')[0:max_size])
@@ -274,7 +271,6 @@ class Formatter:
                 try:
                     try:
                         # results = self.search_title(search_terms=new_title, release_year=release_year, verbose=verbose)
-                        print('new title:', new_title + 't')
                         results = self.search_movies(search_terms=new_title, release_year=release_year, verbose=verbose)
                     except Exception as e:
                         print(e)
