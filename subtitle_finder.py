@@ -133,7 +133,7 @@ if __name__ == '__main__':
     # directory = os.path.join('test', 'data', 'Fake_Directory')  
     # directory = "C:/Users/Neophile/Desktop/sandboxes/python/movie-file-fixer/input/"
     directory = os.path.join(os.getcwd(), 'input')
-    directory = "H:\Films"
+    # directory = "H:\Films"
     SubtitleFinder(directory=directory, contents_file='contents.json')
 
     # hashcode = pf.get_hash(filename="C:/Users/Neophile/Desktop/sandboxes/python/movie-file-fixer/input/Flatliners [2017]/FLatliners [2017].mp4")

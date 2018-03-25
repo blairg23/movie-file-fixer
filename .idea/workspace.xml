@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="3562da20-6128-4b2c-ba1e-460d94d79787" name="Default" comment="">
+    <list default="true" id="3562da20-6128-4b2c-ba1e-460d94d79787" name="Default" comment="Fixed issue #20: Added support for up to 9 words in a movie title and added offending file to bad_titles.txt list.&#10;&#10;Fixed issue #22: Also added support for a single result back from search, instead of assuming we always have more than 1 result returned.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change beforePath="$PROJECT_DIR$/formatter.py" afterPath="$PROJECT_DIR$/formatter.py" />
+      <change beforePath="$PROJECT_DIR$/subtitle_finder.py" afterPath="$PROJECT_DIR$/subtitle_finder.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -13,35 +15,36 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/movie_file_fixer$subtitle_finder.coverage" NAME="subtitle_finder Coverage Results" MODIFIED="1521001485548" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/movie_file_fixer$movie_file_fixer.coverage" NAME="movie_file_fixer Coverage Results" MODIFIED="1520935283247" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/movie_file_fixer$formatter.coverage" NAME="formatter Coverage Results" MODIFIED="1521969147009" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/movie_file_fixer$movie_file_fixer.coverage" NAME="movie_file_fixer Coverage Results" MODIFIED="1521969165983" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
-    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+    <leaf>
+      <file leaf-file-name="movie_file_fixer.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/movie_file_fixer.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="170">
+              <caret line="40" column="72" lean-forward="true" selection-start-line="40" selection-start-column="72" selection-end-line="40" selection-end-column="72" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="subtitle_finder.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/subtitle_finder.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2125">
-              <caret line="129" column="0" lean-forward="false" selection-start-line="129" selection-start-column="0" selection-end-line="129" selection-end-column="0" />
+            <state relative-caret-position="-1315">
+              <caret line="17" column="8" lean-forward="false" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="8" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="movie_file_fixer.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/movie_file_fixer.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="867">
-              <caret line="57" column="17" lean-forward="false" selection-start-line="57" selection-start-column="8" selection-end-line="57" selection-end-column="17" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="formatter.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="formatter.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/formatter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="351">
-              <caret line="151" column="63" lean-forward="true" selection-start-line="151" selection-start-column="63" selection-end-line="151" selection-end-column="63" />
+            <state relative-caret-position="170">
+              <caret line="328" column="60" lean-forward="true" selection-start-line="328" selection-start-column="60" selection-end-line="328" selection-end-column="60" />
               <folding />
             </state>
           </provider>
@@ -52,6 +55,8 @@
   <component name="FindInProjectRecents">
     <findStrings>
       <find>print(response)</find>
+      <find>ERROR:</find>
+      <find>renaming</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -74,7 +79,8 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="953" />
+    <option name="x" value="139" />
+    <option name="y" value="-16" />
     <option name="width" value="974" />
     <option name="height" value="1047" />
   </component>
@@ -94,6 +100,7 @@
     </navigator>
     <panes>
       <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -105,7 +112,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -125,7 +131,26 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.subtitle_finder">
+  <component name="RunManager" selected="Python.movie_file_fixer">
+    <configuration name="formatter" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="movie-file-fixer" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/formatter.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+    </configuration>
     <configuration name="movie_file_fixer" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -164,14 +189,16 @@
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
     </configuration>
-    <list size="2">
+    <list size="3">
       <item index="0" class="java.lang.String" itemvalue="Python.movie_file_fixer" />
       <item index="1" class="java.lang.String" itemvalue="Python.subtitle_finder" />
+      <item index="2" class="java.lang.String" itemvalue="Python.formatter" />
     </list>
     <recent_temporary>
-      <list size="2">
-        <item index="0" class="java.lang.String" itemvalue="Python.subtitle_finder" />
-        <item index="1" class="java.lang.String" itemvalue="Python.movie_file_fixer" />
+      <list size="3">
+        <item index="0" class="java.lang.String" itemvalue="Python.movie_file_fixer" />
+        <item index="1" class="java.lang.String" itemvalue="Python.formatter" />
+        <item index="2" class="java.lang.String" itemvalue="Python.subtitle_finder" />
       </list>
     </recent_temporary>
   </component>
@@ -211,12 +238,12 @@
     <editor active="true" />
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32979852" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34570518" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32343584" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.12447917" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24947807" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Docker" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="SciView" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -275,24 +302,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/subtitle_finder.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2125">
-          <caret line="129" column="0" lean-forward="false" selection-start-line="129" selection-start-column="0" selection-end-line="129" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/movie_file_fixer.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="867">
-          <caret line="57" column="17" lean-forward="false" selection-start-line="57" selection-start-column="8" selection-end-line="57" selection-end-column="17" />
+        <state relative-caret-position="-1315">
+          <caret line="17" column="8" lean-forward="false" selection-start-line="17" selection-start-column="8" selection-end-line="17" selection-end-column="8" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/formatter.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="351">
-          <caret line="151" column="63" lean-forward="true" selection-start-line="151" selection-start-column="63" selection-end-line="151" selection-end-column="63" />
+        <state relative-caret-position="170">
+          <caret line="328" column="60" lean-forward="true" selection-start-line="328" selection-start-column="60" selection-end-line="328" selection-end-column="60" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/movie_file_fixer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="40" column="72" lean-forward="true" selection-start-line="40" selection-start-column="72" selection-end-line="40" selection-end-column="72" />
           <folding />
         </state>
       </provider>

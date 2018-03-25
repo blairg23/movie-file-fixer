@@ -153,29 +153,47 @@ class Formatter:
 
                 valid_results = []
                 # If more than one movie matched the search query:
+                print(response['Search'])
                 if len(response['Search']) > 0:
                     # Iterate through all the movies
                     for search_result in response['Search']:
                         # If all the words in the title of the current movie are in the search query,
-                        if all([self.strip_bad_chars(word) in search_terms for word in search_result['Title'].split(' ')]) and search_result['Year'] == release_year:
+                        # print('search_terms:', search_terms)
+                        # print('Title:', search_result['Title'].split(' '))
+                        # print(all([self.strip_bad_chars(word).lower() in search_terms.lower() for word in search_result['Title'].split(' ')]) and search_result['Year'] == release_year)
+                        if all([self.strip_bad_chars(word).lower() in search_terms.lower() for word in search_result['Title'].split(' ')]) and search_result['Year'] == release_year:
                             # Add it to the list of valid titles
                             valid_results.append(search_result)
 
                 if len(valid_results) == 1:
                     response = self.search_id(imdb_id=valid_results[0]['imdbID'])
+                elif len(valid_results) > 1:
+                    verbose = True
+                    if verbose:
+                        print('[RESPONSE] The following movies matched this search query:')
+                        print(json.dumps(valid_results, indent=4))
+                        raise Exception('ERROR: More than one movie matched this search query.')
                 else:
                     verbose = True
                     if verbose:
-                        print('The following movies matched this search query:')
-                        print(json.dumps(valid_results, indent=4))
-                    raise Exception('ERROR: More than one movie matched this search query.')
-
+                        print('[ERROR] Not a valid search query.')
+                        print('[FAILED] search terms: {search_terms}\n'.format(search_terms=search_terms))
+                        raise Exception('ERROR: Not a valid search query.')
                 return response  # Return the full response
-            else:
-                verbose = True
+            # else:
+            #     verbose = True
+            #     if verbose:
+            #         print('[ERROR] Not a valid search query.')
+            #         print('[FAILED] search terms: {search_terms}\n'.format(search_terms=search_terms))
+            #     raise Exception('ERROR: Not a valid search query.')
+            else:  # Otherwise, remove the last word from the title (in case it's a junk word or a year of release),
+                search_terms = ' '.join(search_terms.split(' ')[:-1])
                 if verbose:
-                    print('ERROR: Not a valid search query.')
-                raise Exception('ERROR: Not a valid search query.')
+                    print('[FAILED] new search terms: {search_terms}\n'.format(search_terms=search_terms))
+                if run_number < max_recurse:
+                    return self.search_movies(search_terms=search_terms, release_year=release_year, run_number=run_number + 1, verbose=verbose)  # And recursively try again
+                else:
+                    raise Exception('ERROR: Max recursion depth.')
 
     def search_tv_id(self, url='http://www.omdbapi.com/', apikey='967174e1', imdb_id='', season='1', verbose=False):
         '''
@@ -310,15 +328,15 @@ class Formatter:
                             print(single_files)
                             for single_file in single_files:
                                 old_file_path = os.path.join(new_path, single_file)
-                                print(old_file_path)
+                                # print(old_file_path)
                                 old_filename, ext = os.path.splitext(single_file)
-                                print(old_filename)
+                                # print(old_filename)
                                 new_filename = final_title + ext
-                                print(new_filename)
+                                # print(new_filename)
                                 new_file_path = os.path.join(new_path, new_filename)
-                                print(new_file_path)
+                                # print(new_file_path)
                                 os.rename(old_file_path, new_file_path)
-                                print('renaming {old_path} to {new_path}....'.format(old_path=old_file_path, new_path=new_file_path))
+                                print('[RENAMING] {old_path} to {new_path}....\n'.format(old_path=old_file_path, new_path=new_file_path))
                                 if verbose:
                                     print('Old Filename: {old_filename}'.format(old_filename=old_filename))
                                     print('Old Filepath: {old_file_path}'.format(old_file_path=old_file_path))
