@@ -169,10 +169,18 @@ class Formatter:
                     response = self.search_id(imdb_id=valid_results[0]['imdbID'])
                 elif len(valid_results) > 1:
                     verbose = True
+                    found_it = False
                     if verbose:
                         print('[RESPONSE] The following movies matched this search query:')
                         print(json.dumps(valid_results, indent=4))
-                        raise Exception('ERROR: More than one movie matched this search query.')
+                        print('Attempting to find the one that is a movie.')
+                        for result in valid_results:
+                            if result['Type'] == 'movie':
+                                response = self.search_id(imdb_id=valid_results[0]['imdbID'])
+                                found_it = True
+
+                        if not found_it:
+                            raise Exception('ERROR: More than one title matched this search query, but neither was a movie.')
                 else:
                     verbose = True
                     if verbose:

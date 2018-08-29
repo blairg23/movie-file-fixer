@@ -63,4 +63,5 @@ class PosterFinder:
 if __name__ == '__main__':
     directory = os.path.join('test', 'data', 'Fake_Directory')
     directory = 'J:\\to_sort'
+    directory = os.path.join('input')
     PosterFinder(directory=directory, contents_file='contents.json')
