@@ -186,7 +186,7 @@ class Formatter:
                     if verbose:
                         print('[ERROR] Not a valid search query.')
                         print('[FAILED] search terms: {search_terms}\n'.format(search_terms=search_terms))
-                        raise Exception('ERROR: Not a valid search query.')
+                    raise Exception('[ERROR] Not a valid search query.')
                 return response  # Return the full response
             # else:
             #     verbose = True
