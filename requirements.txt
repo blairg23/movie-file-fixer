@@ -1,5 +1,10 @@
-cv2
-requests==2.5.0
-requests-oauthlib==0.5.0
-tvdb-api==1.10
-tvnamer==2.3
+Cython>=0.28.1
+hachoir3>=3.0a2
+numpy>=1.12.1
+oauthlib>=2.0.1
+opencv-python>=3.2.0.7
+requests>=2.5.0
+requests-cache>=0.4.13
+requests-oauthlib>=0.5.0
+tvdb-api>=1.10
+tvnamer>=2.3
