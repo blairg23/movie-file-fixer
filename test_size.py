@@ -2,6 +2,7 @@ import os
 import sys
 import cv2
 import csv
+import json
 
 
 def return_movie_file(files=None):
@@ -35,13 +36,27 @@ if __name__ == '__main__':
 
     bad_files = []
 
+    input_content_file = os.path.join(input_directory, 'contents.json')
+
+    with open(input_content_file, encoding="utf8") as infile:
+        imdb_data = json.load(infile)
+
+    imdb_id_map = {}
+    for data in imdb_data['Titles']:
+        if data['title'] not in imdb_id_map:
+            if 'imdb_id' in data:
+                imdb_id_map[data['title']] = data['imdb_id']
+            else:
+                print(data)
+
     with open(filename, 'w+', newline='') as outfile:
         csv_writer = csv.writer(outfile)
         header_row = [
             'title',
             'width',
             'height',
-            'error'
+            'error',
+            'imdb_id'
         ]
         csv_writer.writerow(header_row)
         for file_folder in os.listdir(input_directory):
@@ -57,6 +72,7 @@ if __name__ == '__main__':
                     else:
                         counter += 1
                         input_file = os.path.join(current_folder, movie_file)
+                        movie_title, movie_file_extension = os.path.splitext(movie_file)
                         # with open(input_file) as infile:
                         # BMP file:
                         # infile.seek(18)
@@ -91,7 +107,8 @@ if __name__ == '__main__':
                                     movie_file,
                                     width,
                                     height,
-                                    ''
+                                    '',
+                                    imdb_id_map[movie_title]
                                 ]
                                 csv_writer.writerow(row_to_write)
             except Exception as e:
@@ -104,6 +121,7 @@ if __name__ == '__main__':
                     movie_file,
                     '',
                     '',
-                    str(e)
+                    str(e),
+                    imdb_id_map[movie_title]
                 ]
                 csv_writer.writerow(row_to_write)
