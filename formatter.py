@@ -48,7 +48,7 @@ class Formatter:
         or all the files that errored out.
         '''
         with open(os.path.join(directory, filename), mode='w') as outfile:
-            json.dump(initial_data, outfile)
+            json.dump(initial_data, outfile, indent=4)
 
     def append_content_data(self, directory=None, filename='contents.json', new_content=None, content_key=None):
         '''
@@ -70,7 +70,7 @@ class Formatter:
             if content_key == 'Titles':
                 contents_file['Total'] += 1
             # Write that updated list to the existing file:
-            json.dump(contents_file, outfile)
+            json.dump(contents_file, outfile, indent=4)
 
     # @Todo: Deprecate this method:
     def search_title(self, url='http://www.omdbapi.com/', apikey='967174e1', title='', release_year='', run_number=0, max_recurse=10, verbose=False):
