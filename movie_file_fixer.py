@@ -77,5 +77,6 @@ if __name__ == '__main__':
     fake_directory = os.path.join(os.getcwd(), 'test', 'data', 'Fake_Directory')
     directory = fake_directory
     directory = os.path.join(os.getcwd(), 'input')
+    directory = os.path.join('H:', 'tosort', 'input')
     # directory = "C:/Users/Neophile/Desktop/sandboxes/python/movie-file-fixer/input/"
     MovieFileFixer(directory=directory, data_files=['contents.json', 'errors.json'], verbose=False)
