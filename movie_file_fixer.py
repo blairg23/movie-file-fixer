@@ -41,8 +41,10 @@ class MovieFileFixer():
     def folderize(self, directory=None, data_files=None, verbose=False):
         '''
         1. Place all single files in folders of the same name.
+            a. Pull all subtitle files out of folders if they are in them.
         '''
-        Folderizer(directory=directory, data_files=data_files, verbose=verbose)
+        folderizer = Folderizer(directory=directory, data_files=data_files, verbose=verbose)
+        folderizer.unfolderize(directory=directory, folder_name='subs')
 
     def cleanup(self, directory=None, extensions=None, verbose=False):
         '''

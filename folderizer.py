@@ -64,13 +64,29 @@ class Folderizer:
         file_names = self.find_single_files(directory=directory)  # Get all file_names in the given directory
         self.move_files_into_folders(file_names=file_names, data_files=data_files, directory=directory)  # And move those into folders, based on the same names
 
-    def unfolderize(self, directory):
+    def unfolderize_all(self, directory):
         '''
         Removes all files from every folder and places them into the main directory,
         then removes all the folders.
         '''
         # TODO
         pass
+
+    def unfolderize(self, directory, folder_name=None):
+        '''
+        Removes all files from every folder named <folder_name> and places them into the
+        current root directory, then removes the folder named <folder_name>.
+        '''
+        for root, dirs, files in os.walk(directory):
+            print('dirs:', dirs)
+            for folder in dirs:
+                print('folder:', folder)
+                if folder.lower() == folder_name.lower():
+                    for file in self.find_single_files(directory=os.path.join(root, folder)):
+                        old_file_path = os.path.join(root, folder, file)
+                        new_file_path = os.path.join(root, file)
+                        shutil.move(old_file_path, new_file_path)
+                    shutil.rmtree(os.path.join(root, folder))
 
 
 if __name__ == '__main__':
