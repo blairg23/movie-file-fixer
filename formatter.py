@@ -284,10 +284,11 @@ class Formatter:
             old_filename, ext = os.path.splitext(single_file)
             new_filename = final_title + ext
             new_file_path = os.path.join(new_path, new_filename)
+            print(f'[RENAMING] {old_file_path} to {new_file_path}....\n')
             # Check if the file already exists:
             if os.path.exists(new_file_path):
                 if verbose:
-                    print(f'New Filepath: {new_file_path} exists.')
+                    print(f'[ERROR] New Filepath: {new_file_path} exists.')
                 counter += 1
                 # if it does: rename the file so it doesn't conflict
                 final_title = final_title + '_' + str(counter)
@@ -295,13 +296,15 @@ class Formatter:
                 if verbose:
                     print(f'Retrying with new title: {final_title}')
                 rename_file(new_path=new_path, single_file=single_file, final_title=final_title, verbose=verbose, counter=counter)
-            print(f'[RENAMING] {old_file_path} to {new_file_path}....\n')
-            os.rename(old_file_path, new_file_path)
-            if verbose:
-                print(f'Old Filename: {old_filename}')
-                print(f'Old Filepath: {old_file_path}')
-                print(f'New Filename: {new_filename}')
-                print(f'New Filepath: {new_file_path}')
+            else:
+                os.rename(old_file_path, new_file_path)
+                print(f'[RENAMING] {old_file_path} to {new_file_path}....complete.\n')
+
+                if verbose:
+                    print(f'Old Filename: {old_filename}')
+                    print(f'Old Filepath: {old_file_path}')
+                    print(f'New Filename: {new_filename}')
+                    print(f'New Filepath: {new_file_path}\n')
 
         # s = ''.os.path.join(ch for ch in s if ch not in exclude)
         for title in os.listdir(directory):
@@ -357,7 +360,6 @@ class Formatter:
                             print('{old_name} -> {new_name}'.format(old_name=title, new_name=final_title))
                             # Now, check the folder for files inside it and os.rename those too:                            
                             single_files = [f for f in os.listdir(new_path) if os.path.isfile(os.path.join(new_path, f))]
-                            print(single_files)
                             for single_file in single_files:
                                 rename_file(new_path=new_path, single_file=single_file, final_title=final_title, verbose=verbose, counter=0)
                 except Exception as error:
