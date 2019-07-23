@@ -279,6 +279,30 @@ class Formatter:
             # new_title = re.sub(r'[(<>:"/\\|?*)]', '', new_title)
             return new_title
 
+        def rename_file(new_path, single_file, final_title, verbose, counter):
+            old_file_path = os.path.join(new_path, single_file)
+            old_filename, ext = os.path.splitext(single_file)
+            new_filename = final_title + ext
+            new_file_path = os.path.join(new_path, new_filename)
+            # Check if the file already exists:
+            if os.path.exists(new_file_path):
+                if verbose:
+                    print(f'New Filepath: {new_file_path} exists.')
+                counter += 1
+                # if it does: rename the file so it doesn't conflict
+                final_title = final_title + '_' + str(counter)
+                # and try again!
+                if verbose:
+                    print(f'Retrying with new title: {final_title}')
+                rename_file(new_path=new_path, single_file=single_file, final_title=final_title, verbose=verbose, counter=counter)
+            print(f'[RENAMING] {old_file_path} to {new_file_path}....\n')
+            os.rename(old_file_path, new_file_path)
+            if verbose:
+                print(f'Old Filename: {old_filename}')
+                print(f'Old Filepath: {old_file_path}')
+                print(f'New Filename: {new_filename}')
+                print(f'New Filepath: {new_file_path}')
+
         # s = ''.os.path.join(ch for ch in s if ch not in exclude)
         for title in os.listdir(directory):
             # Let's not process the contents.json file or duplicate our work:           
@@ -335,21 +359,7 @@ class Formatter:
                             single_files = [f for f in os.listdir(new_path) if os.path.isfile(os.path.join(new_path, f))]
                             print(single_files)
                             for single_file in single_files:
-                                old_file_path = os.path.join(new_path, single_file)
-                                # print(old_file_path)
-                                old_filename, ext = os.path.splitext(single_file)
-                                # print(old_filename)
-                                new_filename = final_title + ext
-                                # print(new_filename)
-                                new_file_path = os.path.join(new_path, new_filename)
-                                # print(new_file_path)
-                                os.rename(old_file_path, new_file_path)
-                                print('[RENAMING] {old_path} to {new_path}....\n'.format(old_path=old_file_path, new_path=new_file_path))
-                                if verbose:
-                                    print('Old Filename: {old_filename}'.format(old_filename=old_filename))
-                                    print('Old Filepath: {old_file_path}'.format(old_file_path=old_file_path))
-                                    print('New Filename: {new_filename}'.format(new_filename=new_filename))
-                                    print('New Filepath: {new_file_path}\n'.format(new_file_path=new_file_path))
+                                rename_file(new_path=new_path, single_file=single_file, final_title=final_title, verbose=verbose, counter=0)
                 except Exception as error:
                     print("[ERROR]", error)
                     print('[FAILED] search terms: {search_terms}\n'.format(search_terms=new_title))

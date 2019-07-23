@@ -20,7 +20,7 @@ class Folderizer:
         self.verbose = verbose
         self.action_counter = 0
         # If the directory has been provided:
-        if self.directory != None:
+        if self.directory is not None:
             self.folderize(directory=self.directory, data_files=data_files)
 
     def find_single_files(self, directory=None):
@@ -78,9 +78,7 @@ class Folderizer:
         current root directory, then removes the folder named <folder_name>.
         '''
         for root, dirs, files in os.walk(directory):
-            print('dirs:', dirs)
             for folder in dirs:
-                print('folder:', folder)
                 if folder.lower() == folder_name.lower():
                     for file in self.find_single_files(directory=os.path.join(root, folder)):
                         old_file_path = os.path.join(root, folder, file)
