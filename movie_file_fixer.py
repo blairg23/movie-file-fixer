@@ -31,7 +31,7 @@ from subtitle_finder import SubtitleFinder
 
 
 class MovieFileFixer():
-    def __init__(self, directory=None, extensions=['.nfo', '.dat', '.jpg', '.png', '.txt'], data_files=['contents.json', 'errors.json'], verbose=True):
+    def __init__(self, directory=None, extensions=['.nfo', '.dat', '.jpg', '.png', '.txt', '.exe'], data_files=['contents.json', 'errors.json'], verbose=True):
         self.folderize(directory=directory, data_files=data_files, verbose=verbose)
         self.cleanup(directory=directory, extensions=extensions, verbose=verbose)
         self.format(directory=directory, verbose=verbose)
