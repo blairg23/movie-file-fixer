@@ -1,0 +1,1 @@
+This directory contains files and scripts to test functionality for movie-file-fixer
