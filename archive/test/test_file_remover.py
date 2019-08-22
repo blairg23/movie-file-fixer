@@ -11,7 +11,7 @@ import os
 import shutil
 import unittest
 
-from ..file_remover import File_Remover
+from src.movie_file_fixer.file_remover import File_Remover
 
 
 class TestFileRemoverMethods(unittest.TestCase):
