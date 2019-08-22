@@ -13,7 +13,8 @@ import os
 import re
 
 import requests
-import configparser
+
+OMDB_API_KEY = os.environ.get('OMDB_API_KEY')
 
 
 class Formatter:
@@ -102,7 +103,7 @@ class Formatter:
     def search_title(
         self,
         url="http://www.omdbapi.com/",
-        apikey="967174e1",
+        apikey=OMDB_API_KEY,
         title="",
         release_year="",
         run_number=0,
@@ -151,7 +152,7 @@ class Formatter:
     def search_id(
         self,
         url="http://www.omdbapi.com/",
-        apikey="967174e1",
+        apikey=OMDB_API_KEY,
         imdb_id=None,
         verbose=False,
     ):
@@ -182,7 +183,7 @@ class Formatter:
     def search_movies(
         self,
         url="http://www.omdbapi.com/",
-        apikey="967174e1",
+        apikey=OMDB_API_KEY,
         search_terms="",
         release_year="",
         run_number=0,
@@ -287,7 +288,7 @@ class Formatter:
     def search_tv_id(
         self,
         url="http://www.omdbapi.com/",
-        apikey="967174e1",
+        apikey=OMDB_API_KEY,
         imdb_id="",
         season="1",
         verbose=False,
