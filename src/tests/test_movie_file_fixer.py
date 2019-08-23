@@ -14,6 +14,7 @@ fake = faker.Faker()
 
 TEST_FOLDER = os.path.join('src', 'tests')
 TEST_INPUT_FOLDER = os.path.join(TEST_FOLDER, 'test_input')
+DATA_FILES = ['contents.json', 'errors.json']
 
 TEST_TITLES = {
     'vanilla': os.path.join(TEST_FOLDER, 'test_examples', 'test_titles.json'),
@@ -21,37 +22,41 @@ TEST_TITLES = {
 }
 
 
+def create_test_environment(test_folder=TEST_INPUT_FOLDER):
+    """
+    :param os.path test_folder: The directory where the test environment will be set up.
+    :return: test_folder and the example titles used to create the test environment.
+    """
+    example_titles = []
+
+    if not os.path.exists(TEST_INPUT_FOLDER):
+        os.mkdir(TEST_INPUT_FOLDER)
+
+    # Create a bunch of random fake files:
+    with open(TEST_TITLES['vanilla'], 'r') as infile:
+        title_examples = json.load(infile)
+
+    for title_example in title_examples:
+        # TODO: Figure out something to do with this description:
+        # description = title_example.get('description')
+        examples = title_example.get('examples')
+
+        for example in examples:
+            filename = os.path.join(test_folder, example)
+            open(filename, 'a').close()
+
+            example_titles.append(example)
+
+    return test_folder, example_titles
+
+
 class MovieFileFixerTestCase(TestCase):
+    """
+    Checks that upon instantiation with a valid directory string, all methods are being called.
+    """
     def setUp(self):
-        # # Create a bunch of random fake files:
-        # with open(TEST_TITLES['vanilla'], 'r') as infile:
-        #     title_examples = json.load(infile)
-        #
-        # path_to_create = os.path.join(TEST_FOLDER, 'test_input')
-        #
-        # for title_example in self.title_examples:
-        #     description = title_example.get('description')
-        #     examples = title_example.get('examples')
-        #     for example in examples:
-        #         filename = os.path.join(path_to_create, example)
-        #         open(filename, 'a').close()
-
-        # self.mock_folderize_patch = mock.patch(
-        #     f"{module_under_test}.MovieFileFixer.folderize", autospec=True
-        # )
-        # self.mock_folderize = self.mock_folderize_patch.start()
-
-        # self.mock_MovieFileFixer_patch = mock.patch(
-        #     f"{module_under_test}.MovieFileFixer", autospec=True
-        # )
-        # self.mock_MovieFileFixer = self.mock_MovieFileFixer_patch.start()
-        pass
-
-    def tearDown(self):
-        # self.mock_folderize_patch.stop()
-        # self.mock_MovieFileFixer_patch.stop()
-        # shutil.rmtree(self.)
-        pass
+        if not os.path.exists(TEST_INPUT_FOLDER):
+            os.mkdir(TEST_INPUT_FOLDER)
 
     @patch(f'{module_under_test}.MovieFileFixer.folderize')
     def test_folderize(self, folderize):
@@ -77,3 +82,31 @@ class MovieFileFixerTestCase(TestCase):
     def test_get_subtitles(self, get_subtitles):
         movie_file_fixer.MovieFileFixer(directory=TEST_INPUT_FOLDER)
         get_subtitles.assert_called_once()
+
+
+class FolderizerTestCase(TestCase):
+    def setUp(self):
+        self.test_folder, self.example_titles = create_test_environment()
+
+        self.folderizer = movie_file_fixer.Folderizer(directory=TEST_INPUT_FOLDER)
+
+        # self.mock_folderize_patch = mock.patch(
+        #     f"{module_under_test}.MovieFileFixer.folderize", autospec=True
+        # )
+        # self.mock_folderize = self.mock_folderize_patch.start()
+
+        # self.mock_MovieFileFixer_patch = mock.patch(
+        #     f"{module_under_test}.MovieFileFixer", autospec=True
+        # )
+        # self.mock_MovieFileFixer = self.mock_MovieFileFixer_patch.start()
+
+    def tearDown(self):
+        # self.mock_folderize_patch.stop()
+        # self.mock_MovieFileFixer_patch.stop()
+        shutil.rmtree(self.test_folder)
+
+    def test_find_single_files(self):
+        single_files = self.folderizer.find_single_files()
+        for single_file in single_files:
+            if single_file not in DATA_FILES:
+                self.assertIn(single_file, self.example_titles)

@@ -45,8 +45,8 @@
   {
     "description": "Titles containing apostrophes.",
     "examples": [
-      "Ferris Bueller\"s Day Off (1986) [1080p]",
-      "You.Don\"t.Mess.With.The.Zohan[2008][Unrated.Edition]DvDrip-aXXo"
+      "Ferris Bueller's Day Off (1986) [1080p]",
+      "You.Don't.Mess.With.The.Zohan[2008][Unrated.Edition]DvDrip-aXXo"
     ]
   },
   {
@@ -78,7 +78,7 @@
   {
     "description": "Titles with random known issues.",
     "examples": [
-      "Howl\"s Moving Castle (2004) 720p",
+      "Howl's Moving Castle (2004) 720p",
       "I Hope They Serve Beer In Hell [2009] DvDrip H.264 AAC",
       "Rocketman 1997 DvDrip[Eng]"
     ]

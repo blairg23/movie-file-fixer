@@ -14,21 +14,28 @@ import shutil
 
 class Folderizer:
     def __init__(
-        self, directory=None, data_files=["contents.json", "errors.json"], verbose=False
+        self, directory, data_files=["contents.json", "errors.json"], verbose=False
     ):
         if verbose:
             print("[CURRENT ACTION: MOVING SINGLETON FILES TO FOLDERS]\n")
         self.directory = directory
+        self.data_files = data_files
         self.verbose = verbose
         self.action_counter = 0
         # If the directory has been provided:
-        if self.directory is not None:
-            self.folderize(directory=self.directory, data_files=data_files)
+        # if self.directory is not None:
+        #     self.folderize(directory=self.directory, data_files=data_files)
 
     def find_single_files(self, directory=None):
         """
+        :param directory: The directory to locate single files.
+        :return: A list of single files.
+
         Finds all the files without a folder within a given directory.
         """
+        if directory is None:
+            directory = self.directory
+
         # And find all the single files:
         if self.verbose:
             print(
@@ -45,12 +52,15 @@ class Folderizer:
         self.action_counter += 1
         return single_files
 
-    def move_files_into_folders(self, file_names=[], data_files=None, directory=None):
+    def move_files_into_folders(self, directory=None, data_files=None, file_names=[]):
         """
         Moves a group of files into their respective folders,
         given a list of file_names.
         Will create the folder if it does not already exist.
         """
+        if directory is None:
+            directory = self.directory
+
         valid_file_names = [fName for fName in file_names if fName not in data_files]
         for fName in valid_file_names:
             old_file_path = os.path.join(os.getcwd(), directory, fName)
@@ -85,6 +95,12 @@ class Folderizer:
         """
         Puts all singleton files from a directory into a folder of its namesake.
         """
+        if directory is None:
+            directory = self.directory
+
+        if data_files is None:
+            data_files = self.data_files
+
         file_names = self.find_single_files(
             directory=directory
         )  # Get all file_names in the given directory
@@ -92,19 +108,25 @@ class Folderizer:
             file_names=file_names, data_files=data_files, directory=directory
         )  # And move those into folders, based on the same names
 
-    def unfolderize_all(self, directory):
+    def unfolderize_all(self, directory=None):
         """
         Removes all files from every folder and places them into the main directory,
         then removes all the folders.
         """
+        if directory is None:
+            directory = self.directory
+
         # TODO
         pass
 
-    def unfolderize(self, directory, folder_name=None):
+    def unfolderize(self, directory=None, folder_name=None):
         """
         Removes all files from every folder named <folder_name> and places them into the
         current root directory, then removes the folder named <folder_name>.
         """
+        if directory is None:
+            directory = self.directory
+
         for root, dirs, files in os.walk(directory):
             for folder in dirs:
                 if folder.lower() == folder_name.lower():
@@ -120,4 +142,6 @@ class Folderizer:
 if __name__ == "__main__":
     directory = os.path.join("test", "data", "Fake_Directory")
     directory = "J:\\Films"
-    Folderizer(directory=directory, verbose=False)
+    folderizer = Folderizer(directory=directory, verbose=False)
+    folderizer.folderize()
+    folderizer.unfolderize(folder_name='subs')

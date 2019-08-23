@@ -21,17 +21,17 @@ and creates a title directory called "contents.json", which also contains poster
 
 import os
 
-from src.movie_file_fixer.folderizer import Folderizer
-from src.movie_file_fixer.file_remover import FileRemover
-from src.movie_file_fixer.formatter import Formatter
-from src.movie_file_fixer.poster_finder import PosterFinder
-from src.movie_file_fixer.subtitle_finder import SubtitleFinder
+from movie_file_fixer.folderizer import Folderizer
+from movie_file_fixer.file_remover import FileRemover
+from movie_file_fixer.formatter import Formatter
+from movie_file_fixer.poster_finder import PosterFinder
+from movie_file_fixer.subtitle_finder import SubtitleFinder
 
 
 class MovieFileFixer:
     def __init__(
         self,
-        directory=None,
+        directory,
         extensions=[".nfo", ".dat", ".jpg", ".png", ".txt", ".exe"],
         data_files=["contents.json", "errors.json"],
         verbose=False,
@@ -42,7 +42,7 @@ class MovieFileFixer:
         self.get_posters(directory=directory, data_files=data_files, verbose=verbose)
         self.get_subtitles(directory=directory, data_files=data_files, verbose=verbose)
 
-    def folderize(self, directory=None, data_files=None, verbose=False):
+    def folderize(self, directory, data_files, verbose=False):
         """
         1. Place all single files in folders of the same name.
             a. Pull all subtitle files out of folders if they are in them.
@@ -50,22 +50,23 @@ class MovieFileFixer:
         folderizer = Folderizer(
             directory=directory, data_files=data_files, verbose=verbose
         )
-        folderizer.unfolderize(directory=directory, folder_name="subs")
+        folderizer.folderize()
+        folderizer.unfolderize(folder_name="subs")
 
-    def cleanup(self, directory=None, extensions=None, verbose=False):
+    def cleanup(self, directory, extensions, verbose=False):
         """
         2. Remove all non-movie files, based on a list of "bad" extensions (i.e., .nfo, .txt, etc)
         """
         FileRemover(directory=directory, extensions=extensions, verbose=verbose)
 
-    def format(self, directory=None, verbose=False):
+    def format(self, directory, verbose=False):
         """
         3. Pull the names of all folders and decide what the title is, based on movie titles in OMDb API.
             a. Rename the movie file and folders (i.e., <movie_title> [<year_of_release>])
         """
         Formatter(directory=directory, verbose=verbose)
 
-    def get_posters(self, directory=None, data_files=None, verbose=False):
+    def get_posters(self, directory, data_files, verbose=False):
         """
         4. Download the movie poster and name the file poster.<extension>
         (where <extension> is the original extension of the poster file)
@@ -74,7 +75,7 @@ class MovieFileFixer:
         PosterFinder(directory=directory, contents_file=contents_file, verbose=verbose)
 
     def get_subtitles(
-        self, directory=None, data_files=None, language="en", verbose=False
+        self, directory, data_files, language="en", verbose=False
     ):
         """
         5. Download the movie subtitles and name the file <language>_subtitles.srt
