@@ -1,0 +1,86 @@
+[
+  {
+    "description": "Normal titles.",
+    "examples": [
+      "The.Bay.2012.LiMiTED.BRRip.XviD.RoSubbed-playXD",
+      "Hansel.&.Gretel.Witch.Hunters.2013.DVDRip.XviD-P2P"
+    ]
+  },
+  {
+    "description": "Titles containing underscores.",
+    "examples": [
+      "Ordinary_Decent_Criminal.DVDRip_devilwarez.pl"
+    ]
+  },
+  {
+    "description": "Titles containing hyphens.",
+    "examples": [
+      "Kick-Ass (2010) R5 XViD-MAXSPEED",
+      "Kick-Ass 2 (2013) [1080p]",
+      "Bio-Dome (1996) - DVD Rip - XVID",
+      "The.X-Files-Fight.the.Future[1998]DvDrip-aXXo"
+    ]
+  },
+  {
+    "description": "Titles containing numbers.",
+    "examples": [
+      "22.Jump.Street.2014.1080p.BluRay.x264.anoXmous",
+      "30 Days Of Night[2007]",
+      "'71 (2014) [1080p]"
+    ]
+  },
+  {
+    "description": "Titles containing intentional periods.",
+    "examples": [
+      "Snatch.2000.1080p.BluRay.x264.anoXmous"
+    ]
+  },
+  {
+    "description": "Titles containing colons.",
+    "examples": [
+      "Avengers Age of Ultron (2015) [1080p]",
+      "Sherlock Holmes A Game of Shadows (2011) DVDRip XviD-MAXSPEED"
+    ]
+  },
+  {
+    "description": "Titles containing apostrophes.",
+    "examples": [
+      "Ferris Bueller\"s Day Off (1986) [1080p]",
+      "You.Don\"t.Mess.With.The.Zohan[2008][Unrated.Edition]DvDrip-aXXo"
+    ]
+  },
+  {
+    "description": "Titles containing random punctation.",
+    "examples": [
+      "What the #$! Do We (K)now!",
+      "Fired Up! (2009)"
+    ]
+  },
+  {
+    "description": "Titles containing a year or numbers as the entirety of the title.",
+    "examples": [
+      "2012 (2009) DVDRip XviD-MAXSPEED",
+      "1408[2007]DvDrip[Eng]-aXXo",
+      "300[2006]DvDrip[Eng]-aXXo"
+    ]
+  },
+  {
+    "description": "Duplicate titles (remakes, different languages)",
+    "examples": [
+      "Red Dawn {2012} DVDRIP. Jaybob",
+      "Red.Dawn.1984.720p.BrRip.x264.Obit11.ThumperDC",
+      "Poltergeist (1982) [1080p]",
+      "Poltergeist 2015 1080p HDRip x264 AC3-JYK",
+      "The.Girl.With.The.Dragon.Tattoo[2009]",
+      "The Girl With The Dragon Tattoo (2011) (HD)"
+    ]
+  },
+  {
+    "description": "Titles with random known issues.",
+    "examples": [
+      "Howl\"s Moving Castle (2004) 720p",
+      "I Hope They Serve Beer In Hell [2009] DvDrip H.264 AAC",
+      "Rocketman 1997 DvDrip[Eng]"
+    ]
+  }
+]

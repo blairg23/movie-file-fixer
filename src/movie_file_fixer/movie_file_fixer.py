@@ -21,8 +21,8 @@ and creates a title directory called "contents.json", which also contains poster
 
 import os
 
-from src.movie_file_fixer.file_remover import FileRemover
 from src.movie_file_fixer.folderizer import Folderizer
+from src.movie_file_fixer.file_remover import FileRemover
 from src.movie_file_fixer.formatter import Formatter
 from src.movie_file_fixer.poster_finder import PosterFinder
 from src.movie_file_fixer.subtitle_finder import SubtitleFinder
@@ -34,7 +34,7 @@ class MovieFileFixer:
         directory=None,
         extensions=[".nfo", ".dat", ".jpg", ".png", ".txt", ".exe"],
         data_files=["contents.json", "errors.json"],
-        verbose=True,
+        verbose=False,
     ):
         self.folderize(directory=directory, data_files=data_files, verbose=verbose)
         self.cleanup(directory=directory, extensions=extensions, verbose=verbose)

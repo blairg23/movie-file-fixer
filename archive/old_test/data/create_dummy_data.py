@@ -147,7 +147,7 @@ class CreateDummyData:
 
 if __name__ == '__main__':
     # Fake files:
-    CDD = CreateDummyData()
+    CDD = CreateDummyData(verbose=True)
     CDD.run()
 
     # If you want to clone a real directory to test it out:

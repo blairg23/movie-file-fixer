@@ -1,0 +1,24 @@
+[
+  {
+    "description": "Titles containing numbers.",
+    "examples": [
+      "12 Monkeys (1995)",
+      "2001 - A Space Odyssey"
+    ]
+  },
+  {
+    "description": "Titles containing periods.",
+    "examples": [
+      "G.I.Joe.The.Rise.of.Cobra.2009.HDRip",
+      "G.I. Joe Retaliation (2013) [1080p]",
+      "Fantastic.Mr.Fox.DVDRip.XviD-MOViERUSH",
+      "W.[2008]DvDrip-aXXo"
+    ]
+  },
+  {
+    "description": "Titles with colons in them.",
+    "examples": [
+      "Abraham.Lincoln.Vampire.Hunter.2012.DVDRip.XviD-ALLiANCE"
+    ]
+  }
+]
