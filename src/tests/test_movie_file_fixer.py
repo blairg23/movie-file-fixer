@@ -22,7 +22,7 @@ TEST_TITLES = {
 }
 
 
-def create_test_environment(test_folder=TEST_INPUT_FOLDER):
+def create_test_environment(test_folder=TEST_INPUT_FOLDER, file_extensions=['avi', 'mov', 'mp4', 'txt', 'dat', 'nfo', 'jpg', 'png', 'mkv']):
     """
     :param os.path test_folder: The directory where the test environment will be set up.
     :return: test_folder and the example titles used to create the test environment.
@@ -55,33 +55,57 @@ class MovieFileFixerTestCase(TestCase):
     Checks that upon instantiation with a valid directory string, all methods are being called.
     """
     def setUp(self):
-        if not os.path.exists(TEST_INPUT_FOLDER):
-            os.mkdir(TEST_INPUT_FOLDER)
+        self.mock_folderize_patch = mock.patch(
+            f"{module_under_test}.MovieFileFixer.folderize", directory=TEST_INPUT_FOLDER
+        )
+        self.mock_folderize = self.mock_folderize_patch.start()
 
-    @patch(f'{module_under_test}.MovieFileFixer.folderize')
-    def test_folderize(self, folderize):
-        movie_file_fixer.MovieFileFixer(directory=TEST_INPUT_FOLDER)
-        folderize.assert_called_once()
+        self.mock_cleanup_patch = mock.patch(
+            f"{module_under_test}.MovieFileFixer.cleanup", directory=TEST_INPUT_FOLDER
+        )
+        self.mock_cleanup = self.mock_cleanup_patch.start()
 
-    @patch(f'{module_under_test}.MovieFileFixer.cleanup')
-    def test_cleanup(self, cleanup):
-        movie_file_fixer.MovieFileFixer(directory=TEST_INPUT_FOLDER)
-        cleanup.assert_called_once()
+        self.mock_format_patch = mock.patch(
+            f"{module_under_test}.MovieFileFixer.format", directory=TEST_INPUT_FOLDER
+        )
+        self.mock_format = self.mock_format_patch.start()
 
-    @patch(f'{module_under_test}.MovieFileFixer.format')
-    def test_format(self, format):
-        movie_file_fixer.MovieFileFixer(directory=TEST_INPUT_FOLDER)
-        format.assert_called_once()
+        self.mock_get_posters_patch = mock.patch(
+            f"{module_under_test}.MovieFileFixer.get_posters", directory=TEST_INPUT_FOLDER
+        )
+        self.mock_get_posters = self.mock_get_posters_patch.start()
 
-    @patch(f'{module_under_test}.MovieFileFixer.format')
-    def test_get_posters(self, get_posters):
-        movie_file_fixer.MovieFileFixer(directory=TEST_INPUT_FOLDER)
-        get_posters.assert_called_once()
+        self.mock_get_subtitles_patch = mock.patch(
+            f"{module_under_test}.MovieFileFixer.get_subtitles", directory=TEST_INPUT_FOLDER
+        )
+        self.mock_get_subtitles = self.mock_get_subtitles_patch.start()
 
-    @patch(f'{module_under_test}.MovieFileFixer.folderize')
-    def test_get_subtitles(self, get_subtitles):
+    def tearDown(self):
+        self.mock_folderize_patch.stop()
+        self.mock_cleanup_patch.stop()
+        self.mock_format_patch.stop()
+        self.mock_get_posters_patch.stop()
+        self.mock_get_subtitles_patch.stop()
+
+    def test_folderize(self):
         movie_file_fixer.MovieFileFixer(directory=TEST_INPUT_FOLDER)
-        get_subtitles.assert_called_once()
+        self.mock_folderize.assert_called_once()
+
+    def test_cleanup(self):
+        movie_file_fixer.MovieFileFixer(directory=TEST_INPUT_FOLDER)
+        self.mock_cleanup.assert_called_once()
+
+    def test_format(self):
+        movie_file_fixer.MovieFileFixer(directory=TEST_INPUT_FOLDER)
+        self.mock_cleanup.assert_called_once()
+
+    def test_get_posters(self):
+        movie_file_fixer.MovieFileFixer(directory=TEST_INPUT_FOLDER)
+        self.mock_get_posters.assert_called_once()
+
+    def test_get_subtitles(self):
+        movie_file_fixer.MovieFileFixer(directory=TEST_INPUT_FOLDER)
+        self.mock_get_subtitles.assert_called_once()
 
 
 class FolderizerTestCase(TestCase):
@@ -90,19 +114,7 @@ class FolderizerTestCase(TestCase):
 
         self.folderizer = movie_file_fixer.Folderizer(directory=TEST_INPUT_FOLDER)
 
-        # self.mock_folderize_patch = mock.patch(
-        #     f"{module_under_test}.MovieFileFixer.folderize", autospec=True
-        # )
-        # self.mock_folderize = self.mock_folderize_patch.start()
-
-        # self.mock_MovieFileFixer_patch = mock.patch(
-        #     f"{module_under_test}.MovieFileFixer", autospec=True
-        # )
-        # self.mock_MovieFileFixer = self.mock_MovieFileFixer_patch.start()
-
     def tearDown(self):
-        # self.mock_folderize_patch.stop()
-        # self.mock_MovieFileFixer_patch.stop()
         shutil.rmtree(self.test_folder)
 
     def test_find_single_files(self):
