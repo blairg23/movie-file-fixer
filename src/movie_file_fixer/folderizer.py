@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-Name: folderizer.py
-Author: Blair Gemmer
-Version: 20160618
-
 Description: Searches a directory and puts all singleton files into
 a directory of their namesake.
 """
@@ -88,6 +84,11 @@ class Folderizer:
 
     def folderize(self, directory=None, data_files=None):
         """
+
+        :param str directory: Directory of single files to folderize.
+        :param list data_files: A list of metadata files to ignore when folderizing.
+        :return: None
+
         Puts all singleton files from a directory into a folder of its namesake.
         """
         if directory is None:
@@ -116,6 +117,11 @@ class Folderizer:
 
     def unfolderize(self, directory=None, folder_name=None):
         """
+
+        :param str directory: Directory of folderized files.
+        :param str folder_name: Folder name to unfolderize.
+        :return: None
+
         Removes all files from every folder named <folder_name> and places them into the
         current root directory, then removes the folder named <folder_name>.
         """
