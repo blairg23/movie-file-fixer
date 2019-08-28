@@ -14,7 +14,7 @@ import re
 
 import requests
 
-OMDB_API_KEY = os.environ.get('OMDB_API_KEY')
+OMDB_API_KEY = os.environ.get("OMDB_API_KEY")
 
 
 class Formatter:

@@ -42,8 +42,15 @@ class MovieFileFixer:
         self.get_posters(directory=directory, data_files=data_files, verbose=verbose)
         self.get_subtitles(directory=directory, data_files=data_files, verbose=verbose)
 
-    def folderize(self, directory, data_files, verbose=False):
+    def folderize(self, directory, data_files, folder_name="subs", verbose=False):
         """
+
+        :param str directory: The directory to single files to folderize.
+        :param list data_files: A list of metadata files to ignore when folderizing.
+        :param str folder_name: Folder to unfolderize files from.
+        :param bool verbose: Whether or not to activate verbose mode.
+        :return: None
+
         1. Place all single files in folders of the same name.
             a. Pull all subtitle files out of folders if they are in them.
         """
@@ -51,16 +58,27 @@ class MovieFileFixer:
             directory=directory, data_files=data_files, verbose=verbose
         )
         folderizer.folderize()
-        folderizer.unfolderize(folder_name="subs")
+        folderizer.unfolderize(folder_name=folder_name)
 
     def cleanup(self, directory, extensions, verbose=False):
         """
+
+        :param str directory: The directory of movie folders to clean.
+        :param list extensions: A list of file extensions to remove.
+        :param bool verbose: Whether or not to activate verbose mode.
+        :return: None
+
         2. Remove all non-movie files, based on a list of "bad" extensions (i.e., .nfo, .txt, etc)
         """
         FileRemover(directory=directory, extensions=extensions, verbose=verbose)
 
     def format(self, directory, verbose=False):
         """
+
+        :param str directory: The directory of movie folders to format.
+        :param bool verbose: Whether or not to activate verbose mode.
+        :return: None
+
         3. Pull the names of all folders and decide what the title is, based on movie titles in OMDb API.
             a. Rename the movie file and folders (i.e., <movie_title> [<year_of_release>])
         """
@@ -68,16 +86,27 @@ class MovieFileFixer:
 
     def get_posters(self, directory, data_files, verbose=False):
         """
+
+        :param str directory: The directory of movie folders to get posters for.
+        :param list data_files: A list of metadata files to get poster URL metadata from.
+        :param bool verbose: Whether or not to activate verbose mode.
+        :return: None
+
         4. Download the movie poster and name the file poster.<extension>
         (where <extension> is the original extension of the poster file)
         """
         contents_file = data_files[0]
         PosterFinder(directory=directory, contents_file=contents_file, verbose=verbose)
 
-    def get_subtitles(
-        self, directory, data_files, language="en", verbose=False
-    ):
+    def get_subtitles(self, directory, data_files, language="en", verbose=False):
         """
+
+        :param str directory: The directory of movie folders to get subtitles for.
+        :param list data_files: A list of metadata files to get movie paths from.
+        :param str language: The two-character language code for the subtitle language to retrieve.
+        :param bool verbose: Whether or not to activate verbose mode.
+        :return: None
+
         5. Download the movie subtitles and name the file <language>_subtitles.srt
         """
         contents_file = data_files[0]
@@ -94,7 +123,6 @@ if __name__ == "__main__":
     directory = fake_directory
     directory = os.path.join(os.getcwd(), "input")
     directory = os.path.join("H:", "tosort", "input")
-    # directory = "C:/Users/Neophile/Desktop/sandboxes/python/movie-file-fixer/input/"
     MovieFileFixer(
         directory=directory, data_files=["contents.json", "errors.json"], verbose=False
     )
