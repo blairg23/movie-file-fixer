@@ -58,15 +58,16 @@ class Folderizer:
         if data_files is None:
             data_files = self._data_files
 
-        valid_filenames = [filename for filename in filenames if filename not in data_files]
+        valid_filenames = [
+            filename for filename in filenames if filename not in data_files
+        ]
         for filename in valid_filenames:
             old_file_path = os.path.join(os.getcwd(), directory, filename)
             stripped_filename, file_ext = os.path.splitext(
                 filename
             )  # Extract the filename from the extension
             new_file_path = os.path.join(os.getcwd(), directory, stripped_filename)
-            print('old_file_path:', old_file_path)
-            print('new_file_path:', new_file_path)
+
             if not os.path.exists(
                 new_file_path
             ):  # If the folder doesn't already exist:
@@ -102,7 +103,8 @@ class Folderizer:
         filenames = self._find_single_files(
             directory=directory
         )  # Get all filenames in the given directory
-        self._move_files_into_folders(directory=directory, data_files=data_files, filenames=filenames
+        self._move_files_into_folders(
+            directory=directory, data_files=data_files, filenames=filenames
         )  # And move those into folders, based on the same names
 
     def unfolderize_all(self, directory=None):
@@ -139,10 +141,3 @@ class Folderizer:
                         new_file_path = os.path.join(root, file)
                         shutil.move(old_file_path, new_file_path)
                     shutil.rmtree(os.path.join(root, folder))
-
-
-if __name__ == "__main__":
-    directory = r'C:\Users\Neophile\Desktop\sandboxes\python\movie-file-fixer\src\tests\test_input'
-    folderizer = Folderizer(directory=directory, verbose=True)
-    folderizer.folderize()
-    # folderizer.unfolderize(folder_name='subs')
