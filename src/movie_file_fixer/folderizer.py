@@ -112,10 +112,6 @@ class Folderizer:
         Removes all files from every folder and places them into the main directory,
         then removes all the folders.
         """
-        if directory is None:
-            directory = self._directory
-
-        # TODO
         pass
 
     def unfolderize(self, directory=None, folder_name=None):

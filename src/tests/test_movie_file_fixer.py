@@ -176,3 +176,8 @@ class FolderizerTestCase(TestCase):
             self.assertFalse(os.path.exists(new_folder_name))
             # nor is it a single file inside that folder:
             self.assertFalse(os.path.isfile(new_filename))
+
+    def test_unfolderize_all(self):
+        """This test does nothing until we've implemented that method."""
+        fake_result = self.folderizer.unfolderize_all()
+        self.assertEqual(fake_result, None)
