@@ -95,83 +95,77 @@ class FolderizerTestCase(TestCase):
         self.single_files = self.folderizer._find_single_files()
 
     def tearDown(self):
-        # shutil.rmtree(self.test_folder)
-        pass
+        shutil.rmtree(self.test_folder)
 
-    # def test_find_single_files(self):
-    #     """Ensure all single files that were created were found."""
-    #     for single_file in self.single_files:
-    #         if single_file not in blockbuster.DATA_FILES:
-    #             filename, extension = os.path.splitext(single_file)
-    #             filename_is_in_list = utils.is_in_list(element=filename, the_list=self.example_titles)
-    #             self.assertTrue(filename_is_in_list)
+    def test_find_single_files(self):
+        """Ensure all single files that were created were found."""
+        for single_file in self.single_files:
+            if single_file not in blockbuster.DATA_FILES:
+                filename, extension = os.path.splitext(single_file)
+                filename_is_in_list = utils.is_in_list(element=filename, the_list=self.example_titles)
+                self.assertTrue(filename_is_in_list)
 
     def test_move_files_into_folders(self):
         """Ensure that all single files that were created moved to folders of the same name."""
-        self.folderizer._move_files_into_folders(file_names=self.single_files)
-        # for single_file in self.single_files:
-        #     print('SINGLE_FILE:', single_file)
-        #     filename, extension = os.path.splitext(single_file)
-        #     print('FILENAME:', filename)
-        #     folder_name = os.path.join(blockbuster.TEST_INPUT_FOLDER, filename)
-        #     new_filename = os.path.join(folder_name, single_file)
-        #     print('IS FILE:', os.path.isfile(folder_name))
-        #     print('IS A FOLDER TOO:', os.path.exists(folder_name))
-        #     print('AND THERE IS A FILE INSIDE THE FOLDER:', os.path.isfile(new_filename))
-        #
-        #     # Ensure it's no longer a file:
-        #     self.assertFalse(os.path.isfile(folder_name))
-        #     # But it still exists (as a folder):
-        #     self.assertTrue(os.path.exists(folder_name))
-        #     # And also as a file inside that folder:
-        #     self.assertTrue(os.path.isfile(new_filename))
+        self.folderizer._move_files_into_folders(filenames=self.single_files)
+        for single_file in self.single_files:
+            filename, extension = os.path.splitext(single_file)
+            folder_name = os.path.join(blockbuster.TEST_INPUT_FOLDER, filename)
+            new_filename = os.path.join(folder_name, single_file)
 
-    # @patch(f"{module_under_test}.Folderizer._find_single_files")
-    # @patch(f"{module_under_test}.Folderizer._move_files_into_folders")
-    # def test_folderize(self, _find_single_files, _move_files_into_folders):
-    #     """Ensure all internal methods got called when the folderize() method was called."""
-    #     self.folderizer.folderize()
-    #     _find_single_files.assert_called_once()
-    #     _move_files_into_folders.assert_called_once()
-    #
-    # def test_unfolderize(self):
-    #     """Ensure all files inside a given directory get unfolderized."""
-    #     fake_folder_name = fake.word()
-    #     fake_filename = fake.word()
-    #     fake_file_extension = "." + fake.word()
-    #     self.folderizer.folderize()
-    #     # Set up the test area inside each folder by creating an arbitrary file
-    #     # with an arbitrary file extension inside an arbitrary folder:
-    #     for root, dirs, files in os.walk(blockbuster.TEST_INPUT_FOLDER):
-    #         new_folder_name = os.path.join(root, fake_folder_name)
-    #         os.mkdir(new_folder_name)
-    #         new_filename = os.path.join(
-    #             new_folder_name, fake_filename + fake_file_extension
-    #         )
-    #         open(new_filename, "a").close()
-    #
-    #         # Test that the setup worked and created the file in the correct place:
-    #         should_not_exist = os.path.join(root, fake_filename + fake_file_extension)
-    #         # It is not a single file name in the movie folder:
-    #         self.assertFalse(os.path.isfile(should_not_exist))
-    #         # It is a folder name however:
-    #         self.assertTrue(os.path.exists(new_folder_name))
-    #         # and also a file name inside that folder:
-    #         self.assertTrue(os.path.isfile(new_filename))
-    #
-    #     self.folderizer.unfolderize(folder_name=fake_folder_name)
-    #
-    #     for root, dirs, files in os.walk(blockbuster.TEST_INPUT_FOLDER):
-    #         new_folder_name = os.path.join(root, fake_folder_name)
-    #         new_filename = os.path.join(
-    #             new_folder_name, fake_filename + fake_file_extension
-    #         )
-    #
-    #         # Test that unfolderize pulled the files out of the folder and deleted the folder:
-    #         should_exist_now = os.path.join(root, fake_filename + fake_file_extension)
-    #         # Now it is a single file name in the movie folder (unfolderized):
-    #         self.assertTrue(os.path.isfile(should_exist_now))
-    #         # and no longer a folder name (folder is deleted):
-    #         self.assertFalse(os.path.exists(new_folder_name))
-    #         # nor is it a single file inside that folder:
-    #         self.assertFalse(os.path.isfile(new_filename))
+            # Ensure it's no longer a file:
+            self.assertFalse(os.path.isfile(folder_name))
+            # But it still exists (as a folder):
+            self.assertTrue(os.path.exists(folder_name))
+            # And also as a file inside that folder:
+            self.assertTrue(os.path.isfile(new_filename))
+
+    @patch(f"{module_under_test}.Folderizer._find_single_files")
+    @patch(f"{module_under_test}.Folderizer._move_files_into_folders")
+    def test_folderize(self, _find_single_files, _move_files_into_folders):
+        """Ensure all internal methods got called when the folderize() method was called."""
+        self.folderizer.folderize()
+        _find_single_files.assert_called_once()
+        _move_files_into_folders.assert_called_once()
+
+    def test_unfolderize(self):
+        """Ensure all files inside a given directory get unfolderized."""
+        fake_folder_name = fake.word()
+        fake_filename = fake.word()
+        fake_file_extension = "." + fake.word()
+        self.folderizer.folderize()
+        # Set up the test area inside each folder by creating an arbitrary file
+        # with an arbitrary file extension inside an arbitrary folder:
+        for root, dirs, files in os.walk(blockbuster.TEST_INPUT_FOLDER):
+            new_folder_name = os.path.join(root, fake_folder_name)
+            os.mkdir(new_folder_name)
+            new_filename = os.path.join(
+                new_folder_name, fake_filename + fake_file_extension
+            )
+            open(new_filename, "a").close()
+
+            # Test that the setup worked and created the file in the correct place:
+            should_not_exist = os.path.join(root, fake_filename + fake_file_extension)
+            # It is not a single file name in the movie folder:
+            self.assertFalse(os.path.isfile(should_not_exist))
+            # It is a folder name however:
+            self.assertTrue(os.path.exists(new_folder_name))
+            # and also a file name inside that folder:
+            self.assertTrue(os.path.isfile(new_filename))
+
+        self.folderizer.unfolderize(folder_name=fake_folder_name)
+
+        for root, dirs, files in os.walk(blockbuster.TEST_INPUT_FOLDER):
+            new_folder_name = os.path.join(root, fake_folder_name)
+            new_filename = os.path.join(
+                new_folder_name, fake_filename + fake_file_extension
+            )
+
+            # Test that unfolderize pulled the files out of the folder and deleted the folder:
+            should_exist_now = os.path.join(root, fake_filename + fake_file_extension)
+            # Now it is a single file name in the movie folder (unfolderized):
+            self.assertTrue(os.path.isfile(should_exist_now))
+            # and no longer a folder name (folder is deleted):
+            self.assertFalse(os.path.exists(new_folder_name))
+            # nor is it a single file inside that folder:
+            self.assertFalse(os.path.isfile(new_filename))

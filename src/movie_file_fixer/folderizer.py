@@ -61,28 +61,28 @@ class Folderizer:
         valid_filenames = [filename for filename in filenames if filename not in data_files]
         for filename in valid_filenames:
             old_file_path = os.path.join(os.getcwd(), directory, filename)
-            filename, file_ext = os.path.splitext(
+            stripped_filename, file_ext = os.path.splitext(
                 filename
             )  # Extract the filename from the extension
-            new_file_path = os.path.join(os.getcwd(), directory, filename)
+            new_file_path = os.path.join(os.getcwd(), directory, stripped_filename)
             print('old_file_path:', old_file_path)
             print('new_file_path:', new_file_path)
-            # if not os.path.exists(
-            #     new_file_path
-            # ):  # If the folder doesn't already exist:
-            #     os.mkdir(new_file_path)  # Then create it
-            #     if self._verbose:
-            #         print(
-            #             f'[{self._action_counter}] [Created Folder] "{filename}" [successfully]'
-            #         )
-            #     self._action_counter += 1
-            #
-            # shutil.move(old_file_path, new_file_path)
-            # if self._verbose:
-            #     print(
-            #         f'[{self._action_counter}] [Moved File] "{filename}" to [Folder] "{filename}" [successfully]'
-            #     )
-            # self._action_counter += 1
+            if not os.path.exists(
+                new_file_path
+            ):  # If the folder doesn't already exist:
+                os.mkdir(new_file_path)  # Then create it
+                if self._verbose:
+                    print(
+                        f'[{self._action_counter}] [Created Folder] "{filename}" [successfully]'
+                    )
+                self._action_counter += 1
+
+            shutil.move(old_file_path, new_file_path)
+            if self._verbose:
+                print(
+                    f'[{self._action_counter}] [Moved File] "{filename}" to [Folder] "{filename}" [successfully]'
+                )
+            self._action_counter += 1
 
     def folderize(self, directory=None, data_files=None):
         """
@@ -139,3 +139,10 @@ class Folderizer:
                         new_file_path = os.path.join(root, file)
                         shutil.move(old_file_path, new_file_path)
                     shutil.rmtree(os.path.join(root, folder))
+
+
+if __name__ == "__main__":
+    directory = r'C:\Users\Neophile\Desktop\sandboxes\python\movie-file-fixer\src\tests\test_input'
+    folderizer = Folderizer(directory=directory, verbose=True)
+    folderizer.folderize()
+    # folderizer.unfolderize(folder_name='subs')

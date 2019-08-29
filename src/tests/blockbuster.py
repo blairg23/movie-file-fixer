@@ -92,7 +92,7 @@ class BlockBusterBuilder:
         return self._test_folder, example_titles
 
     def create_single_file_environment(
-        self, file_extensions=None, use_extensions=False
+        self, file_extensions=None, use_extensions=None
     ):
         """
 
@@ -108,7 +108,7 @@ class BlockBusterBuilder:
             use_extensions=use_extensions,
         )
 
-    def create_folderized_environment(self, file_extensions=None, use_extensions=False):
+    def create_folderized_environment(self, file_extensions=None, use_extensions=None):
         """
 
         :param list file_extensions: A list of file extensions to create individual files, for testing file support.
