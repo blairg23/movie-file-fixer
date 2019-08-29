@@ -41,15 +41,15 @@ class Folderizer:
         self._action_counter += 1
         return single_files
 
-    def _move_files_into_folders(self, directory=None, data_files=None, file_names=[]):
+    def _move_files_into_folders(self, directory=None, data_files=None, filenames=[]):
         """
 
         :param str directory: Directory of single files to move into folders.
         :param list data_files: A list of metadata files to ignore when folderizing.
-        :param file_names:
+        :param list filenames: A list of files to folderize.
         :return: None
 
-        Moves a group of files into their respective folders, given a list of file_names.
+        Moves a group of files into their respective folders, given a list of filenames.
         Will create the folder if it does not already exist.
         """
         if directory is None:
@@ -58,29 +58,31 @@ class Folderizer:
         if data_files is None:
             data_files = self._data_files
 
-        valid_file_names = [fName for fName in file_names if fName not in data_files]
-        for fName in valid_file_names:
-            old_file_path = os.path.join(os.getcwd(), directory, fName)
-            file_name, file_ext = os.path.splitext(
-                fName
-            )  # Extract the file_name from the extension
-            new_file_path = os.path.join(os.getcwd(), directory, file_name)
-            if not os.path.exists(
-                new_file_path
-            ):  # If the folder doesn't already exist:
-                os.mkdir(new_file_path)  # Then create it
-                if self._verbose:
-                    print(
-                        f'[{self._action_counter}] [Created Folder] "{file_name}" [successfully]'
-                    )
-                self._action_counter += 1
-
-            shutil.move(old_file_path, new_file_path)
-            if self._verbose:
-                print(
-                    f'[{self._action_counter}] [Moved File] "{fName}" to [Folder] "{file_name}" [successfully]'
-                )
-            self._action_counter += 1
+        valid_filenames = [filename for filename in filenames if filename not in data_files]
+        for filename in valid_filenames:
+            old_file_path = os.path.join(os.getcwd(), directory, filename)
+            filename, file_ext = os.path.splitext(
+                filename
+            )  # Extract the filename from the extension
+            new_file_path = os.path.join(os.getcwd(), directory, filename)
+            print('old_file_path:', old_file_path)
+            print('new_file_path:', new_file_path)
+            # if not os.path.exists(
+            #     new_file_path
+            # ):  # If the folder doesn't already exist:
+            #     os.mkdir(new_file_path)  # Then create it
+            #     if self._verbose:
+            #         print(
+            #             f'[{self._action_counter}] [Created Folder] "{filename}" [successfully]'
+            #         )
+            #     self._action_counter += 1
+            #
+            # shutil.move(old_file_path, new_file_path)
+            # if self._verbose:
+            #     print(
+            #         f'[{self._action_counter}] [Moved File] "{filename}" to [Folder] "{filename}" [successfully]'
+            #     )
+            # self._action_counter += 1
 
     def folderize(self, directory=None, data_files=None):
         """
@@ -97,11 +99,10 @@ class Folderizer:
         if data_files is None:
             data_files = self._data_files
 
-        file_names = self._find_single_files(
+        filenames = self._find_single_files(
             directory=directory
-        )  # Get all file_names in the given directory
-        self._move_files_into_folders(
-            file_names=file_names, data_files=data_files, directory=directory
+        )  # Get all filenames in the given directory
+        self._move_files_into_folders(directory=directory, data_files=data_files, filenames=filenames
         )  # And move those into folders, based on the same names
 
     def unfolderize_all(self, directory=None):
