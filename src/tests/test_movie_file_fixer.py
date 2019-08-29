@@ -21,17 +21,20 @@ class MovieFileFixerTestCase(TestCase):
 
     def setUp(self):
         self.mock_folderize_patch = mock.patch(
-            f"{module_under_test}.MovieFileFixer.folderize", directory=blockbuster.TEST_INPUT_FOLDER
+            f"{module_under_test}.MovieFileFixer.folderize",
+            directory=blockbuster.TEST_INPUT_FOLDER,
         )
         self.mock_folderize = self.mock_folderize_patch.start()
 
         self.mock_cleanup_patch = mock.patch(
-            f"{module_under_test}.MovieFileFixer.cleanup", directory=blockbuster.TEST_INPUT_FOLDER
+            f"{module_under_test}.MovieFileFixer.cleanup",
+            directory=blockbuster.TEST_INPUT_FOLDER,
         )
         self.mock_cleanup = self.mock_cleanup_patch.start()
 
         self.mock_format_patch = mock.patch(
-            f"{module_under_test}.MovieFileFixer.format", directory=blockbuster.TEST_INPUT_FOLDER
+            f"{module_under_test}.MovieFileFixer.format",
+            directory=blockbuster.TEST_INPUT_FOLDER,
         )
         self.mock_format = self.mock_format_patch.start()
 
@@ -91,7 +94,9 @@ class FolderizerTestCase(TestCase):
         self.test_folder, self.example_titles = (
             test_environment.create_single_file_environment()
         )
-        self.folderizer = movie_file_fixer.Folderizer(directory=blockbuster.TEST_INPUT_FOLDER, verbose=True)
+        self.folderizer = movie_file_fixer.Folderizer(
+            directory=blockbuster.TEST_INPUT_FOLDER, verbose=False
+        )
         self.single_files = self.folderizer._find_single_files()
 
     def tearDown(self):
@@ -102,7 +107,9 @@ class FolderizerTestCase(TestCase):
         for single_file in self.single_files:
             if single_file not in blockbuster.DATA_FILES:
                 filename, extension = os.path.splitext(single_file)
-                filename_is_in_list = utils.is_in_list(element=filename, the_list=self.example_titles)
+                filename_is_in_list = utils.is_in_list(
+                    element=filename, the_list=self.example_titles
+                )
                 self.assertTrue(filename_is_in_list)
 
     def test_move_files_into_folders(self):

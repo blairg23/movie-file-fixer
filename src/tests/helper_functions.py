@@ -31,6 +31,7 @@ def is_in_folder(folder_path=None, file_name=None):
     file_name is a string value representing the file or folder name to search for.
     """
     import os.path
+
     if os.path.exists(folder_path):
         print(file_name in os.listdir(folder_path))
     print(os.listdir(folder_path))
@@ -40,14 +41,20 @@ def find_single_files(directory):
     """
     Finds all the files without a folder within a given directory
     """
-    return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
+    return [
+        f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))
+    ]
 
 
 def find_folders(directory):
     """
     Finds all the folders in a given directory
     """
-    return [os.path.join(directory, o) for o in os.listdir(directory) if os.path.isdir(os.path.join(directory, o))]
+    return [
+        os.path.join(directory, o)
+        for o in os.listdir(directory)
+        if os.path.isdir(os.path.join(directory, o))
+    ]
 
 
 def get_folder_name(folder):
