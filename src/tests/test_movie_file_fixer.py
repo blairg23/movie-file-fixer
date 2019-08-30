@@ -1,5 +1,6 @@
 import os
 import shutil
+import builtins
 from unittest import mock, TestCase
 from unittest.mock import patch
 
@@ -85,6 +86,10 @@ class MovieFileFixerTestCase(TestCase):
 
 class FolderizerTestCase(TestCase):
     def setUp(self):
+        # To suppress the stdout by having verbose=True on Folderizer instantiation:
+        self.mock_print_patch = mock.patch("builtins.print")
+        self.mock_print = self.mock_print_patch.start()
+
         test_environment = blockbuster.BlockBusterBuilder(
             level="pg-13",
             test_folder=blockbuster.TEST_INPUT_FOLDER,
@@ -95,12 +100,13 @@ class FolderizerTestCase(TestCase):
             test_environment.create_single_file_environment()
         )
         self.folderizer = movie_file_fixer.Folderizer(
-            directory=blockbuster.TEST_INPUT_FOLDER, verbose=False
+            directory=blockbuster.TEST_INPUT_FOLDER, verbose=True
         )
         self.single_files = self.folderizer._find_single_files()
 
     def tearDown(self):
         shutil.rmtree(self.test_folder)
+        self.mock_print_patch.stop()
 
     def test_find_single_files(self):
         """Ensure all single files that were created were found."""
@@ -181,3 +187,48 @@ class FolderizerTestCase(TestCase):
         """This test does nothing until we've implemented that method."""
         fake_result = self.folderizer.unfolderize_all()
         self.assertEqual(fake_result, None)
+
+
+class FileRemoverTestCase(TestCase):
+    def setUp(self):
+        # To suppress the stdout by having verbose=True on FileRemover instantiation:
+        self.mock_print_patch = mock.patch("builtins.print")
+        self.mock_print = self.mock_print_patch.start()
+
+        self.good_file_extensions = [".avi", ".mov", ".mp4", ".mkv", ".srt"]
+        self.bad_file_extensions = [
+            ".txt",
+            ".dat",
+            ".nfo",
+            ".bmp",
+            ".gif",
+            ".jpg",
+            ".png",
+            ".exe",
+        ]
+        test_environment = blockbuster.BlockBusterBuilder(
+            level="pg-13",
+            test_folder=blockbuster.TEST_INPUT_FOLDER,
+            file_extensions=self.good_file_extensions + self.bad_file_extensions,
+            use_extensions=True,
+        )
+        self.test_folder, self.example_titles = (
+            test_environment.create_single_file_environment()
+        )
+        self.file_remover = movie_file_fixer.FileRemover(
+            directory=blockbuster.TEST_INPUT_FOLDER,
+            file_extensions=self.bad_file_extensions,
+            verbose=True,
+        )
+
+    def tearDown(self):
+        shutil.rmtree(self.test_folder)
+        self.mock_print_patch.stop()
+
+    def test_remove_files(self):
+        self.file_remover.remove_files()
+        for root, dirs, files in os.walk(self.test_folder):
+            for file in files:
+                filename, extension = os.path.splitext(file)
+                self.assertIn(extension, self.good_file_extensions)
+                self.assertNotIn(extension, self.bad_file_extensions)

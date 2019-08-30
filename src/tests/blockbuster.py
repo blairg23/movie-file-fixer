@@ -35,7 +35,21 @@ class BlockBusterBuilder:
         self,
         level="pg-13",
         test_folder=TEST_INPUT_FOLDER,
-        file_extensions=["avi", "mov", "mp4", "txt", "dat", "nfo", "jpg", "png", "mkv"],
+        file_extensions=[
+            ".avi",
+            ".mov",
+            ".mp4",
+            ".mkv",
+            ".srt",
+            ".txt",
+            ".dat",
+            ".nfo",
+            ".bmp",
+            ".gif",
+            ".jpg",
+            ".png",
+            ".exe",
+        ],
         use_extensions=False,
     ):
         self._level = level
@@ -82,7 +96,11 @@ class BlockBusterBuilder:
                 )
                 if use_extensions:
                     for extension in file_extensions:
-                        new_filename = filename + "." + extension
+                        new_filename = (
+                            filename + extension
+                            if "." in extension
+                            else ".".join([filename, extension])
+                        )
                         open(new_filename, "a").close()
                 else:
                     open(filename, "a").close()

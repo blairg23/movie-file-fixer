@@ -70,7 +70,10 @@ class MovieFileFixer:
 
         2. Remove all non-movie files, based on a list of "bad" extensions (i.e., .nfo, .txt, etc)
         """
-        FileRemover(directory=directory, extensions=extensions, verbose=verbose)
+        file_remover = FileRemover(
+            directory=directory, extensions=extensions, verbose=verbose
+        )
+        file_remover.remove_files()
 
     def format(self, directory, verbose=False):
         """

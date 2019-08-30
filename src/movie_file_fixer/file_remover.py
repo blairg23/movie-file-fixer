@@ -1,40 +1,50 @@
 # -*- coding: utf-8 -*-
 """
-Name: file_remover.py
-Author: Blair Gemmer
-Version: 20160618
 
-Description: os.removes any files with unwanted extensions like ".txt" or ".dat".
+Description: Removes any files with unwanted extensions like ".txt" or ".dat".
 """
 
 import os
 
 
 class FileRemover:
-    def __init__(self, directory=None, extensions=None, verbose=True):
-        if verbose:
-            print("[CURRENT ACTION: REMOVING UNWANTED FILES]\n")
-        self.remove_files(directory=directory, extensions=extensions, verbose=verbose)
+    def __init__(
+        self,
+        directory,
+        file_extensions=["txt", "dat", "nfo", "bmp", "gif", "jpg", "png", "exe"],
+        verbose=True,
+    ):
+        self._directory = directory
+        self._file_extensions = file_extensions
+        self._verbose = verbose
+        self._action_counter = 0
 
-    def remove_files(self, directory=None, extensions=None, verbose=False):
+        if self._verbose:
+            print("[CURRENT ACTION: REMOVING UNWANTED FILES]\n")
+
+    def remove_files(self, directory=None, file_extensions=None):
+        """
+
+        :param str directory: Directory to remove files from.
+        :param list file_extensions: A list of file extensions to remove.
+        :return: None
+        """
+        if directory is None:
+            directory = self._directory
+
+        if file_extensions is None:
+            file_extensions = self._file_extensions
+
         for root, dirs, files in os.walk(directory):
+            # print(f'root: {root}, dirs: {dirs}, files: {files}')
             for current_file in files:
-                if verbose:
-                    print("[PROCESSING FILE: {filename}]".format(filename=current_file))
-                if any(current_file.lower().endswith(ext) for ext in extensions):
+                if self._verbose:
+                    print(f"[{self._action_counter}] [PROCESSING FILE: {current_file}]")
+                    self._action_counter += 1
+                if any(current_file.lower().endswith(ext) for ext in file_extensions):
                     os.remove(os.path.join(os.getcwd(), root, current_file))
-                    if verbose:
+                    if self._verbose:
                         print("[RESULT: REMOVED]\n")
                 else:
-                    if verbose:
+                    if self._verbose:
                         print("[RESULT: NOT REMOVED]\n")
-                # This is not as fast:
-                # filename, ext = splitext(current_file)
-                # if ext in extensions:
-                # 	os.os.remove(os.path.join(root, current_file))
-
-
-if __name__ == "__main__":
-    bad_extensions = [".nfo", ".dat", ".jpg", ".png", ".txt"]
-    directory = os.path.join("test", "data", "Fake_Directory")
-    FileRemover(directory=directory, extensions=bad_extensions, verbose=False)

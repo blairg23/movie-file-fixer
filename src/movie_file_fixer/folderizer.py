@@ -12,12 +12,13 @@ class Folderizer:
     def __init__(
         self, directory, data_files=["contents.json", "errors.json"], verbose=False
     ):
-        if verbose:
-            print("[CURRENT ACTION: MOVING SINGLETON FILES TO FOLDERS]\n")
         self._directory = directory
         self._data_files = data_files
         self._verbose = verbose
         self._action_counter = 0
+
+        if self._verbose:
+            print("[CURRENT ACTION: MOVING SINGLETON FILES TO FOLDERS]\n")
 
     def _find_single_files(self, directory=None):
         """
@@ -31,14 +32,17 @@ class Folderizer:
 
         # And find all the single files:
         if self._verbose:
-            print(f"\n[{self._action_counter}] Finding files in {directory}.")
+            print(
+                f"[{self._action_counter}] [DISCOVERING SINGLE FILES IN FOLDER: {directory}]\n"
+            )
+            self._action_counter += 1
+
         single_files = [
             f
             for f in os.listdir(directory)
             if os.path.isfile(os.path.join(os.getcwd(), directory, f))
         ]
 
-        self._action_counter += 1
         return single_files
 
     def _move_files_into_folders(self, directory=None, data_files=None, filenames=[]):
@@ -62,28 +66,24 @@ class Folderizer:
             filename for filename in filenames if filename not in data_files
         ]
         for filename in valid_filenames:
-            old_file_path = os.path.join(os.getcwd(), directory, filename)
+            old_filepath = os.path.join(os.getcwd(), directory, filename)
             stripped_filename, file_ext = os.path.splitext(
                 filename
             )  # Extract the filename from the extension
-            new_file_path = os.path.join(os.getcwd(), directory, stripped_filename)
+            new_filepath = os.path.join(os.getcwd(), directory, stripped_filename)
 
-            if not os.path.exists(
-                new_file_path
-            ):  # If the folder doesn't already exist:
-                os.mkdir(new_file_path)  # Then create it
+            if not os.path.exists(new_filepath):  # If the folder doesn't already exist:
+                os.mkdir(new_filepath)  # Then create it
                 if self._verbose:
-                    print(
-                        f'[{self._action_counter}] [Created Folder] "{filename}" [successfully]'
-                    )
-                self._action_counter += 1
+                    print(f'[{self._action_counter}] [CREATED FOLDER] "{filename}"')
+                    self._action_counter += 1
 
-            shutil.move(old_file_path, new_file_path)
+            shutil.move(old_filepath, new_filepath)
             if self._verbose:
                 print(
-                    f'[{self._action_counter}] [Moved File] "{filename}" to [Folder] "{filename}" [successfully]'
+                    f'[{self._action_counter}] [MOVED FILE] "{filename}" -> [FOLDER] "{filename}"'
                 )
-            self._action_counter += 1
+                self._action_counter += 1
 
     def folderize(self, directory=None, data_files=None):
         """
@@ -99,6 +99,12 @@ class Folderizer:
 
         if data_files is None:
             data_files = self._data_files
+
+        if self._verbose:
+            print(
+                f"[{self._action_counter}] [RUNNING FOLDERIZE ON SINGLE FILES IN FOLDER: {directory}]\n"
+            )
+            self._action_counter += 1
 
         filenames = self._find_single_files(
             directory=directory
@@ -127,13 +133,29 @@ class Folderizer:
         if directory is None:
             directory = self._directory
 
+        if self._verbose:
+            print(
+                f"[{self._action_counter}] [RUNNING UNFOLDERIZE ON SINGLE FILES IN FOLDER: {directory}]\n"
+            )
+            self._action_counter += 1
+
         for root, dirs, files in os.walk(directory):
             for folder in dirs:
                 if folder.lower() == folder_name.lower():
                     for file in self._find_single_files(
                         directory=os.path.join(root, folder)
                     ):
-                        old_file_path = os.path.join(root, folder, file)
-                        new_file_path = os.path.join(root, file)
-                        shutil.move(old_file_path, new_file_path)
+                        old_filepath = os.path.join(root, folder, file)
+                        new_filepath = os.path.join(root, file)
+                        if self._verbose:
+                            print(
+                                f"[{self._action_counter}] [MOVING FILE] {old_filepath} -> [FOLDER] {new_filepath}\n"
+                            )
+                            self._action_counter += 1
+                        shutil.move(old_filepath, new_filepath)
                     shutil.rmtree(os.path.join(root, folder))
+                    if self._verbose:
+                        print(
+                            f"[{self._action_counter}] [FOLDER] {os.path.join(root, folder)} [REMOVED]\n"
+                        )
+                        self._action_counter += 1
