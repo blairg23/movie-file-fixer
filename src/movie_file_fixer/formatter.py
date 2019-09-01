@@ -8,9 +8,8 @@ and creates a title directory called "contents.json", which also contains poster
 import json
 import os
 import re
-import omdb
 
-import requests
+import omdb
 
 
 class Formatter:
@@ -109,10 +108,29 @@ class Formatter:
             )
             self._action_counter += 1
 
-        if self._verbose:
-            print(f"[FOUND RELEASE YEAR: {release_year}]\n")
+        year_candidate_list = re.findall(r"\d{4}", search_terms)  # Find all possible "release year" candidates
 
-        # TODO: Add functionality
+        if len(year_candidate_list) > 0:  # If we found any results:
+            if self._verbose:
+                print(f"[FOUND {len(year_candidate_list)} RELEASE YEAR CANDIDATES: {year_candidate_list}]")
+
+            for year in year_candidate_list:
+                # Typically, we don't deal with movies before the 1900's
+                # and this script will be future proof until the 2100's!
+                if not 1900 < int(year) < 2100:
+                    # If we found an invalid year candidate, remove it:
+                    year_candidate_list.remove(str(year))
+
+            # Make sure there is still at least one candidate
+            if len(year_candidate_list) > 0:
+                # Add only the last one as that is the most likely candidate of a real candidate (files don't typically start with the release year)
+                release_year = year_candidate_list[-1]  # This will also be the only candidate if there is only one candidate.
+
+                if self._verbose:
+                    print(f"[FOUND RELEASE YEAR: {release_year}]\n")
+            else:
+                if self._verbose:
+                    print("[DID NOT FIND RELEASE YEAR]\n")
 
         return release_year
 
