@@ -2,85 +2,230 @@
   {
     "description": "Normal titles.",
     "examples": [
-      "The.Bay.2012.LiMiTED.BRRip.XviD.RoSubbed-playXD",
-      "Hansel.&.Gretel.Witch.Hunters.2013.DVDRip.XviD-P2P"
+      {
+        "original_filename": "The.Bay.2012.LiMiTED.BRRip.XviD.RoSubbed-playXD",
+        "imdb_id": "tt1713476",
+        "title": "The Bay",
+        "release_year": "2012"
+      },
+      {
+        "original_filename": "Hansel.&.Gretel.Witch.Hunters.2013.DVDRip.XviD-P2P",
+        "imdb_id": "tt1428538",
+        "title": "Hansel & Gretel: Witch Hunters",
+        "release_year": "2013"
+      }
     ]
   },
   {
     "description": "Titles containing underscores.",
     "examples": [
-      "Ordinary_Decent_Criminal.DVDRip_devilwarez.pl"
+      {
+        "original_filename": "Ordinary_Decent_Criminal.DVDRip_devilwarez.pl",
+        "imdb_id": "tt0160611",
+        "title": "Ordinary Decent Criminal",
+        "release_year": "2000"
+      }
     ]
   },
   {
     "description": "Titles containing hyphens.",
     "examples": [
-      "Kick-Ass (2010) R5 XViD-MAXSPEED",
-      "Kick-Ass 2 (2013) [1080p]",
-      "Bio-Dome (1996) - DVD Rip - XVID",
-      "The.X-Files-Fight.the.Future[1998]DvDrip-aXXo"
+      {
+        "original_filename": "Kick-Ass (2010) R5 XViD-MAXSPEED",
+        "imdb_id": "tt1250777",
+        "title": "Kick-Ass",
+        "release_year": "2010"
+      },
+      {
+        "original_filename": "Kick-Ass 2 (2013) [1080p]",
+        "imdb_id": "tt1650554",
+        "title": "Kick-Ass 2",
+        "release_year": "2013"
+      },
+      {
+        "original_filename": "Bio-Dome (1996) - DVD Rip - XVID",
+        "imdb_id": "tt0115683",
+        "title": "Bio-Dome",
+        "release_year": "1996"
+      },
+      {
+        "original_filename": "The.X-Files-Fight.the.Future[1998]DvDrip-aXXo",
+        "imdb_id": "tt0120902",
+        "title": "The X Files",
+        "release_year": "1998"
+      }
     ]
   },
   {
     "description": "Titles containing numbers.",
     "examples": [
-      "22.Jump.Street.2014.1080p.BluRay.x264.anoXmous",
-      "30 Days Of Night[2007]",
-      "'71 (2014) [1080p]"
+      {
+        "original_filename": "22.Jump.Street.2014.1080p.BluRay.x264.anoXmous",
+        "imdb_id": "tt2294449",
+        "title": "22 Jump Street",
+        "release_year": "2014"
+      },
+      {
+        "original_filename": "30 Days Of Night[2007]",
+        "imdb_id": "tt0389722",
+        "title": "30 Days of Night",
+        "release_year": "2007"
+      },
+      {
+        "original_filename": "'71 (2014) [1080p]",
+        "imdb_id": "tt2614684",
+        "title": "'71",
+        "release_year": "2014"
+      }
     ]
   },
   {
     "description": "Titles containing intentional periods.",
     "examples": [
-      "Snatch.2000.1080p.BluRay.x264.anoXmous"
+      {
+        "original_filename": "Snatch.2000.1080p.BluRay.x264.anoXmous",
+        "imdb_id": "tt0208092",
+        "title": "Snatch",
+        "release_year": "2000"
+      }
     ]
   },
   {
     "description": "Titles containing colons.",
     "examples": [
-      "Avengers Age of Ultron (2015) [1080p]",
-      "Sherlock Holmes A Game of Shadows (2011) DVDRip XviD-MAXSPEED"
+      {
+        "original_filename": "Avengers Age of Ultron (2015) [1080p]",
+        "imdb_id": "tt2395427",
+        "title": "Avengers: Age of Ultron",
+        "release_year": "2015"
+      },
+      {
+        "original_filename": "Sherlock Holmes A Game of Shadows (2011) DVDRip XviD-MAXSPEED",
+        "imdb_id": "tt1515091",
+        "title": "Sherlock Holmes: A Game of Shadows",
+        "release_year": "2011"
+      }
     ]
   },
   {
     "description": "Titles containing apostrophes.",
     "examples": [
-      "Ferris Bueller's Day Off (1986) [1080p]",
-      "You.Don't.Mess.With.The.Zohan[2008][Unrated.Edition]DvDrip-aXXo"
+      {
+        "original_filename": "Ferris Bueller's Day Off (1986) [1080p]",
+        "imdb_id": "tt0091042",
+        "title": "Ferris Bueller's Day Off",
+        "release_year": "1986"
+      },
+      {
+        "original_filename": "You.Don't.Mess.With.The.Zohan[2008][Unrated.Edition]DvDrip-aXXo",
+        "imdb_id": "tt0960144",
+        "title": "You Don't Mess with the Zohan",
+        "release_year": "2008"
+      }
     ]
   },
   {
     "description": "Titles containing random punctuation.",
     "examples": [
-      "What the #$! Do We (K)now!",
-      "Fired Up! (2009)"
+      {
+        "original_filename": "What the #$! Do We (K)now!",
+        "imdb_id": "tt0399877",
+        "title": "What the #$*! Do We (K)now!?",
+        "release_year": "2004"
+      },
+      {
+        "original_filename": "Fired Up! (2009)",
+        "imdb_id": "tt1083456",
+        "title": "Fired Up!",
+        "release_year": "2009"
+      }
     ]
   },
   {
     "description": "Titles containing a year or numbers as the entirety of the title.",
     "examples": [
-      "2012 (2009) DVDRip XviD-MAXSPEED",
-      "1408[2007]DvDrip[Eng]-aXXo",
-      "300[2006]DvDrip[Eng]-aXXo"
+      {
+        "original_filename": "2012 (2009) DVDRip XviD-MAXSPEED",
+        "imdb_id": "tt1190080",
+        "title": "2012",
+        "release_year": "2009"
+      },
+      {
+        "original_filename": "1408[2007]DvDrip[Eng]-aXXo",
+        "imdb_id": "tt0450385",
+        "title": "1408",
+        "release_year": "2007"
+      },
+      {
+        "original_filename": "300[2006]DvDrip[Eng]-aXXo",
+        "imdb_id": "tt0416449",
+        "title": "300",
+        "release_year": "2006"
+      }
     ]
   },
   {
     "description": "Duplicate titles (remakes, different languages)",
     "examples": [
-      "Red Dawn {2012} DVDRIP. Jaybob",
-      "Red.Dawn.1984.720p.BrRip.x264.Obit11.ThumperDC",
-      "Poltergeist (1982) [1080p]",
-      "Poltergeist 2015 1080p HDRip x264 AC3-JYK",
-      "The.Girl.With.The.Dragon.Tattoo[2009]",
-      "The Girl With The Dragon Tattoo (2011) (HD)"
+      {
+        "original_filename": "Red.Dawn.1984.720p.BrRip.x264.Obit11.ThumperDC",
+        "imdb_id": "tt0087985",
+        "title": "Red Dawn",
+        "release_year": "1984"
+      },
+      {
+        "original_filename": "Red Dawn {2012} DVDRIP. Jaybob",
+        "imdb_id": "tt1234719",
+        "title": "Red Dawn",
+        "release_year": "2012"
+      },
+      {
+        "original_filename": "Poltergeist (1982) [1080p]",
+        "imdb_id": "tt0084516",
+        "title": "Poltergeist",
+        "release_year": "1982"
+      },
+      {
+        "original_filename": "Poltergeist 2015 1080p HDRip x264 AC3-JYK",
+        "imdb_id": "tt1029360",
+        "title": "Poltergeist",
+        "release_year": "2015"
+      },
+      {
+        "original_filename": "The.Girl.With.The.Dragon.Tattoo[2009]",
+        "imdb_id": "tt1132620",
+        "title": "The Girl with the Dragon Tattoo",
+        "release_year": "2009"
+      },
+      {
+        "original_filename": "The Girl With The Dragon Tattoo (2011) (HD)",
+        "imdb_id": "tt1568346",
+        "title": "The Girl with the Dragon Tattoo",
+        "release_year": "2011"
+      }
     ]
   },
   {
     "description": "Titles with random known issues.",
     "examples": [
-      "Howl's Moving Castle (2004) 720p",
-      "I Hope They Serve Beer In Hell [2009] DvDrip H.264 AAC",
-      "Rocketman 1997 DvDrip[Eng]"
+      {
+        "original_filename": "Howl's Moving Castle (2004) 720p",
+        "imdb_id": "tt0347149",
+        "title": "Howl's Moving Castle",
+        "release_year": "2004"
+      },
+      {
+        "original_filename": "I Hope They Serve Beer In Hell [2009] DvDrip H.264 AAC",
+        "imdb_id": "tt1220628",
+        "title": "I Hope They Server Beer in Hell",
+        "release_year": "2009"
+      },
+      {
+        "original_filename": "Rocketman 1997 DvDrip[Eng]",
+        "imdb_id": "tt0120029",
+        "title": "RocketMan",
+        "release_year": "1997"
+      }
     ]
   }
 ]

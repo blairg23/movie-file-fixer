@@ -11,8 +11,17 @@ class FileRemover:
     def __init__(
         self,
         directory,
-        file_extensions=["txt", "dat", "nfo", "bmp", "gif", "jpg", "png", "exe"],
-        verbose=True,
+        file_extensions=[
+            ".txt",
+            ".dat",
+            ".nfo",
+            ".bmp",
+            ".gif",
+            ".jpg",
+            ".png",
+            ".exe",
+        ],
+        verbose=False,
     ):
         self._directory = directory
         self._file_extensions = file_extensions
@@ -36,12 +45,14 @@ class FileRemover:
             file_extensions = self._file_extensions
 
         for root, dirs, files in os.walk(directory):
-            # print(f'root: {root}, dirs: {dirs}, files: {files}')
             for current_file in files:
                 if self._verbose:
                     print(f"[{self._action_counter}] [PROCESSING FILE: {current_file}]")
                     self._action_counter += 1
-                if any(current_file.lower().endswith(ext) for ext in file_extensions):
+
+                filename, extension = os.path.splitext(current_file)
+
+                if extension in file_extensions:
                     os.remove(os.path.join(os.getcwd(), root, current_file))
                     if self._verbose:
                         print("[RESULT: REMOVED]\n")

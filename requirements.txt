@@ -7,6 +7,6 @@
 certifi==2019.6.16        # via requests
 chardet==3.0.4            # via requests
 idna==2.8                 # via requests
-omdbpy==0.1.9
+omdbpy==0.1.14
 requests==2.22.0
 urllib3==1.25.3           # via requests

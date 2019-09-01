@@ -10,10 +10,13 @@ import shutil
 
 class Folderizer:
     def __init__(
-        self, directory, data_files=["contents.json", "errors.json"], verbose=False
+        self,
+        directory,
+        metadata_filename=["contents.json", "errors.json"],
+        verbose=False,
     ):
         self._directory = directory
-        self._data_files = data_files
+        self._metadata_filename = metadata_filename
         self._verbose = verbose
         self._action_counter = 0
 
@@ -45,11 +48,13 @@ class Folderizer:
 
         return single_files
 
-    def _move_files_into_folders(self, directory=None, data_files=None, filenames=[]):
+    def _move_files_into_folders(
+        self, directory=None, metadata_filename=None, filenames=[]
+    ):
         """
 
         :param str directory: Directory of single files to move into folders.
-        :param list data_files: A list of metadata files to ignore when folderizing.
+        :param str metadata_filename: The metadata file to ignore when folderizing.
         :param list filenames: A list of files to folderize.
         :return: None
 
@@ -59,11 +64,11 @@ class Folderizer:
         if directory is None:
             directory = self._directory
 
-        if data_files is None:
-            data_files = self._data_files
+        if metadata_filename is None:
+            metadata_filename = self._metadata_filename
 
         valid_filenames = [
-            filename for filename in filenames if filename not in data_files
+            filename for filename in filenames if filename not in metadata_filename
         ]
         for filename in valid_filenames:
             old_filepath = os.path.join(os.getcwd(), directory, filename)
@@ -85,11 +90,11 @@ class Folderizer:
                 )
                 self._action_counter += 1
 
-    def folderize(self, directory=None, data_files=None):
+    def folderize(self, directory=None, metadata_filename=None):
         """
 
         :param str directory: Directory of single files to folderize.
-        :param list data_files: A list of metadata files to ignore when folderizing.
+        :param str metadata_filename: The metadata file to ignore when folderizing.
         :return: None
 
         Puts all singleton files from a directory into a folder of its namesake.
@@ -97,8 +102,8 @@ class Folderizer:
         if directory is None:
             directory = self._directory
 
-        if data_files is None:
-            data_files = self._data_files
+        if metadata_filename is None:
+            metadata_filename = self._metadata_filename
 
         if self._verbose:
             print(
@@ -110,7 +115,9 @@ class Folderizer:
             directory=directory
         )  # Get all filenames in the given directory
         self._move_files_into_folders(
-            directory=directory, data_files=data_files, filenames=filenames
+            directory=directory,
+            metadata_filename=metadata_filename,
+            filenames=filenames,
         )  # And move those into folders, based on the same names
 
     def unfolderize_all(self, directory=None):

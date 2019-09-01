@@ -33,20 +33,28 @@ class MovieFileFixer:
         self,
         directory,
         extensions=[".nfo", ".dat", ".jpg", ".png", ".txt", ".exe"],
-        data_files=["contents.json", "errors.json"],
+        metadata_filename=["contents.json", "errors.json"],
         verbose=False,
     ):
-        self.folderize(directory=directory, data_files=data_files, verbose=verbose)
+        self.folderize(
+            directory=directory, metadata_filename=metadata_filename, verbose=verbose
+        )
         self.cleanup(directory=directory, extensions=extensions, verbose=verbose)
         self.format(directory=directory, verbose=verbose)
-        self.get_posters(directory=directory, data_files=data_files, verbose=verbose)
-        self.get_subtitles(directory=directory, data_files=data_files, verbose=verbose)
+        self.get_posters(
+            directory=directory, metadata_filename=metadata_filename, verbose=verbose
+        )
+        self.get_subtitles(
+            directory=directory, metadata_filename=metadata_filename, verbose=verbose
+        )
 
-    def folderize(self, directory, data_files, folder_name="subs", verbose=False):
+    def folderize(
+        self, directory, metadata_filename, folder_name="subs", verbose=False
+    ):
         """
 
         :param str directory: The directory to single files to folderize.
-        :param list data_files: A list of metadata files to ignore when folderizing.
+        :param str metadata_filename: The metadata file to ignore when folderizing.
         :param str folder_name: Folder to unfolderize files from.
         :param bool verbose: Whether or not to activate verbose mode.
         :return: None
@@ -55,7 +63,7 @@ class MovieFileFixer:
             a. Pull all subtitle files out of folders if they are in them.
         """
         folderizer = Folderizer(
-            directory=directory, data_files=data_files, verbose=verbose
+            directory=directory, metadata_filename=metadata_filename, verbose=verbose
         )
         folderizer.folderize()
         folderizer.unfolderize(folder_name=folder_name)
@@ -87,32 +95,32 @@ class MovieFileFixer:
         """
         Formatter(directory=directory, verbose=verbose)
 
-    def get_posters(self, directory, data_files, verbose=False):
+    def get_posters(self, directory, metadata_filename, verbose=False):
         """
 
         :param str directory: The directory of movie folders to get posters for.
-        :param list data_files: A list of metadata files to get poster URL metadata from.
+        :param str metadata_filename: The metadata file to get the poster URL from.
         :param bool verbose: Whether or not to activate verbose mode.
         :return: None
 
         4. Download the movie poster and name the file poster.<extension>
         (where <extension> is the original extension of the poster file)
         """
-        contents_file = data_files[0]
+        contents_file = metadata_filename[0]
         PosterFinder(directory=directory, contents_file=contents_file, verbose=verbose)
 
-    def get_subtitles(self, directory, data_files, language="en", verbose=False):
+    def get_subtitles(self, directory, metadata_filename, language="en", verbose=False):
         """
 
         :param str directory: The directory of movie folders to get subtitles for.
-        :param list data_files: A list of metadata files to get movie paths from.
+        :param str metadata_filename: The metadata file to get movie paths from.
         :param str language: The two-character language code for the subtitle language to retrieve.
         :param bool verbose: Whether or not to activate verbose mode.
         :return: None
 
         5. Download the movie subtitles and name the file <language>_subtitles.srt
         """
-        contents_file = data_files[0]
+        contents_file = metadata_filename[0]
         SubtitleFinder(
             directory=directory,
             contents_file=contents_file,
@@ -127,5 +135,7 @@ if __name__ == "__main__":
     directory = os.path.join(os.getcwd(), "input")
     directory = os.path.join("H:", "tosort", "input")
     MovieFileFixer(
-        directory=directory, data_files=["contents.json", "errors.json"], verbose=False
+        directory=directory,
+        metadata_filename=["contents.json", "errors.json"],
+        verbose=False,
     )

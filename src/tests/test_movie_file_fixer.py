@@ -1,6 +1,5 @@
 import os
 import shutil
-import builtins
 from unittest import mock, TestCase
 from unittest.mock import patch
 
@@ -111,7 +110,7 @@ class FolderizerTestCase(TestCase):
     def test_find_single_files(self):
         """Ensure all single files that were created were found."""
         for single_file in self.single_files:
-            if single_file not in blockbuster.DATA_FILES:
+            if single_file not in blockbuster.METADATA_FILENAMES:
                 filename, extension = os.path.splitext(single_file)
                 filename_is_in_list = utils.is_in_list(
                     element=filename, the_list=self.example_titles
@@ -135,11 +134,11 @@ class FolderizerTestCase(TestCase):
 
     @patch(f"{module_under_test}.Folderizer._find_single_files")
     @patch(f"{module_under_test}.Folderizer._move_files_into_folders")
-    def test_folderize(self, _find_single_files, _move_files_into_folders):
+    def test_folderize(self, find_single_files_method, move_files_into_folders_method):
         """Ensure all internal methods got called when the folderize() method was called."""
         self.folderizer.folderize()
-        _find_single_files.assert_called_once()
-        _move_files_into_folders.assert_called_once()
+        find_single_files_method.assert_called_once()
+        move_files_into_folders_method.assert_called_once()
 
     def test_unfolderize(self):
         """Ensure all files inside a given directory get unfolderized."""
@@ -226,9 +225,74 @@ class FileRemoverTestCase(TestCase):
         self.mock_print_patch.stop()
 
     def test_remove_files(self):
+        """Ensure all files with `bad_extensions` are removed."""
         self.file_remover.remove_files()
         for root, dirs, files in os.walk(self.test_folder):
             for file in files:
                 filename, extension = os.path.splitext(file)
                 self.assertIn(extension, self.good_file_extensions)
                 self.assertNotIn(extension, self.bad_file_extensions)
+
+
+class FormatterTestCase(TestCase):
+    def setUp(self):
+        # To suppress the stdout by having verbose=True on Formatter instantiation:
+        self.mock_print_patch = mock.patch("builtins.print")
+        self.mock_print = self.mock_print_patch.start()
+
+        test_environment = blockbuster.BlockBusterBuilder(
+            level="pg-13",
+            test_folder=blockbuster.TEST_INPUT_FOLDER,
+            use_extensions=False,
+        )
+        self.test_folder, self.example_titles = (
+            test_environment.create_single_file_environment()
+        )
+        self.formatter = movie_file_fixer.Formatter(
+            directory=blockbuster.TEST_INPUT_FOLDER, verbose=True
+        )
+
+    def tearDown(self):
+        shutil.rmtree(self.test_folder)
+        self.mock_print_patch.stop()
+
+    @patch(f"{module_under_test}.Formatter._get_release_year")
+    @patch(f"{module_under_test}.Formatter._search")
+    def test_search_by_search_terms(self, get_release_year_method, search_method):
+        """Ensure searching by some search terms calls the `_get_release_year()` and `_search()` methods."""
+        call_counter = 0
+        for example_title in self.example_titles:
+            for original_filename, metadata in example_title.items():
+                search_terms = original_filename
+                self.formatter.search_by_search_terms(search_terms=search_terms)
+                call_counter += 1
+        self.assertEqual(get_release_year_method.call_count, call_counter)
+        self.assertEqual(search_method.call_count, call_counter)
+
+    @patch(f"{module_under_test}.Formatter._search")
+    def test_search_by_imdb_id(self, search_method):
+        """Ensure searching by an IMDb ID calls the `_get_release_year()` and `_search()` methods."""
+        call_counter = 0
+        for example_title in self.example_titles:
+            for original_filename, metadata in example_title.items():
+                imdb_id = metadata["imdb_id"]
+                self.formatter.search_by_imdb_id(imdb_id=imdb_id)
+                call_counter += 1
+        self.assertEqual(search_method.call_count, call_counter)
+
+    @patch(f"{module_under_test}.Formatter._get_release_year")
+    @patch(f"{module_under_test}.Formatter._search")
+    def test_search_by_title(self, get_release_year_method, search_method):
+        """Ensure searching by a title calls the `_get_release_year()` and `_search()` methods."""
+        call_counter = 0
+        for example_title in self.example_titles:
+            for original_filename, metadata in example_title.items():
+                title = metadata["title"]
+                self.formatter.search_by_title(title=title)
+                call_counter += 1
+        self.assertEqual(get_release_year_method.call_count, call_counter)
+        self.assertEqual(search_method.call_count, call_counter)
+
+    def test_format(self):
+        """Ensure formatting happens as expected."""
+        pass
