@@ -1,3 +1,4 @@
+import json
 import os
 import shutil
 from unittest import mock, TestCase
@@ -110,7 +111,7 @@ class FolderizerTestCase(TestCase):
     def test_find_single_files(self):
         """Ensure all single files that were created were found."""
         for single_file in self.single_files:
-            if single_file not in blockbuster.METADATA_FILENAMES:
+            if single_file != blockbuster.METADATA_FILENAME:
                 filename, extension = os.path.splitext(single_file)
                 filename_is_in_list = utils.is_in_list(
                     element=filename, the_list=self.example_titles
@@ -237,29 +238,346 @@ class FileRemoverTestCase(TestCase):
 class FormatterTestCase(TestCase):
     def setUp(self):
         # To suppress the stdout by having verbose=True on Formatter instantiation:
-        self.mock_print_patch = mock.patch("builtins.print")
-        self.mock_print = self.mock_print_patch.start()
+        # self.mock_print_patch = mock.patch("builtins.print")
+        # self.mock_print = self.mock_print_patch.start()
 
+        self.file_extensions = ["file"]
         test_environment = blockbuster.BlockBusterBuilder(
             level="pg-13",
             test_folder=blockbuster.TEST_INPUT_FOLDER,
-            use_extensions=False,
+            file_extensions=self.file_extensions,
+            use_extensions=True,
         )
         self.test_folder, self.example_titles = (
-            test_environment.create_single_file_environment()
+            test_environment.create_folderized_environment()
         )
         self.formatter = movie_file_fixer.Formatter(
-            directory=blockbuster.TEST_INPUT_FOLDER, verbose=True
+            directory=blockbuster.TEST_INPUT_FOLDER,
+            metadata_filename=blockbuster.METADATA_FILENAME,
+            verbose=True,
         )
 
     def tearDown(self):
         shutil.rmtree(self.test_folder)
-        self.mock_print_patch.stop()
+        # self.mock_print_patch.stop()
+
+    def test_initialize_metadata_file_if_nonexistent(self):
+        """Ensures metadata file is created and initialized if non-existent."""
+        metadata_filepath = os.path.join(
+            self.test_folder, blockbuster.METADATA_FILENAME
+        )
+
+        # Ensure the file doesn't already exist in the test folder:
+        if os.path.exists(metadata_filepath):
+            os.remove(metadata_filepath)
+
+        # Ensure there is no metadata file:
+        self.assertFalse(os.path.exists(metadata_filepath))
+
+        # Now, this should create a new metadata file:
+        metadata_file = self.formatter._initialize_metadata_file()
+
+        # So let's ensure that that is indeed created:
+        self.assertTrue(os.path.exists(metadata_filepath))
+
+        # and that it's a new metadata file (all lists should be empty:
+        empty_list = []
+        test_titles = metadata_file.get("Titles")
+        test_metadata = metadata_file.get("Metadata")
+        test_errors = metadata_file.get("Errors")
+        self.assertListEqual(test_titles, empty_list)
+        self.assertListEqual(test_metadata, empty_list)
+        self.assertListEqual(test_errors, empty_list)
+
+    def test_initialize_metadata_file_if_existent(self):
+        """Ensures metadata file is initialized if it does exist."""
+        metadata_filepath = os.path.join(
+            self.test_folder, blockbuster.METADATA_FILENAME
+        )
+
+        # Ensure the file doesn't already exist in the test folder:
+        if os.path.exists(metadata_filepath):
+            os.remove(metadata_filepath)
+
+        # Ensure there is no metadata file:
+        self.assertFalse(os.path.exists(metadata_filepath))
+
+        # Now, let's create a file with some fake "pre-existing" contents:
+        fake_titles = fake.words()
+        fake_metadata = fake.words()
+        fake_errors = fake.words()
+        metadata = {
+            "Titles": fake_titles,
+            "Metadata": fake_metadata,
+            "Errors": fake_errors,
+        }
+        with open(os.path.join(metadata_filepath), mode="w") as outfile:
+            json.dump(metadata, outfile, indent=4)
+
+        # Ensure this file does indeed exist now:
+        self.assertTrue(os.path.exists(metadata_filepath))
+
+        # Now, this should not create a new one:
+        metadata_file = self.formatter._initialize_metadata_file()
+
+        # So let's ensure the file was initialized correctly:
+        test_titles = metadata_file.get("Titles")
+        test_metadata = metadata_file.get("Metadata")
+        test_errors = metadata_file.get("Errors")
+        self.assertListEqual(test_titles, fake_titles)
+        self.assertListEqual(test_metadata, fake_metadata)
+        self.assertListEqual(test_errors, fake_errors)
+
+    def test_write_metadata_using_correct_content_key(self):
+        """Ensure `_write_metadata()` method writes data to metadata file as expected if correct `content_key` is used."""
+        content_keys = ["Titles", "Metadata", "Errors"]
+        content = {content_key: [] for content_key in content_keys}
+
+        for content_key in content_keys:
+            # Create some fake data:
+            fake_key = fake.word()
+            fake_value = fake.word()
+            fake_data = {fake_key: fake_value}
+            # and keep track of that fake data:
+            content[content_key].append(fake_data)
+            self.formatter._write_metadata(
+                new_content=fake_data, content_key=content_key
+            )
+
+        metadata_file = self.formatter._initialize_metadata_file()
+
+        # Ensure all the data is congruent:
+        for content_key in content_keys:
+            self.assertEqual(metadata_file.get(content_key), content.get(content_key))
+
+    def test_write_metadata_using_incorrect_content_key_raises_keyerror_exception(self):
+        """Ensure `_write_metadata()` method raises KeyError exception if incorrect `content_key` is used."""
+        fake_content_key = fake.word()
+
+        try:
+            fake_key = fake.word()
+            fake_value = fake.word()
+            fake_data = {fake_key: fake_value}
+            self.formatter._write_metadata(
+                new_content=fake_data, content_key=fake_content_key
+            )
+        except Exception as error:
+            self.assertIsInstance(error, KeyError)
+
+    def test_write_metadata_using_incorrect_content_key_writes_nothing(self):
+        """Ensure `_write_metadata()` method raises KeyError exception if incorrect `content_key` is used."""
+        content_keys = ["Titles", "Metadata", "Errors"]
+
+        fake_content_key = fake.word()
+        fake_key = fake.word()
+        fake_value = fake.word()
+        fake_data = {fake_key: fake_value}
+
+        try:
+            self.formatter._write_metadata(
+                new_content=fake_data, content_key=fake_content_key
+            )
+        except Exception as error:
+            self.assertIsInstance(error, KeyError)
+
+        metadata_file = self.formatter._initialize_metadata_file()
+
+        for content_key in content_keys:
+            self.assertNotEqual(metadata_file.get(content_key), fake_data)
+
+    def test_strip_punctuation(self):
+        """Ensures all punctuation that might confused the search method are stripped from the given phrase."""
+        # Punctuation characters that confuse the search method:
+        punctuation_characters = ".-_"
+        # Convert the random phrase string to a list to do insertions (without any initial punctuation:
+        random_phrase = " ".join(fake.words())
+        random_phrase_list = list(random_phrase)
+
+        print("random_phrase (before):", random_phrase)
+        # Put a random punctuation character in place of every space
+        for i in range(len(random_phrase_list) - 1):
+            if random_phrase_list[i] == " ":
+                # Choose a random punctuation character:
+                random_punctuation_character_index = fake.pyint(
+                    min_value=0, max_value=len(punctuation_characters) - 1
+                )
+                random_punctuation_character = punctuation_characters[
+                    random_punctuation_character_index
+                ]
+                random_phrase_list[i] = random_punctuation_character
+
+        test_punctuated_phrase = "".join(random_phrase_list)
+
+        print("random_phrase (after):", test_punctuated_phrase)
+
+        test_depunctuated_phrase = self.formatter._strip_punctuation(
+            phrase=test_punctuated_phrase
+        )
+
+        print("random_phrase (fixed):", test_depunctuated_phrase)
+
+        self.assertEqual(test_depunctuated_phrase, random_phrase)
+
+    def test_get_release_year(self):
+        """Ensure release year can be found."""
+        release_year = fake.year()
+        random_text = fake.sentence()
+        more_random_text = fake.sentence()
+        search_terms = " ".join([random_text, release_year, more_random_text])
+
+        test_release_year = self.formatter._get_release_year(search_terms=search_terms)
+
+        self.assertEqual(release_year, test_release_year)
+
+    @patch(f"omdb.Api.search")
+    def test_search(self, omdb_search_method):
+        """Ensure that the `omdb.Api.search()` method is called when `formatter._search()` is called."""
+
+        search_terms = fake.sentence()
+        imdb_id = fake.word()
+        title = fake.sentence()
+        result_type = fake.word()
+        release_year = fake.year()
+        plot = fake.word()
+        page = fake.pyint()
+        callback = fake.url()
+        season = fake.pyint()
+        episode = fake.pyint()
+
+        self.formatter._search(
+            search_terms=search_terms,
+            imdb_id=imdb_id,
+            title=title,
+            result_type=result_type,
+            release_year=release_year,
+            plot=plot,
+            page=page,
+            callback=callback,
+            season=season,
+            episode=episode,
+        )
+
+        omdb_search_method.assert_called_once()
+
+    def test_strip_illegal_characters(self):
+        """Ensures all characters that aren't allowed in files or folders are stripped from the given phrase."""
+        # Characters that are not allowed when creating a file or folder:
+        illegal_characters = '\\/:*?"<>|'
+        # Convert the random phrase string to a list to do insertions:
+        random_phrase = fake.sentence()
+        random_phrase_list = list(random_phrase)
+        # How many illegal characters we will be inserting into the random phrase:
+        iterations = fake.pyint(min_value=0, max_value=len(random_phrase) - 1)
+
+        print("random_phrase (before):", random_phrase)
+        # For a random number of iterations (up to a max of the length of the random phrase):
+        for i in range(iterations):
+            # Choose a random illegal_character:
+            random_illegal_character_index = fake.pyint(
+                min_value=0, max_value=len(illegal_characters) - 1
+            )
+            random_illegal_character = illegal_characters[
+                random_illegal_character_index
+            ]
+
+            # and a random index to place the illegal character:
+            random_index = fake.pyint(
+                min_value=0, max_value=len(random_phrase_list) - 1
+            )
+            random_phrase_list.insert(random_index, random_illegal_character)
+
+        test_illegal_phrase = "".join(random_phrase_list)
+
+        print("random_phrase (after):", test_illegal_phrase)
+
+        test_legalized_phrase = self.formatter._strip_illegal_characters(
+            phrase=test_illegal_phrase
+        )
+
+        print("random_phrase (fixed):", test_legalized_phrase)
+
+        self.assertEqual(test_legalized_phrase, random_phrase)
+
+    def test_rename_file_without_recursion(self):
+        """Ensure files are being renamed appropriately."""
+        fake_new_filenames = []
+        original_filenames = []
+
+        # Rename all the files in the `test_folder`:
+        for root, dirs, files in os.walk(self.test_folder):
+            for file in files:
+                # Keep track of the original filenames:
+                original_filenames.append(file)
+
+                # Create a fake new filename:
+                fake_new_filename = fake.word()
+                # and keep track of those fake new filenames:
+                fake_new_filenames.append(fake_new_filename)
+                # Rename that file!
+                self.formatter._rename_file(
+                    current_filepath=root,
+                    original_filename=file,
+                    proposed_new_filename=fake_new_filename,
+                )
+
+        # Now let's check that all the files were renamed:
+        for root, dirs, files in os.walk(self.test_folder):
+            for file in files:
+                filename, extension = os.path.splitext(file)
+                # They should exist in the fake new filenames list:
+                self.assertIn(filename, fake_new_filenames)
+                # and not in the original filenames list:
+                self.assertNotIn(filename, original_filenames)
+
+    def test_rename_file_with_recursion(self):
+        """Ensure files are being renamed appropriately if more than one file with that filename exists."""
+        fake_new_filenames = []
+        original_filenames = []
+
+        # This time, we'll use the same fake new filename for all the files
+        # to test the recursive renaming functionality:
+        fake_new_filename = fake.word()
+        counter = 1
+
+        # Rename all the files in the `test_folder`:
+        for root, dirs, files in os.walk(self.test_folder):
+            for file in files:
+                # Keep track of the original filenames:
+                original_filenames.append(file)
+
+                # and keep track of those fake new filenames:
+                fake_new_filename_to_append = (
+                    "_".join([fake_new_filename, str(counter)])
+                    if counter > 1
+                    else fake_new_filename
+                )
+                counter += 1
+                fake_new_filenames.append(fake_new_filename_to_append)
+                # Rename that file!
+                self.formatter._rename_file(
+                    current_filepath=root,
+                    original_filename=file,
+                    proposed_new_filename=fake_new_filename,
+                )
+
+        # Now let's check that all the files were renamed:
+        for root, dirs, files in os.walk(self.test_folder):
+            for file in files:
+                filename, extension = os.path.splitext(file)
+                # They should exist in the fake new filenames list:
+                self.assertIn(filename, fake_new_filenames)
+                # and not in the original filenames list:
+                self.assertNotIn(filename, original_filenames)
 
     @patch(f"{module_under_test}.Formatter._get_release_year")
     @patch(f"{module_under_test}.Formatter._search")
-    def test_search_by_search_terms(self, get_release_year_method, search_method):
-        """Ensure searching by some search terms calls the `_get_release_year()` and `_search()` methods."""
+    def test_search_by_search_terms_without_release_year(
+        self, search_method, get_release_year_method
+    ):
+        """
+
+        Ensure searching by some `search_terms` without the `release_year` calls the `_get_release_year()` and `_search()` methods.
+        """
         call_counter = 0
         for example_title in self.example_titles:
             for original_filename, metadata in example_title.items():
@@ -269,9 +587,30 @@ class FormatterTestCase(TestCase):
         self.assertEqual(get_release_year_method.call_count, call_counter)
         self.assertEqual(search_method.call_count, call_counter)
 
+    @patch(f"{module_under_test}.Formatter._get_release_year")
+    @patch(f"{module_under_test}.Formatter._search")
+    def test_search_by_search_terms_with_release_year(
+        self, search_method, get_release_year_method
+    ):
+        """
+
+        Ensure searching by some `search_terms` with the `release_year` calls the `_search()` method, but not the `_get_release_year()` method.
+        """
+        call_counter = 0
+        for example_title in self.example_titles:
+            for original_filename, metadata in example_title.items():
+                search_terms = original_filename
+                release_year = fake.year()
+                self.formatter.search_by_search_terms(
+                    search_terms=search_terms, release_year=release_year
+                )
+                call_counter += 1
+        get_release_year_method.assert_not_called()
+        self.assertEqual(search_method.call_count, call_counter)
+
     @patch(f"{module_under_test}.Formatter._search")
     def test_search_by_imdb_id(self, search_method):
-        """Ensure searching by an IMDb ID calls the `_get_release_year()` and `_search()` methods."""
+        """Ensure searching by an IMDb ID calls the `_search()` method."""
         call_counter = 0
         for example_title in self.example_titles:
             for original_filename, metadata in example_title.items():
@@ -282,8 +621,13 @@ class FormatterTestCase(TestCase):
 
     @patch(f"{module_under_test}.Formatter._get_release_year")
     @patch(f"{module_under_test}.Formatter._search")
-    def test_search_by_title(self, get_release_year_method, search_method):
-        """Ensure searching by a title calls the `_get_release_year()` and `_search()` methods."""
+    def test_search_by_title_without_release_year(
+        self, search_method, get_release_year_method
+    ):
+        """
+
+        Ensure searching by a title without the `release_year` calls the `_get_release_year()` and `_search()` methods.
+        """
         call_counter = 0
         for example_title in self.example_titles:
             for original_filename, metadata in example_title.items():
@@ -293,6 +637,82 @@ class FormatterTestCase(TestCase):
         self.assertEqual(get_release_year_method.call_count, call_counter)
         self.assertEqual(search_method.call_count, call_counter)
 
-    def test_format(self):
-        """Ensure formatting happens as expected."""
-        pass
+    @patch(f"{module_under_test}.Formatter._get_release_year")
+    @patch(f"{module_under_test}.Formatter._search")
+    def test_search_by_title_with_release_year(
+        self, search_method, get_release_year_method
+    ):
+        """
+
+        Ensure searching by a title with the `release_year` calls the `_search()` method, but not the `_get_release_year()` method.
+        """
+        call_counter = 0
+        for example_title in self.example_titles:
+            for original_filename, metadata in example_title.items():
+                title = metadata["title"]
+                release_year = fake.year()
+                self.formatter.search_by_title(title=title, release_year=release_year)
+                call_counter += 1
+        get_release_year_method.assert_not_called()
+        self.assertEqual(search_method.call_count, call_counter)
+
+    # def test_format_creates_correct_files_and_folders(self):
+    #     """Ensure formatting happens as expected, given a directory of poorly formatted title folders with files."""
+    #     self.formatter.format()
+    #
+    #     root_directory = self.test_folder
+    #
+    #     for example_title in self.example_titles:
+    #         for original_filename, metadata in example_title.items():
+    #             # Original file should no longer exist:
+    #             original_folder_path = os.path.join(root_directory, original_filename)
+    #             self.assertFalse(os.path.exists(original_folder_path))
+    #             formatted_filename = f"{metadata.get('title')} [{metadata.get('release_year')}]"
+    #             formatted_folder_path = os.path.join(root_directory, formatted_filename)
+    #             # Check that all the file extensions are formatted:
+    #             for file_extension in self.file_extensions:
+    #                 formatted_filename_with_extension = formatted_filename + file_extension
+    #                 formatted_filepath = os.path.join(formatted_folder_path, formatted_filename_with_extension)
+    #                 bad_filepath = os.path.join(original_folder_path, formatted_filename_with_extension)
+    #                 self.assertFalse(os.path.exists(bad_filepath))
+    #                 self.assertTrue(os.path.exists(formatted_filepath))
+    #
+    # def test_format_writes_correct_metadata(self):
+    #     """Ensure `format()` writes the correct metadata to the metadata file."""
+    #     self.formatter.format()
+    #
+    #     title_data = {}
+    #     metadata_data = {}
+    #
+    #     metadata_file = self.formatter._initialize_metadata_file()
+    #     for title in metadata_file.get('Titles'):
+    #         title_data[title.get('imdb_id')] = {
+    #             'original_filename': title.get('original_filename'),
+    #             'imdb_id': title.get('imdb_id'),
+    #             'title': title.get('title'),
+    #         }
+    #
+    #     for metadata in metadata_file.get('Metadata'):
+    #         metadata_data[metadata.get('imdb_id')] = {
+    #             'title': metadata.get('Title'),
+    #             'release_year': metadata.get('Year'),
+    #             'imdb_id': metadata.get('imdbID'),
+    #         }
+    #
+    #     for example_title in self.example_titles:
+    #         for original_filename, metadata in example_title.items():
+    #             title = metadata.get('title')
+    #             imdb_id = metadata.get('imdb_id')
+    #             release_year = metadata.get('release_year')
+    #
+    #             # First check Titles:
+    #             title_data_object = title_data[imdb_id]
+    #             self.assertEqual(original_filename, title_data_object.get('original_filename'))
+    #             self.assertEqual(imdb_id, title_data_object.get('imdb_id'))
+    #             self.assertEqual(f"{title} [{release_year}]", title_data_object.get('title'))
+    #
+    #             # Then check Metadata:
+    #             metadata_data_object = metadata_data[imdb_id]
+    #             self.assertEqual(title, metadata_data_object.get('title'))
+    #             self.assertEqual(release_year, metadata_data_object.get('release_year'))
+    #             self.assertEqual(imdb_id, metadata_data_object.get('imdb_id'))

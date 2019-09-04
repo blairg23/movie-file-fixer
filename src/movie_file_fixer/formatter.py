@@ -9,6 +9,8 @@ import json
 import os
 import re
 
+from fuzzywuzzy import fuzz
+
 import omdb
 
 
@@ -77,7 +79,7 @@ class Formatter:
 
         if self._verbose:
             print(
-                f"[{self._action_counter}] [WRITING METADATA] to [FILE] {metadata_filename}\n"
+                f'[{self._action_counter}] [WRITING METADATA] to [FILE] "{metadata_filename}"\n'
             )
             self._action_counter += 1
 
@@ -85,12 +87,33 @@ class Formatter:
         with open(os.path.join(directory, metadata_filename), mode="r") as infile:
             # Load existing data into titles index list:
             contents_file = json.load(infile)
-        # Open file for writing:
-        with open(os.path.join(directory, metadata_filename), mode="w") as outfile:
-            # Append the new data to the titles index list:
-            contents_file[content_key].append(new_content)
-            # Write that updated list to the existing file:
-            json.dump(contents_file, outfile, indent=4)
+
+        # Check that the `content_key` exists:
+        if contents_file.get(content_key) is not None:
+            # Open file for writing:
+            with open(os.path.join(directory, metadata_filename), mode="w") as outfile:
+                # Append the new data to the titles index list:
+                contents_file[content_key].append(new_content)
+                # Write that updated list to the existing file:
+                json.dump(contents_file, outfile, indent=4)
+        else:
+            raise KeyError(content_key)
+
+    def _strip_punctuation(self, phrase):
+        """
+
+        :param str phrase: The phrase to strip punctuation from.
+        :return str: The original phrase, stripped of punctuation.
+
+        Strips the given phrase of random punctuation that can confuse the search method.
+        """
+        if self._verbose:
+            print(
+                f'[{self._action_counter}] [STRIPPING PUNCTUATION CHARACTERS] from [PHRASE] "{phrase}"\n'
+            )
+            self._action_counter += 1
+
+        return re.sub(r"[^\$#! | ^\w\d'\s]+", " ", phrase).replace("_", " ").strip()
 
     def _get_release_year(self, search_terms):
         """
@@ -108,11 +131,15 @@ class Formatter:
             )
             self._action_counter += 1
 
-        year_candidate_list = re.findall(r"\d{4}", search_terms)  # Find all possible "release year" candidates
+        year_candidate_list = re.findall(
+            r"\d{4}", search_terms
+        )  # Find all possible "release year" candidates
 
         if len(year_candidate_list) > 0:  # If we found any results:
             if self._verbose:
-                print(f"[FOUND {len(year_candidate_list)} RELEASE YEAR CANDIDATES: {year_candidate_list}]")
+                print(
+                    f"[FOUND {len(year_candidate_list)} RELEASE YEAR CANDIDATES: {year_candidate_list}]"
+                )
 
             for year in year_candidate_list:
                 # Typically, we don't deal with movies before the 1900's
@@ -124,7 +151,9 @@ class Formatter:
             # Make sure there is still at least one candidate
             if len(year_candidate_list) > 0:
                 # Add only the last one as that is the most likely candidate of a real candidate (files don't typically start with the release year)
-                release_year = year_candidate_list[-1]  # This will also be the only candidate if there is only one candidate.
+                release_year = year_candidate_list[
+                    -1
+                ]  # This will also be the only candidate if there is only one candidate.
 
                 if self._verbose:
                     print(f"[FOUND RELEASE YEAR: {release_year}]\n")
@@ -133,18 +162,6 @@ class Formatter:
                     print("[DID NOT FIND RELEASE YEAR]\n")
 
         return release_year
-
-    def _strip_illegal_characters(self, title):
-        """
-
-        :param str title: The title to strip illegal characters from.
-        :return str: The original title, stripped of illegal character.
-
-        Strips the given title of any characters that aren't allowed in folder/file names.
-        """
-        # TODO: Add functionality
-
-        return title
 
     def _search(
         self,
@@ -212,6 +229,8 @@ class Formatter:
         if omdb_response.status_code == 200:
             json_response = omdb_response.json()
             if json_response.get("Response") == "True":
+                response = json_response
+
                 if self._verbose:
                     total_results = (
                         json_response.get("titleResults")
@@ -219,20 +238,90 @@ class Formatter:
                         else 1
                     )
                     title_text = "TITLES" if total_results > 1 else "TITLE"
+
                     print(
                         f"[FOUND {total_results} {title_text}]\n{json.dumps(json_response, indent=4)}\n"
                     )
-                response = json_response
 
         return response
 
-    def search_by_search_terms(self, search_terms):
+    def _strip_illegal_characters(self, phrase):
+        """
+
+        :param str phrase: The phrase to strip illegal characters from.
+        :return str: The original phrase, stripped of illegal characters.
+
+        Strips the given phrase of any characters that aren't allowed in folder/file names.
+        """
+        if self._verbose:
+            print(
+                f'[{self._action_counter}] [STRIPPING ILLEGAL CHARACTERS] from [PHRASE] "{phrase}"\n'
+            )
+            self._action_counter += 1
+
+        return re.sub(r'[(<>:"/\\|?*)]', "", phrase)
+
+    def _rename_file(
+        self, current_filepath, original_filename, proposed_new_filename, counter=2
+    ):
+        """
+
+        :param current_filepath: The filepath containing the file to be renamed.
+        :param original_filename: The original filename of the file to rename.
+        :param proposed_new_filename: The proposed new filename to name the file.
+        :param counter: A counter to augment the filename if the file already exists.
+        :return: None
+        """
+        old_filepath = os.path.join(current_filepath, original_filename)
+        old_filename, extension = os.path.splitext(original_filename)
+        new_filename = proposed_new_filename + extension
+        new_filepath = os.path.join(current_filepath, new_filename)
+
+        # Check if the file already exists and recursively rename the file if it does:
+        if os.path.exists(new_filepath):
+            if self._verbose:
+                print(
+                    f'[{self._action_counter}] [ERROR] in [FILEPATH] "{new_filepath}" exists.'
+                )
+                self._action_counter += 1
+            # In case the conflicting filename is one we've dealt with before:
+            original_new_filename = proposed_new_filename.split("_")[0]
+            proposed_new_filename = "_".join([original_new_filename, str(counter)])
+            # and try again!
+            if self._verbose:
+                print(
+                    f'[{self._action_counter}] [RETRYING] with [FILENAME] "{proposed_new_filename}"'
+                )
+                self._action_counter += 1
+            self._rename_file(
+                current_filepath=current_filepath,
+                original_filename=original_filename,
+                proposed_new_filename=proposed_new_filename,
+                counter=counter + 1,
+            )
+        else:
+            os.rename(old_filepath, new_filepath)
+            if self._verbose:
+                print(
+                    f'[{self._action_counter}] [RENAMING] from [FILEPATH] "{old_filepath}" to [FILEPATH] "{new_filepath}"\n'
+                )
+                self._action_counter += 1
+
+    def search_by_search_terms(self, search_terms, release_year=None):
         """
 
         :param str search_terms: Criteria to search by.
+        :param str release_year: Optional release year to make the search more specific.
         :return json: An OMDb API response containing IMDb objects that match the search criteria.
         """
-        release_year = self._get_release_year(search_terms=search_terms)
+        if self._verbose:
+            print(
+                f'[{self._action_counter}] [SEARCHING] by [SEARCH TERMS] "{search_terms}" and [RELEASE YEAR] "{release_year}"\n'
+            )
+            self._action_counter += 1
+
+        if release_year is None:
+            release_year = self._get_release_year(search_terms=search_terms)
 
         return self._search(search_terms=search_terms, release_year=release_year)
 
@@ -242,30 +331,86 @@ class Formatter:
         :param str imdb_id: IMDb ID to search by.
         :return json: An OMDb API response containing IMDb objects that match the search criteria.
         """
+        if self._verbose:
+            print(f'[{self._action_counter}] [SEARCHING] by [IMDB ID] "{imdb_id}"\n')
+            self._action_counter += 1
+
         return self._search(imdb_id=imdb_id)
 
-    def search_by_title(self, title):
+    def search_by_title(self, title, release_year=None):
         """
 
         :param str title: Title to search by.
+        :param str release_year: Optional release year to make the search more specific.
         :return json: An OMDb API response containing IMDb objects that match the search criteria.
         """
-        release_year = self._get_release_year(search_terms=title)
+        if self._verbose:
+            print(
+                f'[{self._action_counter}] [SEARCHING] by [TITLE] "{title}" and [RELEASE YEAR] "{release_year}"\n'
+            )
+            self._action_counter += 1
+
+        if release_year is None:
+            release_year = self._get_release_year(search_terms=title)
 
         return self._search(title=title, release_year=release_year)
+
+    def fuzzy_search(self, search_phrase, release_year):
+        """
+
+        :param str search_phrase: Query phrase to search by.
+        :param str release_year: Optional release year to make the search more specific.
+        :return json: An OMDb API response containing the most probable IMDb object that matches the search criteria.
+
+        Performs fuzzy search over the 2 primary search methods' results to find the exact match.
+        """
+        if release_year is None:
+            release_year = self._get_release_year(search_terms=search_phrase)
+
+        results = []
+
+        search_response = self.search_by_search_terms(
+            search_terms=search_phrase, release_year=release_year
+        )
 
     def format(self, directory=None, metadata_filename=None):
         """
 
-        :param str directory: The directory containing movie titles to format.
+        :param str directory: The directory containing IMDb titles to format.
         :param str metadata_filename: The metadata filename.
-        :return:
+        :return: None
 
-        Formats every folder/filename in the given directory according to the movie title closest to the folder/filename.
+        Formats every folder/filename in the given directory according to the IMDb title closest to the folder/filename.
         """
 
-        # TODO: Add functionality
-        pass
+        if self._verbose:
+            print(
+                f'[{self._action_counter}] [FORMATTING] folders in [DIRECTORY] "{directory}"\n'
+            )
+            self._action_counter += 1
+
+        for title in os.listdir(directory):
+            if self._verbose:
+                print(f'[{self._action_counter}] [FORMATTING] [FOLDER] "{title}"\n')
+                self._action_counter += 1
+
+            # Let's not process the metadata file or duplicate our work:
+            if str(title) not in metadata_filename and title not in [
+                entry.get("title") for entry in self._metadata.get("Titles")
+            ]:
+                # Prepare the title by stripping the punctuation:
+                new_title = self._strip_punctuation(phrase=title)
+
+                # Limit the size of the new title to a maximum of X words (reducing this number increases recursion depth)
+                max_number_of_words = 9
+
+                if len(new_title.split(" ")) > max_number_of_words:
+                    new_title = " ".join(new_title.split(" ")[0:max_number_of_words])
+
+                # Retrieve the release year to increase dependability of search query results:
+                release_year = self._get_release_year(search_terms=new_title)
+                if release_year is not None:
+                    new_title = new_title.replace(release_year, "").strip()
 
 
 if __name__ == "__main__":

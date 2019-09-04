@@ -8,7 +8,7 @@ import os
 
 TEST_FOLDER = os.path.join("src", "tests")
 TEST_INPUT_FOLDER = os.path.join(TEST_FOLDER, "test_input")
-METADATA_FILENAMES = ["contents.json", "errors.json"]
+METADATA_FILENAME = "metadata.json"
 
 TEST_TITLES = {
     "pg-13": os.path.join(TEST_FOLDER, "test_examples", "test_titles.json"),
@@ -94,11 +94,14 @@ class BlockBusterBuilder:
                 example_release_year = example["release_year"]
 
                 # Create a folder with the example title if folderized is True:
-                filename = (
-                    os.path.join(self._test_folder, example_filename, example_filename)
-                    if folderized
-                    else os.path.join(self._test_folder, example_filename)
-                )
+                if folderized:
+                    os.makedirs(os.path.join(self._test_folder, example_filename))
+                    filename = os.path.join(
+                        self._test_folder, example_filename, example_filename
+                    )
+                else:
+                    filename = os.path.join(self._test_folder, example_filename)
+
                 if use_extensions:
                     for extension in file_extensions:
                         new_filename = (
