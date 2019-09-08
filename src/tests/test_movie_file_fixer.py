@@ -282,9 +282,9 @@ class FormatterTestCase(TestCase):
 
         # and that it's a new metadata file (all lists should be empty:
         empty_list = []
-        test_titles = metadata_file.get("Titles")
-        test_metadata = metadata_file.get("Metadata")
-        test_errors = metadata_file.get("Errors")
+        test_titles = metadata_file.get("titles")
+        test_metadata = metadata_file.get("metadata")
+        test_errors = metadata_file.get("errors")
         self.assertListEqual(test_titles, empty_list)
         self.assertListEqual(test_metadata, empty_list)
         self.assertListEqual(test_errors, empty_list)
@@ -307,9 +307,9 @@ class FormatterTestCase(TestCase):
         fake_metadata = fake.words()
         fake_errors = fake.words()
         metadata = {
-            "Titles": fake_titles,
-            "Metadata": fake_metadata,
-            "Errors": fake_errors,
+            "titles": fake_titles,
+            "metadata": fake_metadata,
+            "errors": fake_errors,
         }
         with open(os.path.join(metadata_filepath), mode="w") as outfile:
             json.dump(metadata, outfile, indent=4)
@@ -321,69 +321,12 @@ class FormatterTestCase(TestCase):
         metadata_file = self.formatter._initialize_metadata_file()
 
         # So let's ensure the file was initialized correctly:
-        test_titles = metadata_file.get("Titles")
-        test_metadata = metadata_file.get("Metadata")
-        test_errors = metadata_file.get("Errors")
+        test_titles = metadata_file.get("titles")
+        test_metadata = metadata_file.get("metadata")
+        test_errors = metadata_file.get("errors")
         self.assertListEqual(test_titles, fake_titles)
         self.assertListEqual(test_metadata, fake_metadata)
         self.assertListEqual(test_errors, fake_errors)
-
-    def test_write_metadata_using_correct_content_key(self):
-        """Ensure `_write_metadata()` method writes data to metadata file as expected if correct `content_key` is used."""
-        content_keys = ["Titles", "Metadata", "Errors"]
-        content = {content_key: [] for content_key in content_keys}
-
-        for content_key in content_keys:
-            # Create some fake data:
-            fake_key = fake.word()
-            fake_value = fake.word()
-            fake_data = {fake_key: fake_value}
-            # and keep track of that fake data:
-            content[content_key].append(fake_data)
-            self.formatter._write_metadata(
-                new_content=fake_data, content_key=content_key
-            )
-
-        metadata_file = self.formatter._initialize_metadata_file()
-
-        # Ensure all the data is congruent:
-        for content_key in content_keys:
-            self.assertEqual(metadata_file.get(content_key), content.get(content_key))
-
-    def test_write_metadata_using_incorrect_content_key_raises_keyerror_exception(self):
-        """Ensure `_write_metadata()` method raises KeyError exception if incorrect `content_key` is used."""
-        fake_content_key = fake.word()
-
-        try:
-            fake_key = fake.word()
-            fake_value = fake.word()
-            fake_data = {fake_key: fake_value}
-            self.formatter._write_metadata(
-                new_content=fake_data, content_key=fake_content_key
-            )
-        except Exception as error:
-            self.assertIsInstance(error, KeyError)
-
-    def test_write_metadata_using_incorrect_content_key_writes_nothing(self):
-        """Ensure `_write_metadata()` method raises KeyError exception if incorrect `content_key` is used."""
-        content_keys = ["Titles", "Metadata", "Errors"]
-
-        fake_content_key = fake.word()
-        fake_key = fake.word()
-        fake_value = fake.word()
-        fake_data = {fake_key: fake_value}
-
-        try:
-            self.formatter._write_metadata(
-                new_content=fake_data, content_key=fake_content_key
-            )
-        except Exception as error:
-            self.assertIsInstance(error, KeyError)
-
-        metadata_file = self.formatter._initialize_metadata_file()
-
-        for content_key in content_keys:
-            self.assertNotEqual(metadata_file.get(content_key), fake_data)
 
     def test_strip_punctuation(self):
         """Ensures all punctuation that might confused the search method are stripped from the given phrase."""
@@ -429,6 +372,33 @@ class FormatterTestCase(TestCase):
 
         self.assertEqual(release_year, test_release_year)
 
+    def test_get_clean_title_candidate_and_release_year_with_example_titles(self):
+        """Ensure title and release year can be found, given real world example titles."""
+        for example_title in self.example_titles:
+            for original_filename, metadata in example_title.items():
+                title = metadata.get('title')
+                # Punctuation-free title, safe for searching
+                search_safe_title = self.formatter._strip_punctuation(phrase=title)
+                # Original (pre-formatted) file names all start as "file safe", meaning they don't contain illegal characters:
+                file_safe_title = self.formatter._strip_illegal_characters(phrase=search_safe_title)
+                release_year = metadata.get('release_year')
+                clean_title_candidate, test_release_year = self.formatter._get_clean_title_candidate_and_release_year(search_terms=original_filename)
+                self.assertIn(file_safe_title, clean_title_candidate)
+                if test_release_year is not None:
+                    self.assertEqual(test_release_year, release_year)
+
+    def test_get_clean_title_candidate_and_release_year_with_contrived_title_and_release_year(self):
+        """Ensure title and release year can be found, given a contrived example title and release year."""
+        fake_title = " ".join(fake.words())
+        fake_title_list = fake_title.split()
+        fake_release_year = fake.year()
+        fake_title_list.extend([fake_release_year, '1080', '720', '480'])
+        fake_search_terms = ".".join(fake_title_list)
+        test_title_candidate, test_release_year = self.formatter._get_clean_title_candidate_and_release_year(search_terms=fake_search_terms)
+
+        self.assertEqual(test_title_candidate, fake_title)
+        self.assertEqual(test_release_year, fake_release_year)
+
     @patch(f"omdb.Api.search")
     def test_search(self, omdb_search_method):
         """Ensure that the `omdb.Api.search()` method is called when `formatter._search()` is called."""
@@ -458,6 +428,73 @@ class FormatterTestCase(TestCase):
         )
 
         omdb_search_method.assert_called_once()
+
+    # TODO: Write this test.
+    def test_fuzzy_search(self):
+        """"""
+        pass
+
+    def test_write_metadata_using_correct_content_key(self):
+        """Ensure `_write_metadata()` method writes data to metadata file as expected if correct `content_key` is used."""
+        content_keys = ["titles", "metadata", "errors"]
+        content = {content_key: [] for content_key in content_keys}
+
+        for content_key in content_keys:
+            # Create some fake data:
+            fake_key = fake.word()
+            fake_value = fake.word()
+            fake_data = {fake_key: fake_value}
+            # and keep track of that fake data:
+            content[content_key].append(fake_data)
+            self.formatter._write_metadata(
+                new_content=fake_data, content_key=content_key
+            )
+
+        metadata_file = self.formatter._initialize_metadata_file()
+
+        # Ensure all the data is congruent:
+        for content_key in content_keys:
+            self.assertEqual(metadata_file.get(content_key), content.get(content_key))
+
+    def test_write_metadata_using_incorrect_content_key_raises_keyerror_exception(self):
+        """Ensure `_write_metadata()` method raises KeyError exception if incorrect `content_key` is used."""
+        fake_content_key = fake.word()
+
+        try:
+            fake_key = fake.word()
+            fake_value = fake.word()
+            fake_data = {fake_key: fake_value}
+            self.formatter._write_metadata(
+                new_content=fake_data, content_key=fake_content_key
+            )
+        except Exception as error:
+            self.assertIsInstance(error, KeyError)
+
+    def test_write_metadata_using_incorrect_content_key_writes_nothing(self):
+        """Ensure `_write_metadata()` method raises KeyError exception if incorrect `content_key` is used."""
+        content_keys = ["titles", "metadata", "errors"]
+
+        fake_content_key = fake.word()
+        fake_key = fake.word()
+        fake_value = fake.word()
+        fake_data = {fake_key: fake_value}
+
+        try:
+            self.formatter._write_metadata(
+                new_content=fake_data, content_key=fake_content_key
+            )
+        except Exception as error:
+            self.assertIsInstance(error, KeyError)
+
+        metadata_file = self.formatter._initialize_metadata_file()
+
+        for content_key in content_keys:
+            self.assertNotEqual(metadata_file.get(content_key), fake_data)
+
+    # TODO: Write this test.
+    def test_write_all_metadata(self):
+        """"""
+        pass
 
     def test_strip_illegal_characters(self):
         """Ensures all characters that aren't allowed in files or folders are stripped from the given phrase."""
@@ -571,12 +608,11 @@ class FormatterTestCase(TestCase):
 
     @patch(f"{module_under_test}.Formatter._get_release_year")
     @patch(f"{module_under_test}.Formatter._search")
-    def test_search_by_search_terms_without_release_year(
-        self, search_method, get_release_year_method
-    ):
+    def test_search_by_search_terms_without_release_year(self, search_method, get_release_year_method):
         """
 
-        Ensure searching by some `search_terms` without the `release_year` calls the `_get_release_year()` and `_search()` methods.
+        Ensure searching by some `search_terms` without the `release_year`
+        calls the `_get_release_year()` and `_search()` methods.
         """
         call_counter = 0
         for example_title in self.example_titles:
@@ -589,12 +625,11 @@ class FormatterTestCase(TestCase):
 
     @patch(f"{module_under_test}.Formatter._get_release_year")
     @patch(f"{module_under_test}.Formatter._search")
-    def test_search_by_search_terms_with_release_year(
-        self, search_method, get_release_year_method
-    ):
+    def test_search_by_search_terms_with_release_year(self, search_method, get_release_year_method):
         """
 
-        Ensure searching by some `search_terms` with the `release_year` calls the `_search()` method, but not the `_get_release_year()` method.
+        Ensure searching by some `search_terms` with the `release_year` calls the `_search()`
+        method, but not the `_get_release_year()` method.
         """
         call_counter = 0
         for example_title in self.example_titles:
@@ -621,12 +656,11 @@ class FormatterTestCase(TestCase):
 
     @patch(f"{module_under_test}.Formatter._get_release_year")
     @patch(f"{module_under_test}.Formatter._search")
-    def test_search_by_title_without_release_year(
-        self, search_method, get_release_year_method
-    ):
+    def test_search_by_title_without_release_year(self, search_method, get_release_year_method):
         """
 
-        Ensure searching by a title without the `release_year` calls the `_get_release_year()` and `_search()` methods.
+        Ensure searching by a title without the `release_year` calls the `_get_release_year()`
+        and `_search()` methods.
         """
         call_counter = 0
         for example_title in self.example_titles:
@@ -639,12 +673,11 @@ class FormatterTestCase(TestCase):
 
     @patch(f"{module_under_test}.Formatter._get_release_year")
     @patch(f"{module_under_test}.Formatter._search")
-    def test_search_by_title_with_release_year(
-        self, search_method, get_release_year_method
-    ):
+    def test_search_by_title_with_release_year(self, search_method, get_release_year_method):
         """
 
-        Ensure searching by a title with the `release_year` calls the `_search()` method, but not the `_get_release_year()` method.
+        Ensure searching by a title with the `release_year` calls the `_search()` method,
+        but not the `_get_release_year()` method.
         """
         call_counter = 0
         for example_title in self.example_titles:
@@ -655,6 +688,11 @@ class FormatterTestCase(TestCase):
                 call_counter += 1
         get_release_year_method.assert_not_called()
         self.assertEqual(search_method.call_count, call_counter)
+
+    # TODO: Write this test.
+    def test_get_imdb_object(self):
+        """"""
+        pass
 
     # def test_format_creates_correct_files_and_folders(self):
     #     """Ensure formatting happens as expected, given a directory of poorly formatted title folders with files."""
@@ -685,14 +723,14 @@ class FormatterTestCase(TestCase):
     #     metadata_data = {}
     #
     #     metadata_file = self.formatter._initialize_metadata_file()
-    #     for title in metadata_file.get('Titles'):
+    #     for title in metadata_file.get('titles'):
     #         title_data[title.get('imdb_id')] = {
     #             'original_filename': title.get('original_filename'),
     #             'imdb_id': title.get('imdb_id'),
     #             'title': title.get('title'),
     #         }
     #
-    #     for metadata in metadata_file.get('Metadata'):
+    #     for metadata in metadata_file.get('metadata'):
     #         metadata_data[metadata.get('imdb_id')] = {
     #             'title': metadata.get('Title'),
     #             'release_year': metadata.get('Year'),
@@ -705,13 +743,13 @@ class FormatterTestCase(TestCase):
     #             imdb_id = metadata.get('imdb_id')
     #             release_year = metadata.get('release_year')
     #
-    #             # First check Titles:
+    #             # First check titles:
     #             title_data_object = title_data[imdb_id]
     #             self.assertEqual(original_filename, title_data_object.get('original_filename'))
     #             self.assertEqual(imdb_id, title_data_object.get('imdb_id'))
     #             self.assertEqual(f"{title} [{release_year}]", title_data_object.get('title'))
     #
-    #             # Then check Metadata:
+    #             # Then check metadata:
     #             metadata_data_object = metadata_data[imdb_id]
     #             self.assertEqual(title, metadata_data_object.get('title'))
     #             self.assertEqual(release_year, metadata_data_object.get('release_year'))

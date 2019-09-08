@@ -15,9 +15,7 @@ import omdb
 
 
 class Formatter:
-    def __init__(
-        self, directory=None, metadata_filename="metadata.json", verbose=False
-    ):
+    def __init__(self, directory=None, metadata_filename="metadata.json", verbose=False):
         self._directory = directory
         self._metadata_filename = metadata_filename
         self._verbose = verbose
@@ -45,7 +43,7 @@ class Formatter:
 
         # If we couldn't find a metadata file containing the table of contents, create a new one:
         if not os.path.exists(os.path.join(directory, metadata_filename)):
-            metadata = {"Titles": [], "Metadata": [], "Errors": []}
+            metadata = {"titles": [], "metadata": [], "errors": []}
             with open(os.path.join(directory, metadata_filename), mode="w") as outfile:
                 json.dump(metadata, outfile, indent=4)
         else:  # However, if it does exist,
@@ -56,48 +54,6 @@ class Formatter:
                 metadata = json.load(infile)
 
         return metadata
-
-    def _write_metadata(
-        self, new_content, content_key, directory=None, metadata_filename=None
-    ):
-        """
-
-        :param str directory: The directory containing the metadata file.
-        :param str metadata_filename: The metadata filename.
-        :param dict new_content: New content to write to the metadata file.
-        :return: None
-
-        Append new data to an existing JSON file that represents the content metadata of the given directory.
-
-        i.e., Movie title information or entire IMDb metadata relating to a particular title.
-        """
-        if directory is None:
-            directory = self._directory
-
-        if metadata_filename is None:
-            metadata_filename = self._metadata_filename
-
-        if self._verbose:
-            print(
-                f'[{self._action_counter}] [WRITING METADATA] to [FILE] "{metadata_filename}"\n'
-            )
-            self._action_counter += 1
-
-        # Open file for reading:
-        with open(os.path.join(directory, metadata_filename), mode="r") as infile:
-            # Load existing data into titles index list:
-            contents_file = json.load(infile)
-
-        # Check that the `content_key` exists:
-        if contents_file.get(content_key) is not None:
-            # Open file for writing:
-            with open(os.path.join(directory, metadata_filename), mode="w") as outfile:
-                # Append the new data to the titles index list:
-                contents_file[content_key].append(new_content)
-                # Write that updated list to the existing file:
-                json.dump(contents_file, outfile, indent=4)
-        else:
-            raise KeyError(content_key)
 
     def _strip_punctuation(self, phrase):
         """
@@ -113,7 +69,17 @@ class Formatter:
             )
             self._action_counter += 1
 
-        return re.sub(r"[^\$#! | ^\w\d'\s]+", " ", phrase).replace("_", " ").strip()
+        # Strip the phrase of any punctuation that isn't $, #, or !:
+        phrase_without_punctuation = re.sub(r"[^\$#!\* | ^\w\d'\s]+", " ", phrase).replace("_", " ")
+
+        # Strip whitespace on left and right side:
+        stripped_phrase_without_punctuation = phrase_without_punctuation.strip()
+
+        # Strip any duplicate whitespace in the middle by splitting, then rejoining on single spaces:
+        stripped_phrase_without_punctuation_or_duplicate_whitespace = " ".join(stripped_phrase_without_punctuation.split())
+
+        # Finally, return the lower-cased, stripped, and deduped phrase:
+        return stripped_phrase_without_punctuation_or_duplicate_whitespace.lower()
 
     def _get_release_year(self, search_terms):
         """
@@ -163,19 +129,31 @@ class Formatter:
 
         return release_year
 
-    def _search(
-        self,
-        search_terms=None,
-        imdb_id=None,
-        title=None,
-        result_type=None,
-        release_year=None,
-        plot="full",
-        page=None,
-        callback=None,
-        season=None,
-        episode=None,
-    ):
+    def _get_clean_title_candidate_and_release_year(self, search_terms):
+        """
+
+        :param str search_terms: The search terms to find the `title` and `release_year` in.
+        :return tuple: A tuple containing the subset of the `search_terms` which contains the title and the `release_year` extracted from the `search_terms`.
+
+        Given unformatted search terms, returns a title without punctuation and the release year.
+        """
+        # Prepare the title by stripping the punctuation:
+        stripped_search_terms = self._strip_punctuation(phrase=search_terms)
+        stripped_search_terms_list = stripped_search_terms.split(" ")
+        release_year = self._get_release_year(search_terms=stripped_search_terms)
+        if release_year is not None:
+            release_year_index = stripped_search_terms_list.index(release_year)
+            # If we found the release year, we know the text BEFORE that release year is the title:
+            title_words_list = stripped_search_terms_list[:release_year_index]
+        else:
+            # If not, then it's in this list somewhere:
+            title_words_list = stripped_search_terms_list
+
+        title = ' '.join(title_words_list)
+
+        return title, release_year
+
+    def _search(self, search_terms=None, imdb_id=None, title=None, result_type=None, release_year=None, plot="full", page=None, callback=None, season=None, episode=None):
         """
 
         :param str search_terms: Any search phrase that might identify a possible movie title. [optional]
@@ -245,6 +223,81 @@ class Formatter:
 
         return response
 
+    def _fuzzy_search(self, search_phrase, search_key, search_list):
+        """
+
+        :param str search_phrase: Query phrase to search by.
+        :param str search_key: The object key to check fuzziness with.
+        :param list search_list: List of IMDb objects to check the fuzziness of the `search_phrase` against.
+        :return json: An OMDb API response containing the most probable IMDb object that matches the search criteria.
+
+        Performs a fuzzy search over the given list of IMDb objects to find the best match.
+        """
+        pass
+
+    def _write_metadata(self, new_content, content_key, directory=None, metadata_filename=None):
+        """
+
+        :param str directory: The directory containing the metadata file.
+        :param str metadata_filename: The metadata filename.
+        :param dict new_content: New content to write to the metadata file.
+        :return: None
+
+        Append new data to an existing JSON file that represents the content metadata of the given directory.
+
+        i.e., Movie title information or entire IMDb metadata relating to a particular title.
+        """
+        if directory is None:
+            directory = self._directory
+
+        if metadata_filename is None:
+            metadata_filename = self._metadata_filename
+
+        if self._verbose:
+            print(
+                f'[{self._action_counter}] [WRITING METADATA] to [FILE] "{metadata_filename}"\n'
+            )
+            self._action_counter += 1
+
+        # Open file for reading:
+        with open(os.path.join(directory, metadata_filename), mode="r") as infile:
+            # Load existing data into titles index list:
+            contents_file = json.load(infile)
+
+        # Check that the `content_key` exists:
+        if contents_file.get(content_key) is not None:
+            # Open file for writing:
+            with open(os.path.join(directory, metadata_filename), mode="w") as outfile:
+                # Append the new data to the titles index list:
+                contents_file[content_key].append(new_content)
+                # Write that updated list to the existing file:
+                json.dump(contents_file, outfile, indent=4)
+        else:
+            raise KeyError(content_key)
+
+    def _write_all_metadata(self, imdb_object, original_filename, final_title, directory=None, metadata_filename=None):
+        """
+
+        :param dict imdb_object: An IMDb object to collect metadata from.
+        :param str original_filename: The original filename of the movie title prior to being formatted.
+        :param str final_title: The filename of the movie title after being formatted.
+        :return: None
+        """
+        if directory is None:
+            directory = self._directory
+
+        if metadata_filename is None:
+            metadata_filename = self._metadata_filename
+
+        title_metadata = {
+            "original_filename": original_filename,
+            'title': final_title,
+            'imdb_id': imdb_object.get('imdbID'),
+            'poster': imdb_object.get('Poster')
+        }
+        self._write_metadata(new_content=title_metadata, content_key='titles', directory=directory, metadata_filename=metadata_filename)
+        self._write_metadata(new_content=imdb_object, content_key='metadata', directory=directory, metadata_filename=metadata_filename)
+
     def _strip_illegal_characters(self, phrase):
         """
 
@@ -261,9 +314,7 @@ class Formatter:
 
         return re.sub(r'[(<>:"/\\|?*)]', "", phrase)
 
-    def _rename_file(
-        self, current_filepath, original_filename, proposed_new_filename, counter=2
-    ):
+    def _rename_file(self, current_filepath, original_filename, proposed_new_filename, counter=2):
         """
 
         :param current_filepath: The filepath containing the file to be renamed.
@@ -355,23 +406,21 @@ class Formatter:
 
         return self._search(title=title, release_year=release_year)
 
-    def fuzzy_search(self, search_phrase, release_year):
+    def get_imdb_object(self, search_phrase, release_year=None, run_number=0, max_recursion_depth=10):
         """
 
         :param str search_phrase: Query phrase to search by.
         :param str release_year: Optional release year to make the search more specific.
+        :param int run_number: The current run number when recursing.
+        :param int max_recursion_depth: The max number of runs to attempt during recursion.
         :return json: An OMDb API response containing the most probable IMDb object that matches the search criteria.
 
-        Performs fuzzy search over the 2 primary search methods' results to find the exact match.
+        Searches OMDb API for a list of IMDb objects closest to the given `title_candidate` and `release_year` and uses
+        Fuzzy Searching to find the best possible match from the list of results.
         """
-        if release_year is None:
-            release_year = self._get_release_year(search_terms=search_phrase)
-
-        results = []
-
-        search_response = self.search_by_search_terms(
-            search_terms=search_phrase, release_year=release_year
-        )
+        # TODO: Implement this functionality.
+        imdb_object = dict()
+        return imdb_object
 
     def format(self, directory=None, metadata_filename=None):
         """
@@ -395,22 +444,24 @@ class Formatter:
                 self._action_counter += 1
 
             # Let's not process the metadata file or duplicate our work:
-            if str(title) not in metadata_filename and title not in [
-                entry.get("title") for entry in self._metadata.get("Titles")
-            ]:
-                # Prepare the title by stripping the punctuation:
-                new_title = self._strip_punctuation(phrase=title)
-
-                # Limit the size of the new title to a maximum of X words (reducing this number increases recursion depth)
-                max_number_of_words = 9
-
-                if len(new_title.split(" ")) > max_number_of_words:
-                    new_title = " ".join(new_title.split(" ")[0:max_number_of_words])
-
+            if title not in metadata_filename and title not in [entry.get("title") for entry in self._metadata.get("titles")]:
                 # Retrieve the release year to increase dependability of search query results:
-                release_year = self._get_release_year(search_terms=new_title)
-                if release_year is not None:
-                    new_title = new_title.replace(release_year, "").strip()
+                title_candidate, release_year = self._get_clean_title_candidate_and_release_year(search_terms=title)
+                try:
+                    imdb_object = self.get_imdb_object(search_phrase=title_candidate, release_year=release_year)
+                    final_title = f"{imdb_object.get('Title')} [{imdb_object.get('Year')}]"
+                    final_title = self._strip_illegal_characters(phrase=final_title)
+                    self._write_all_metadata(imdb_object=imdb_object, original_filename=title, final_title=final_title)
+                    current_filepath = os.path.join(directory, title)
+                    self._rename_file(current_filepath=current_filepath, original_filename=title, proposed_new_filename=final_title)
+                except Exception as error:
+                    if self._verbose:
+                        print(f'[ERROR] No result for [FOLDER] "{title}"\n')
+
+                    error_data = {'original_filename': title, 'title_candidate': title_candidate}
+                    self._write_metadata(new_content=error_data, content_key='errors', directory=directory, metadata_filename=metadata_filename)
+
+
 
 
 if __name__ == "__main__":

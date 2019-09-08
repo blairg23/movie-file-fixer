@@ -28,6 +28,17 @@
     ]
   },
   {
+    "description": "Titles that don't contain release year.",
+    "examples": [
+      {
+        "original_filename": "Ordinary_Decent_Criminal.DVDRip_devilwarez.pl",
+        "imdb_id": "tt0160611",
+        "title": "Ordinary Decent Criminal",
+        "release_year": "2000"
+      }
+    ]
+  },
+  {
     "description": "Titles containing hyphens.",
     "examples": [
       {
@@ -217,7 +228,7 @@
       {
         "original_filename": "I Hope They Serve Beer In Hell [2009] DvDrip H.264 AAC",
         "imdb_id": "tt1220628",
-        "title": "I Hope They Server Beer in Hell",
+        "title": "I Hope They Serve Beer in Hell",
         "release_year": "2009"
       },
       {
