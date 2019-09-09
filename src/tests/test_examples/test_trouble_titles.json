@@ -46,6 +46,17 @@
     ]
   },
   {
+    "description": "Titles that don't contain release year.",
+    "examples": [
+      {
+        "original_filename": "Ordinary_Decent_Criminal.DVDRip_devilwarez.pl",
+        "imdb_id": "tt0160611",
+        "title": "Ordinary Decent Criminal",
+        "release_year": "2000"
+      }
+    ]
+  },
+  {
     "description": "Titles with colons in them.",
     "examples": [
       {

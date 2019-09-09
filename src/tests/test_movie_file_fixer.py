@@ -329,7 +329,12 @@ class FormatterTestCase(TestCase):
         self.assertListEqual(test_errors, fake_errors)
 
     def test_strip_punctuation(self):
-        """Ensures all punctuation that might confused the search method are stripped from the given phrase."""
+        """
+
+        Ensures all punctuation that might confused the search method are stripped
+        from the given phrase.
+        """
+
         # Punctuation characters that confuse the search method:
         punctuation_characters = ".-_"
         # Convert the random phrase string to a list to do insertions (without any initial punctuation:
@@ -396,7 +401,7 @@ class FormatterTestCase(TestCase):
         fake_search_terms = ".".join(fake_title_list)
         test_title_candidate, test_release_year = self.formatter._get_clean_title_candidate_and_release_year(search_terms=fake_search_terms)
 
-        self.assertEqual(test_title_candidate, fake_title)
+        self.assertEqual(test_title_candidate, fake_title.lower())
         self.assertEqual(test_release_year, fake_release_year)
 
     @patch(f"omdb.Api.search")
@@ -429,10 +434,76 @@ class FormatterTestCase(TestCase):
 
         omdb_search_method.assert_called_once()
 
-    # TODO: Write this test.
     def test_fuzzy_search(self):
-        """"""
-        pass
+        """Ensure fuzzy searching works as expected."""
+        fake_search_query = " ".join(fake.words())
+        fake_search_key = fake.word()
+        fake_result_key = fake.word()
+        fake_result_value = fake.word()
+
+        fake_search_list = [
+            {
+                fake_search_key: fake_search_query,
+                fake_result_key: fake_result_value
+            }
+        ]
+
+        # Create a bunch of extraneous bad matches to test against:
+        min_value = 1
+        max_value = 10
+        iterations = fake.pyint(min_value=min_value, max_value=max_value)
+        for iteration in range(min_value, iterations):
+            fake_random_words = " ".join(fake.words())
+            new_fake_result_value = fake.word()
+            fake_data = {
+                fake_search_key: fake_search_query + (fake_random_words * iteration),
+                fake_result_key: new_fake_result_value
+
+            }
+            fake_search_list.append(fake_data)
+
+        test_result_value = self.formatter._fuzzy_search(search_query=fake_search_query, search_key=fake_search_key, search_list=fake_search_list, result_key=fake_result_key)
+
+        self.assertEqual(test_result_value, fake_result_value)
+
+    def test_strip_illegal_characters(self):
+        """Ensures all characters that aren't allowed in files or folders are stripped from the given phrase."""
+        # Characters that are not allowed when creating a file or folder:
+        illegal_characters = '\\/:*?"<>|'
+        # Convert the random phrase string to a list to do insertions:
+        random_phrase = fake.sentence()
+        random_phrase_list = list(random_phrase)
+        # How many illegal characters we will be inserting into the random phrase:
+        iterations = fake.pyint(min_value=0, max_value=len(random_phrase) - 1)
+
+        print("random_phrase (before):", random_phrase)
+        # For a random number of iterations (up to a max of the length of the random phrase):
+        for i in range(iterations):
+            # Choose a random illegal_character:
+            random_illegal_character_index = fake.pyint(
+                min_value=0, max_value=len(illegal_characters) - 1
+            )
+            random_illegal_character = illegal_characters[
+                random_illegal_character_index
+            ]
+
+            # and a random index to place the illegal character:
+            random_index = fake.pyint(
+                min_value=0, max_value=len(random_phrase_list) - 1
+            )
+            random_phrase_list.insert(random_index, random_illegal_character)
+
+        test_illegal_phrase = "".join(random_phrase_list)
+
+        print("random_phrase (after):", test_illegal_phrase)
+
+        test_legalized_phrase = self.formatter._strip_illegal_characters(
+            phrase=test_illegal_phrase
+        )
+
+        print("random_phrase (fixed):", test_legalized_phrase)
+
+        self.assertEqual(test_legalized_phrase, random_phrase)
 
     def test_write_metadata_using_correct_content_key(self):
         """Ensure `_write_metadata()` method writes data to metadata file as expected if correct `content_key` is used."""
@@ -491,49 +562,29 @@ class FormatterTestCase(TestCase):
         for content_key in content_keys:
             self.assertNotEqual(metadata_file.get(content_key), fake_data)
 
-    # TODO: Write this test.
-    def test_write_all_metadata(self):
-        """"""
-        pass
+    @patch(f"{module_under_test}.Formatter._write_metadata")
+    def test_write_all_metadata(self, write_metadata_method):
+        """Ensure all metadata gets written as expected."""
+        fake_imdb_id = fake.word()
+        fake_poster = fake.url()
+        fake_imdb_object = {
+            'imdbID': fake_imdb_id,
+            'Poster': fake_poster,
+        }
+        fake_original_filename = " ".join(fake.words())
+        fake_final_title = " ".join(fake.words())
 
-    def test_strip_illegal_characters(self):
-        """Ensures all characters that aren't allowed in files or folders are stripped from the given phrase."""
-        # Characters that are not allowed when creating a file or folder:
-        illegal_characters = '\\/:*?"<>|'
-        # Convert the random phrase string to a list to do insertions:
-        random_phrase = fake.sentence()
-        random_phrase_list = list(random_phrase)
-        # How many illegal characters we will be inserting into the random phrase:
-        iterations = fake.pyint(min_value=0, max_value=len(random_phrase) - 1)
+        fake_title_metadata = {
+            "original_filename": fake_original_filename,
+            'title': fake_final_title,
+            'imdb_id': fake_imdb_id,
+            'poster': fake_poster
+        }
 
-        print("random_phrase (before):", random_phrase)
-        # For a random number of iterations (up to a max of the length of the random phrase):
-        for i in range(iterations):
-            # Choose a random illegal_character:
-            random_illegal_character_index = fake.pyint(
-                min_value=0, max_value=len(illegal_characters) - 1
-            )
-            random_illegal_character = illegal_characters[
-                random_illegal_character_index
-            ]
+        self.formatter._write_all_metadata(imdb_object=fake_imdb_object, original_filename=fake_original_filename, final_title=fake_final_title)
 
-            # and a random index to place the illegal character:
-            random_index = fake.pyint(
-                min_value=0, max_value=len(random_phrase_list) - 1
-            )
-            random_phrase_list.insert(random_index, random_illegal_character)
-
-        test_illegal_phrase = "".join(random_phrase_list)
-
-        print("random_phrase (after):", test_illegal_phrase)
-
-        test_legalized_phrase = self.formatter._strip_illegal_characters(
-            phrase=test_illegal_phrase
-        )
-
-        print("random_phrase (fixed):", test_legalized_phrase)
-
-        self.assertEqual(test_legalized_phrase, random_phrase)
+        write_metadata_method.assert_any_call(new_content=fake_title_metadata, content_key='titles', directory=blockbuster.TEST_INPUT_FOLDER, metadata_filename=blockbuster.METADATA_FILENAME)
+        write_metadata_method.assert_any_call(new_content=fake_imdb_object, content_key='metadata', directory=blockbuster.TEST_INPUT_FOLDER, metadata_filename=blockbuster.METADATA_FILENAME)
 
     def test_rename_file_without_recursion(self):
         """Ensure files are being renamed appropriately."""
@@ -605,6 +656,27 @@ class FormatterTestCase(TestCase):
                 self.assertIn(filename, fake_new_filenames)
                 # and not in the original filenames list:
                 self.assertNotIn(filename, original_filenames)
+
+    @patch(f"{module_under_test}.Formatter._rename_file")
+    def test_rename_folder_and_contents(self, rename_file_method):
+        """Ensure folders and their contents are renamed correctly."""
+        min_value = 0
+        max_value = 10
+        num_files = fake.pyint(min_value=min_value, max_value=max_value)
+        fake_folder_name = " ".join(fake.words())
+        fake_new_name = " ".join(fake.words())
+
+        # Create a fake folder:
+        fake_folder_path = os.path.join(self.test_folder, fake_folder_name)
+        os.makedirs(fake_folder_path)
+        # And fake files:
+        for i in range(num_files):
+            fake_filename = " ".join(fake.words())
+            fake_filepath = os.path.join(fake_folder_path, fake_filename)
+            open(fake_filepath, "a").close()
+
+        self.formatter._rename_folder_and_contents(directory=self.test_folder, original_name=fake_folder_name, new_name=fake_new_name)
+        self.assertEqual(rename_file_method.call_count, num_files)
 
     @patch(f"{module_under_test}.Formatter._get_release_year")
     @patch(f"{module_under_test}.Formatter._search")
@@ -690,8 +762,13 @@ class FormatterTestCase(TestCase):
         self.assertEqual(search_method.call_count, call_counter)
 
     # TODO: Write this test.
-    def test_get_imdb_object(self):
-        """"""
+    def test_get_imdb_object_by_search_query(self):
+        """Ensure that an IMDb object can be correctly retrieved, given a `search_query`"""
+        pass
+
+    # TODO: Write this test.
+    def test_get_imdb_object_by_imdb_id(self):
+        """Ensure that an IMDb object can be correctly retrieved, given an `imdb_id"""
         pass
 
     # def test_format_creates_correct_files_and_folders(self):

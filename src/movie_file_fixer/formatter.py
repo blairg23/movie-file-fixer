@@ -2,16 +2,15 @@
 """
 
 Description: Formats all the files and folders in a given directory based on their movie title
-and creates a title directory called "contents.json", which also contains poster information.
+and creates a title metadata file called "metadata.json", which also contains poster information.
 """
 
 import json
 import os
 import re
 
-from fuzzywuzzy import fuzz
-
 import omdb
+from fuzzywuzzy import process as fuzzywuzzy_process
 
 
 class Formatter:
@@ -35,6 +34,12 @@ class Formatter:
 
         Initialize some JSON files for containing formatting metadata and error logs.
         """
+        if self._verbose:
+            print(
+                f'[{self._action_counter}] [INITIALIZING METADATA FILE] "{metadata_filename}"\n'
+            )
+            self._action_counter += 1
+
         if directory is None:
             directory = self._directory
 
@@ -44,10 +49,17 @@ class Formatter:
         # If we couldn't find a metadata file containing the table of contents, create a new one:
         if not os.path.exists(os.path.join(directory, metadata_filename)):
             metadata = {"titles": [], "metadata": [], "errors": []}
+
+            if self._verbose:
+                print(f'[INITIALIZED] [NEW] [FILE] "{metadata_filename}" with [METADATA] "{metadata}"\n')
+
             with open(os.path.join(directory, metadata_filename), mode="w") as outfile:
                 json.dump(metadata, outfile, indent=4)
         else:  # However, if it does exist,
             # Let's keep track of the files we've already indexed, so we don't duplicate our work:
+            if self._verbose:
+                print(f'[LOADED] [EXISTING] [FILE] "{metadata_filename}"\n')
+
             with open(
                 os.path.join(directory, metadata_filename), encoding="UTF-8"
             ) as infile:
@@ -79,7 +91,12 @@ class Formatter:
         stripped_phrase_without_punctuation_or_duplicate_whitespace = " ".join(stripped_phrase_without_punctuation.split())
 
         # Finally, return the lower-cased, stripped, and deduped phrase:
-        return stripped_phrase_without_punctuation_or_duplicate_whitespace.lower()
+        final_phrase = stripped_phrase_without_punctuation_or_duplicate_whitespace.lower()
+
+        if self._verbose:
+            print(f'[PHRASE] is now "{final_phrase}"\n')
+
+        return final_phrase
 
     def _get_release_year(self, search_terms):
         """
@@ -104,7 +121,7 @@ class Formatter:
         if len(year_candidate_list) > 0:  # If we found any results:
             if self._verbose:
                 print(
-                    f"[FOUND {len(year_candidate_list)} RELEASE YEAR CANDIDATES: {year_candidate_list}]"
+                    f'[FOUND] {len(year_candidate_list)} [RELEASE YEAR CANDIDATES] "{year_candidate_list}"]\n'
                 )
 
             for year in year_candidate_list:
@@ -122,10 +139,10 @@ class Formatter:
                 ]  # This will also be the only candidate if there is only one candidate.
 
                 if self._verbose:
-                    print(f"[FOUND RELEASE YEAR: {release_year}]\n")
+                    print(f'[FOUND] [RELEASE YEAR] "{release_year}"\n')
             else:
                 if self._verbose:
-                    print("[DID NOT FIND RELEASE YEAR]\n")
+                    print("[DID NOT FIND] [RELEASE YEAR]\n")
 
         return release_year
 
@@ -137,6 +154,12 @@ class Formatter:
 
         Given unformatted search terms, returns a title without punctuation and the release year.
         """
+        if self._verbose:
+            print(
+                f'[{self._action_counter}] [FINDING CLEAN TITLE CANDIDATE] and [RELEASE YEAR] from [SEARCH TERMS] "{search_terms}"\n'
+            )
+            self._action_counter += 1
+
         # Prepare the title by stripping the punctuation:
         stripped_search_terms = self._strip_punctuation(phrase=search_terms)
         stripped_search_terms_list = stripped_search_terms.split(" ")
@@ -150,6 +173,9 @@ class Formatter:
             title_words_list = stripped_search_terms_list
 
         title = ' '.join(title_words_list)
+
+        if self._verbose:
+            print(f'[FOUND] [CLEAN TITLE CANDIDATE] "{title}" and [RELEASE YEAR] "{release_year}"\n')
 
         return title, release_year
 
@@ -223,17 +249,60 @@ class Formatter:
 
         return response
 
-    def _fuzzy_search(self, search_phrase, search_key, search_list):
+    def _fuzzy_search(self, search_query, search_key, search_list, result_key='imdbID'):
         """
 
-        :param str search_phrase: Query phrase to search by.
+        :param str search_query: Query phrase to search by.
         :param str search_key: The object key to check fuzziness with.
-        :param list search_list: List of IMDb objects to check the fuzziness of the `search_phrase` against.
-        :return json: An OMDb API response containing the most probable IMDb object that matches the search criteria.
+        :param list search_list: List of IMDb objects to check the fuzziness of the `search_query` against.
+        :param str result_key: The object key to use as the result value (usually the `imdbID`).
+        :return str: The value found at the `result_key` of the object that best matches the given search criteria.
 
-        Performs a fuzzy search over the given list of IMDb objects to find the best match.
+        Performs a fuzzy search over the given list of IMDb objects to find and return the best match as an IMDb object.
         """
-        pass
+        if self._verbose:
+            print(
+                f'[{self._action_counter}] [PERFORMING FUZZY SEARCH] on [SEARCH QUERY] "{search_query}" using [SEARCH KEY] "{search_key}" and returning the [RESULT KEY] "{result_key}"\n'
+            )
+            self._action_counter += 1
+
+        result_values = {}
+        for search_item in search_list:
+            title = search_item.get(search_key)
+            result_value = search_item.get(result_key)
+            result_values[title] = result_value
+
+        titles = result_values.keys()
+        fuzziness_ratios_list = fuzzywuzzy_process.extract(search_query, titles)
+        if self._verbose:
+            print(f'[FOUND] Each title, ordered by fuzziness ratio: {fuzziness_ratios_list}\n')
+
+        fuzziest_title = fuzzywuzzy_process.extractOne(search_query, titles)
+        if self._verbose:
+            print(f'[FOUND] The fuzziest title: "{fuzziest_title}"\n')
+
+        final_result_value = result_values.get(fuzziest_title[0])
+
+        if self._verbose:
+            print(f'[FOUND] [RESULT KEY] ({result_key}) "{final_result_value}"')
+
+        return final_result_value
+
+    def _strip_illegal_characters(self, phrase):
+        """
+
+        :param str phrase: The phrase to strip illegal characters from.
+        :return str: The original phrase, stripped of illegal characters.
+
+        Strips the given phrase of any characters that aren't allowed in folder/file names.
+        """
+        if self._verbose:
+            print(
+                f'[{self._action_counter}] [STRIPPING ILLEGAL CHARACTERS] from [PHRASE] "{phrase}"\n'
+            )
+            self._action_counter += 1
+
+        return re.sub(r'[(<>:"/\\|?*)]', "", phrase)
 
     def _write_metadata(self, new_content, content_key, directory=None, metadata_filename=None):
         """
@@ -255,7 +324,7 @@ class Formatter:
 
         if self._verbose:
             print(
-                f'[{self._action_counter}] [WRITING METADATA] to [FILE] "{metadata_filename}"\n'
+                f'[{self._action_counter}] [WRITING METADATA] for [CONTENT KEY] "{content_key}" to [FILE] "{metadata_filename}"\n'
             )
             self._action_counter += 1
 
@@ -289,6 +358,12 @@ class Formatter:
         if metadata_filename is None:
             metadata_filename = self._metadata_filename
 
+        if self._verbose:
+            print(
+                f'[{self._action_counter}] [WRITING ALL METADATA] for [TITLE] "{final_title}" to [FILE] "{metadata_filename}"\n'
+            )
+            self._action_counter += 1
+
         title_metadata = {
             "original_filename": original_filename,
             'title': final_title,
@@ -297,22 +372,6 @@ class Formatter:
         }
         self._write_metadata(new_content=title_metadata, content_key='titles', directory=directory, metadata_filename=metadata_filename)
         self._write_metadata(new_content=imdb_object, content_key='metadata', directory=directory, metadata_filename=metadata_filename)
-
-    def _strip_illegal_characters(self, phrase):
-        """
-
-        :param str phrase: The phrase to strip illegal characters from.
-        :return str: The original phrase, stripped of illegal characters.
-
-        Strips the given phrase of any characters that aren't allowed in folder/file names.
-        """
-        if self._verbose:
-            print(
-                f'[{self._action_counter}] [STRIPPING ILLEGAL CHARACTERS] from [PHRASE] "{phrase}"\n'
-            )
-            self._action_counter += 1
-
-        return re.sub(r'[(<>:"/\\|?*)]', "", phrase)
 
     def _rename_file(self, current_filepath, original_filename, proposed_new_filename, counter=2):
         """
@@ -323,6 +382,12 @@ class Formatter:
         :param counter: A counter to augment the filename if the file already exists.
         :return: None
         """
+        if self._verbose:
+            print(
+                f'[{self._action_counter}] [RENAMING] [ORIGINAL FILENAME] "{original_filename}" to [NEW FILENAME] "{proposed_new_filename}"'
+            )
+            self._action_counter += 1
+
         old_filepath = os.path.join(current_filepath, original_filename)
         old_filename, extension = os.path.splitext(original_filename)
         new_filename = proposed_new_filename + extension
@@ -332,18 +397,16 @@ class Formatter:
         if os.path.exists(new_filepath):
             if self._verbose:
                 print(
-                    f'[{self._action_counter}] [ERROR] in [FILEPATH] "{new_filepath}" exists.'
+                    f'[ERROR] [DUPLICATE] [FILEPATH] "{new_filepath}"'
                 )
-                self._action_counter += 1
             # In case the conflicting filename is one we've dealt with before:
             original_new_filename = proposed_new_filename.split("_")[0]
             proposed_new_filename = "_".join([original_new_filename, str(counter)])
             # and try again!
             if self._verbose:
                 print(
-                    f'[{self._action_counter}] [RETRYING] with [FILENAME] "{proposed_new_filename}"'
+                    f'[RETRYING] with [FILENAME] "{proposed_new_filename}"'
                 )
-                self._action_counter += 1
             self._rename_file(
                 current_filepath=current_filepath,
                 original_filename=original_filename,
@@ -354,9 +417,37 @@ class Formatter:
             os.rename(old_filepath, new_filepath)
             if self._verbose:
                 print(
-                    f'[{self._action_counter}] [RENAMING] from [FILEPATH] "{old_filepath}" to [FILEPATH] "{new_filepath}"\n'
+                    f'[RENAMING] from [FILEPATH] "{old_filepath}" to [FILEPATH] "{new_filepath}"\n'
                 )
-                self._action_counter += 1
+
+    def _rename_folder_and_contents(self, directory, original_name, new_name):
+        """
+
+        :param str directory: The directory containing the folder to be renamed.
+        :param str original_name: The original name of the folder to be renamed.
+        :param str new_name: The name to use to rename the folder and its contents.
+        :return: None
+        """
+        if directory is None:
+            directory = self._directory
+
+        if self._verbose:
+            print(
+                f'[{self._action_counter}] [RENAMING] [FOLDER NAME] "{original_name}" and [CONTENTS] to [NEW NAME] "{new_name}"\n'
+            )
+            self._action_counter += 1
+
+        # Rename the folder:
+        original_filepath = os.path.join(directory, original_name)
+        new_filepath = os.path.join(directory, new_name)
+        os.rename(src=original_filepath, dst=new_filepath)
+        if self._verbose:
+            print(f'[RENAMED] [FILEPATH] "{original_filepath}" to [FILEPATH] "{new_filepath}"')
+
+        # Rename the contents of the folder:
+        single_files = [file for file in os.listdir(new_filepath) if os.path.isfile(os.path.join(new_filepath, file))]
+        for single_file in single_files:
+            self._rename_file(current_filepath=new_filepath, original_filename=single_file, proposed_new_filename=new_name)
 
     def search_by_search_terms(self, search_terms, release_year=None):
         """
@@ -406,20 +497,67 @@ class Formatter:
 
         return self._search(title=title, release_year=release_year)
 
-    def get_imdb_object(self, search_phrase, release_year=None, run_number=0, max_recursion_depth=10):
+    def get_imdb_object(self, search_query, imdb_id=None, release_year=None, run_number=0, max_recursion_depth=10):
         """
 
-        :param str search_phrase: Query phrase to search by.
+        :param str search_query: Query phrase to search by.
+        :param str imdb_id: IMDb ID to search by.
         :param str release_year: Optional release year to make the search more specific.
         :param int run_number: The current run number when recursing.
         :param int max_recursion_depth: The max number of runs to attempt during recursion.
         :return json: An OMDb API response containing the most probable IMDb object that matches the search criteria.
 
-        Searches OMDb API for a list of IMDb objects closest to the given `title_candidate` and `release_year` and uses
+        Recursively searches OMDb API for a list of IMDb objects closest to the given `title_candidate` and `release_year` and uses
         Fuzzy Searching to find the best possible match from the list of results.
         """
-        # TODO: Implement this functionality.
-        imdb_object = dict()
+        # If the IMDb ID is provided, use it! It will be the most accurate result (assuming OMDb API doesn't fail)
+        if imdb_id is not None:
+            if self._verbose:
+                print(f'[{self._action_counter}] [FINDING IMDB OBJECT] from [IMDB ID] "{imdb_id}" [RUN {run_number}/{max_recursion_depth}]\n')
+                self._action_counter += 1
+
+            imdb_object = self.search_by_imdb_id(imdb_id=imdb_id)
+        else:
+            if self._verbose:
+                print(f'[{self._action_counter}] [FINDING IMDB OBJECT] from [SEARCH QUERY] "{search_query}" [RUN {run_number}/{max_recursion_depth}]\n')
+                self._action_counter += 1
+
+            result_candidates = []
+
+            # Try searching by title first, as it has the most accurate results (besides searching by IMDb ID)
+            search_by_title_response = self.search_by_title(title=search_query, release_year=release_year)
+            # If we found the title by searching by title:
+            if search_by_title_response.get('Response') == "True":
+                imdb_object = search_by_title_response
+            else:
+                # Then let's try searching by search terms:
+                search_by_search_terms_response = self.search_by_search_terms(search_terms=search_query, release_year=release_year)
+                # If that is successful,
+                if search_by_search_terms_response.get('Response') == "True":
+                    # then get all the objects from the search results:
+                    search_results = search_by_search_terms_response.get('Search')
+                    # Then add them all to the result candidates:
+                    for search_result in search_results:
+                        result_candidates.append(search_result)
+                    # Finally, do a Fuzzy Search over the result candidates to find the most probably result:
+                    imdb_id = self._fuzzy_search(search_query=search_query, search_key='Title', search_list=result_candidates, result_key='imdbID')
+                    imdb_object = self.get_imdb_object(search_query=None, imdb_id=imdb_id)
+                # If it was not successful, the search phrase might be malformed:
+                else:
+                    # Remove the last word from the title (usually it's a junk word that didn't get trimmed previously)
+                    search_query = " ".join(search_query.split()[:-1])
+                    if run_number < max_recursion_depth:
+                        if self._verbose:
+                            print(f'[NOT FOUND] [RETRYING] with [SEARCH QUERY] "{search_query}"')
+                        imdb_object = self.get_imdb_object(search_query=search_query, release_year=release_year, run_number=run_number + 1)
+                    else:
+                        raise Exception(f'[ERROR] Max recursion depth {max_recursion_depth} reached.')
+
+        # And finally, return the IMDb object:
+        if self._verbose:
+            imdb_object.get('imdbID')
+            print(f'[FOUND] IMDb object with [IMDB ID] {imdb_id}')
+
         return imdb_object
 
     def format(self, directory=None, metadata_filename=None):
@@ -434,7 +572,7 @@ class Formatter:
 
         if self._verbose:
             print(
-                f'[{self._action_counter}] [FORMATTING] folders in [DIRECTORY] "{directory}"\n'
+                f'[{self._action_counter}] [FORMATTING FOLDERS] in [DIRECTORY] "{directory}"\n'
             )
             self._action_counter += 1
 
@@ -448,15 +586,14 @@ class Formatter:
                 # Retrieve the release year to increase dependability of search query results:
                 title_candidate, release_year = self._get_clean_title_candidate_and_release_year(search_terms=title)
                 try:
-                    imdb_object = self.get_imdb_object(search_phrase=title_candidate, release_year=release_year)
+                    imdb_object = self.get_imdb_object(search_query=title_candidate, release_year=release_year)
                     final_title = f"{imdb_object.get('Title')} [{imdb_object.get('Year')}]"
                     final_title = self._strip_illegal_characters(phrase=final_title)
                     self._write_all_metadata(imdb_object=imdb_object, original_filename=title, final_title=final_title)
-                    current_filepath = os.path.join(directory, title)
-                    self._rename_file(current_filepath=current_filepath, original_filename=title, proposed_new_filename=final_title)
+                    self._rename_folder_and_contents(directory=directory, original_name=title, new_name=final_title)
                 except Exception as error:
                     if self._verbose:
-                        print(f'[ERROR] No result for [FOLDER] "{title}"\n')
+                        print(f'[ERROR] No result for [FOLDER] "{title}"\n[ERROR] {error}')
 
                     error_data = {'original_filename': title, 'title_candidate': title_candidate}
                     self._write_metadata(new_content=error_data, content_key='errors', directory=directory, metadata_filename=metadata_filename)
