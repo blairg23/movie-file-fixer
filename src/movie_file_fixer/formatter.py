@@ -107,6 +107,7 @@ class Formatter:
         Returns the best candidate for the release year for the given title by removing the improbable candidates.
         """
         release_year = None
+        found = False
 
         if self._verbose:
             print(
@@ -138,11 +139,18 @@ class Formatter:
                     -1
                 ]  # This will also be the only candidate if there is only one candidate.
 
+                found = True
+
                 if self._verbose:
                     print(f'[FOUND] [RELEASE YEAR] "{release_year}"\n')
             else:
-                if self._verbose:
-                    print("[DID NOT FIND] [RELEASE YEAR]\n")
+                found = False
+        else:
+            found = False
+
+        if not found:
+            if self._verbose:
+                print("[DID NOT FIND] [RELEASE YEAR]\n")
 
         return release_year
 

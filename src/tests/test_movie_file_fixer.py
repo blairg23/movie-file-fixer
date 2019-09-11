@@ -238,8 +238,8 @@ class FileRemoverTestCase(TestCase):
 class FormatterTestCase(TestCase):
     def setUp(self):
         # To suppress the stdout by having verbose=True on Formatter instantiation:
-        # self.mock_print_patch = mock.patch("builtins.print")
-        # self.mock_print = self.mock_print_patch.start()
+        self.mock_print_patch = mock.patch("builtins.print")
+        self.mock_print = self.mock_print_patch.start()
 
         self.file_extensions = ["file"]
         test_environment = blockbuster.BlockBusterBuilder(
@@ -259,7 +259,7 @@ class FormatterTestCase(TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.test_folder)
-        # self.mock_print_patch.stop()
+        self.mock_print_patch.stop()
 
     def test_initialize_metadata_file_if_nonexistent(self):
         """Ensures metadata file is created and initialized if non-existent."""
@@ -341,7 +341,6 @@ class FormatterTestCase(TestCase):
         random_phrase = " ".join(fake.words())
         random_phrase_list = list(random_phrase)
 
-        print("random_phrase (before):", random_phrase)
         # Put a random punctuation character in place of every space
         for i in range(len(random_phrase_list) - 1):
             if random_phrase_list[i] == " ":
@@ -356,17 +355,13 @@ class FormatterTestCase(TestCase):
 
         test_punctuated_phrase = "".join(random_phrase_list)
 
-        print("random_phrase (after):", test_punctuated_phrase)
-
         test_depunctuated_phrase = self.formatter._strip_punctuation(
             phrase=test_punctuated_phrase
         )
 
-        print("random_phrase (fixed):", test_depunctuated_phrase)
-
         self.assertEqual(test_depunctuated_phrase, random_phrase)
 
-    def test_get_release_year(self):
+    def test_get_release_year_from_search_terms_with_a_release_year(self):
         """Ensure release year can be found."""
         release_year = fake.year()
         random_text = fake.sentence()
@@ -376,6 +371,17 @@ class FormatterTestCase(TestCase):
         test_release_year = self.formatter._get_release_year(search_terms=search_terms)
 
         self.assertEqual(release_year, test_release_year)
+
+    def test_get_release_year_from_search_terms_without_a_release_year(self):
+        """Ensure release year can be found."""
+        release_year = None
+        random_text = fake.sentence()
+        more_random_text = fake.sentence()
+        search_terms = " ".join([random_text, more_random_text])
+
+        test_release_year = self.formatter._get_release_year(search_terms=search_terms)
+
+        self.assertEqual(test_release_year, release_year)
 
     def test_get_clean_title_candidate_and_release_year_with_example_titles(self):
         """Ensure title and release year can be found, given real world example titles."""
@@ -476,7 +482,6 @@ class FormatterTestCase(TestCase):
         # How many illegal characters we will be inserting into the random phrase:
         iterations = fake.pyint(min_value=0, max_value=len(random_phrase) - 1)
 
-        print("random_phrase (before):", random_phrase)
         # For a random number of iterations (up to a max of the length of the random phrase):
         for i in range(iterations):
             # Choose a random illegal_character:
@@ -495,13 +500,9 @@ class FormatterTestCase(TestCase):
 
         test_illegal_phrase = "".join(random_phrase_list)
 
-        print("random_phrase (after):", test_illegal_phrase)
-
         test_legalized_phrase = self.formatter._strip_illegal_characters(
             phrase=test_illegal_phrase
         )
-
-        print("random_phrase (fixed):", test_legalized_phrase)
 
         self.assertEqual(test_legalized_phrase, random_phrase)
 
