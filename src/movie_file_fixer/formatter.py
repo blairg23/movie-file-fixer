@@ -143,8 +143,6 @@ class Formatter:
 
                 if self._verbose:
                     print(f'[FOUND] [RELEASE YEAR] "{release_year}"\n')
-            else:
-                found = False
         else:
             found = False
 
@@ -240,31 +238,35 @@ class Formatter:
 
         if omdb_response.status_code == 200:
             json_response = omdb_response.json()
-            if json_response.get("Response") == "True":
-                response = json_response
+            response = json_response
 
+            if response.get("Response") == "True":
                 if self._verbose:
-                    total_results = (
-                        json_response.get("titleResults")
-                        if json_response.get("titleResults") is not None
-                        else 1
-                    )
-                    title_text = "TITLES" if total_results > 1 else "TITLE"
+                    total_results = json_response.get("totalResults", 1)
+                    title_text = "TITLES" if int(total_results) > 1 else "TITLE"
 
                     print(
                         f"[FOUND {total_results} {title_text}]\n{json.dumps(json_response, indent=4)}\n"
                     )
+            else:
+                if self._verbose:
+                    print(
+                        f'[DID NOT FIND] [TITLE] using [SEARCH CRITERIA] "{search_terms}"\n'
+                        f'[DID NOT FIND] [TITLE] using [IMDB ID] "{imdb_id}"\n'
+                        f'[DID NOT FIND] [TITLE] using [TITLE] "{title}"\n'
+                    )
 
         return response
 
-    def _fuzzy_search(self, search_query, search_key, search_list, result_key='imdbID'):
+    def _fuzzy_search(self, search_query, search_key, search_list, result_key='imdbID', result_type=None):
         """
 
         :param str search_query: Query phrase to search by.
         :param str search_key: The object key to check fuzziness with.
         :param list search_list: List of IMDb objects to check the fuzziness of the `search_query` against.
         :param str result_key: The object key to use as the result value (usually the `imdbID`).
-        :return str: The value found at the `result_key` of the object that best matches the given search criteria.
+        :param str result_type: Type of result to return. [optional]. Valid Options: [`movie`, `series`, `episode`]
+        :return tuple: A tuple containing the value found at the `result_key` of the object that best matches the given search criteria and the fuzziness score.
 
         Performs a fuzzy search over the given list of IMDb objects to find and return the best match as an IMDb object.
         """
@@ -276,9 +278,12 @@ class Formatter:
 
         result_values = {}
         for search_item in search_list:
-            title = search_item.get(search_key)
-            result_value = search_item.get(result_key)
-            result_values[title] = result_value
+            # Make sure our candidates are actually the type we want to search on (or that `result_type` wasn't provided)
+            # Also ensure it has a poster (missing poster is a sure sign of a bad result):
+            if (result_type is None or search_item.get('Type') == result_type) and search_item.get('Poster') != 'N/A':
+                title = search_item.get(search_key)
+                result_value = search_item.get(result_key)
+                result_values[title] = result_value
 
         titles = result_values.keys()
         fuzziness_ratios_list = fuzzywuzzy_process.extract(search_query, titles)
@@ -289,12 +294,14 @@ class Formatter:
         if self._verbose:
             print(f'[FOUND] The fuzziest title: "{fuzziest_title}"\n')
 
-        final_result_value = result_values.get(fuzziest_title[0])
+        fuzzy_title, fuzzy_score = fuzziest_title
+
+        final_result_value = result_values.get(fuzzy_title)
 
         if self._verbose:
             print(f'[FOUND] [RESULT KEY] ({result_key}) "{final_result_value}"')
 
-        return final_result_value
+        return final_result_value, fuzzy_score
 
     def _strip_illegal_characters(self, phrase):
         """
@@ -392,7 +399,7 @@ class Formatter:
         """
         if self._verbose:
             print(
-                f'[{self._action_counter}] [RENAMING] [ORIGINAL FILENAME] "{original_filename}" to [NEW FILENAME] "{proposed_new_filename}"'
+                f'[{self._action_counter}] [RENAMING] [ORIGINAL FILENAME] "{original_filename}" to [NEW FILENAME] "{proposed_new_filename}"\n'
             )
             self._action_counter += 1
 
@@ -450,7 +457,7 @@ class Formatter:
         new_filepath = os.path.join(directory, new_name)
         os.rename(src=original_filepath, dst=new_filepath)
         if self._verbose:
-            print(f'[RENAMED] [FILEPATH] "{original_filepath}" to [FILEPATH] "{new_filepath}"')
+            print(f'[RENAMED] [FILEPATH] "{original_filepath}" to [FILEPATH] "{new_filepath}"\n')
 
         # Rename the contents of the folder:
         single_files = [file for file in os.listdir(new_filepath) if os.path.isfile(os.path.join(new_filepath, file))]
@@ -505,78 +512,127 @@ class Formatter:
 
         return self._search(title=title, release_year=release_year)
 
-    def get_imdb_object(self, search_query, imdb_id=None, release_year=None, run_number=0, max_recursion_depth=10):
+    def get_imdb_object(self, search_query, imdb_id=None, release_year=None, result_type=None):
         """
 
         :param str search_query: Query phrase to search by.
         :param str imdb_id: IMDb ID to search by.
         :param str release_year: Optional release year to make the search more specific.
-        :param int run_number: The current run number when recursing.
-        :param int max_recursion_depth: The max number of runs to attempt during recursion.
+        :param str result_type: What type of IMDb object you want returned. Valid Options: [`movie`, `series`, `episode`]
         :return json: An OMDb API response containing the most probable IMDb object that matches the search criteria.
 
         Recursively searches OMDb API for a list of IMDb objects closest to the given `title_candidate` and `release_year` and uses
         Fuzzy Searching to find the best possible match from the list of results.
         """
+
         # If the IMDb ID is provided, use it! It will be the most accurate result (assuming OMDb API doesn't fail)
         if imdb_id is not None:
             if self._verbose:
-                print(f'[{self._action_counter}] [FINDING IMDB OBJECT] from [IMDB ID] "{imdb_id}" [RUN {run_number}/{max_recursion_depth}]\n')
+                print(f'[{self._action_counter}] [FINDING IMDB OBJECT] from [IMDB ID] "{imdb_id}"\n')
                 self._action_counter += 1
 
-            imdb_object = self.search_by_imdb_id(imdb_id=imdb_id)
+            # And finally, return the IMDb object:
+            if self._verbose:
+                print(f'[FOUND] IMDb object with [IMDB ID] {imdb_id}\n')
+
+            return self.search_by_imdb_id(imdb_id=imdb_id)
         else:
             if self._verbose:
-                print(f'[{self._action_counter}] [FINDING IMDB OBJECT] from [SEARCH QUERY] "{search_query}" [RUN {run_number}/{max_recursion_depth}]\n')
+                print(f'[{self._action_counter}] [FINDING IMDB OBJECT] from [SEARCH QUERY] "{search_query}"\n')
                 self._action_counter += 1
 
             result_candidates = []
+            original_search_query = search_query
+            first_known_valid_search_query = None
+            last_known_valid_search_query = None
 
-            # Try searching by title first, as it has the most accurate results (besides searching by IMDb ID)
-            search_by_title_response = self.search_by_title(title=search_query, release_year=release_year)
-            # If we found the title by searching by title:
-            if search_by_title_response.get('Response') == "True":
-                imdb_object = search_by_title_response
-            else:
-                # Then let's try searching by search terms:
+            while search_query:
+                if self._verbose:
+                    print(f'[GETTING RESULTS] for [SEARCH QUERY] "{search_query}"\n')
+                # Try searching by `title` first, as it has the most accurate results (besides searching by IMDb ID)
+                search_by_title_response = self.search_by_title(title=search_query, release_year=release_year)
+                # If we found the title by searching by title, let's add it to our candidates list:
+                if search_by_title_response.get('Response') == "True":
+                    # Keep a breadcrumb of the first `search_query` that got results:
+                    if last_known_valid_search_query is None:
+                        first_known_valid_search_query = search_query
+
+                    # Keep a breadcrumb of the last `search_query` that got results
+                    last_known_valid_search_query = search_query
+                    result_candidates.append(search_by_title_response)
+
+                # Now let's search by `search_terms` to get a larger candidate population to choose from:
                 search_by_search_terms_response = self.search_by_search_terms(search_terms=search_query, release_year=release_year)
                 # If that is successful,
                 if search_by_search_terms_response.get('Response') == "True":
+                    # Keep a breadcrumb of the first `search_query` that got results:
+                    if last_known_valid_search_query is None:
+                        first_known_valid_search_query = search_query
+
+                    # Keep a breadcrumb of the last `search_query` that got results
+                    last_known_valid_search_query = search_query
                     # then get all the objects from the search results:
-                    search_results = search_by_search_terms_response.get('Search')
+                    search_results = search_by_search_terms_response.get('Search', [])
                     # Then add them all to the result candidates:
                     for search_result in search_results:
                         result_candidates.append(search_result)
-                    # Finally, do a Fuzzy Search over the result candidates to find the most probably result:
-                    imdb_id = self._fuzzy_search(search_query=search_query, search_key='Title', search_list=result_candidates, result_key='imdbID')
-                    imdb_object = self.get_imdb_object(search_query=None, imdb_id=imdb_id)
-                # If it was not successful, the search phrase might be malformed:
-                else:
-                    # Remove the last word from the title (usually it's a junk word that didn't get trimmed previously)
-                    search_query = " ".join(search_query.split()[:-1])
-                    if run_number < max_recursion_depth:
-                        if self._verbose:
-                            print(f'[NOT FOUND] [RETRYING] with [SEARCH QUERY] "{search_query}"')
-                        imdb_object = self.get_imdb_object(search_query=search_query, release_year=release_year, run_number=run_number + 1)
-                    else:
-                        raise Exception(f'[ERROR] Max recursion depth {max_recursion_depth} reached.')
+                # If it was not successful, the search phrase might be malformed.
+                # Or the title is just a substring. Either way, let's drop one of the words from the end
+                # and try again!
+                # Remove the last word from the title (usually it's a junk word that didn't get trimmed previously)
+                search_query = " ".join(search_query.split()[:-1])
 
-        # And finally, return the IMDb object:
+        # If there are any result candidates, do a Fuzzy Search over them to find the most probably IMDb object to return:
+        fuzzy_scores = {}
+        imdb_id_candidates = {}
+        # The best `search_query` candidate will be either the original search query, the first valid one, or the last valid one:
+        search_query_candidates = [original_search_query, first_known_valid_search_query, last_known_valid_search_query]
         if self._verbose:
-            imdb_object.get('imdbID')
-            print(f'[FOUND] IMDb object with [IMDB ID] {imdb_id}')
+            print(f'[FOUND] [SEARCH QUERY CANDIDATES]\n')
+            print(f'[ORIGINAL SEARCH QUERY]: "{original_search_query}"\n')
+            print(f'[FIRST KNOWN VALID SEARCH QUERY]: "{first_known_valid_search_query}"\n')
+            print(f'[LAST KNOWN VALID SEARCH QUERY]: "{last_known_valid_search_query}"\n')
+        if result_candidates:
+            for search_query_candidate in search_query_candidates:
+                if search_query_candidate is not None:
+                    candidate_imdb_id, fuzzy_score = self._fuzzy_search(search_query=search_query_candidate, search_key='Title', search_list=result_candidates, result_key='imdbID', result_type=result_type)
+                    if fuzzy_score not in fuzzy_scores:
+                        fuzzy_scores[fuzzy_score] = []
+                    fuzzy_scores[fuzzy_score].append(candidate_imdb_id)
+                    imdb_id_candidates[search_query_candidate] = candidate_imdb_id
+            max_fuzzy_score = max(fuzzy_scores.keys())
+            imdb_ids = fuzzy_scores[max_fuzzy_score]
 
-        return imdb_object
+            if self._verbose:
+                print(f'[MAX FUZZY SCORE] "{max_fuzzy_score}" with [IMDB IDS] "{imdb_ids}"\n')
 
-    def format(self, directory=None, metadata_filename=None):
+            # If both search queries have the same fuzziness score,
+            if len(imdb_ids) > 1:
+                # Then the first valid query wins.
+                imdb_id = imdb_id_candidates[first_known_valid_search_query]
+            else:
+                imdb_id = imdb_ids[0]
+
+            if self._verbose:
+                print(f'[FOUND BEST MATCH] [IMDB ID] "{imdb_id}"')
+
+            return self.get_imdb_object(search_query='', imdb_id=imdb_id)
+
+    def format(self, directory=None, metadata_filename=None, result_type=None):
         """
 
         :param str directory: The directory containing IMDb titles to format.
         :param str metadata_filename: The metadata filename.
+        :param str result_type: What type of IMDb object you want returned. Valid Options: [`movie`, `series`, `episode`]
         :return: None
 
         Formats every folder/filename in the given directory according to the IMDb title closest to the folder/filename.
         """
+        if directory is None:
+            directory = self._directory
+
+        if metadata_filename is None:
+            metadata_filename = self._metadata_filename
 
         if self._verbose:
             print(
@@ -590,31 +646,28 @@ class Formatter:
                 self._action_counter += 1
 
             # Let's not process the metadata file or duplicate our work:
-            if title not in metadata_filename and title not in [entry.get("title") for entry in self._metadata.get("titles")]:
+            if str(title) not in metadata_filename and title not in [entry.get("title") for entry in self._metadata.get("titles")]:
                 # Retrieve the release year to increase dependability of search query results:
                 title_candidate, release_year = self._get_clean_title_candidate_and_release_year(search_terms=title)
                 try:
-                    imdb_object = self.get_imdb_object(search_query=title_candidate, release_year=release_year)
+                    imdb_object = self.get_imdb_object(search_query=title_candidate, release_year=release_year, result_type=result_type)
                     final_title = f"{imdb_object.get('Title')} [{imdb_object.get('Year')}]"
                     final_title = self._strip_illegal_characters(phrase=final_title)
                     self._write_all_metadata(imdb_object=imdb_object, original_filename=title, final_title=final_title)
                     self._rename_folder_and_contents(directory=directory, original_name=title, new_name=final_title)
                 except Exception as error:
                     if self._verbose:
-                        print(f'[ERROR] No result for [FOLDER] "{title}"\n[ERROR] {error}')
+                        print(f'[ERROR] No result for [FOLDER] "{title}"\n[ERROR] {error}\n')
 
                     error_data = {'original_filename': title, 'title_candidate': title_candidate}
                     self._write_metadata(new_content=error_data, content_key='errors', directory=directory, metadata_filename=metadata_filename)
 
-
-
-
-if __name__ == "__main__":
-    directory = r"C:\Users\Neophile\Desktop\sandboxes\python\movie-file-fixer\src\tests\test_input"
-    search_terms = "a beautiful mind"
-    imdb_id = "tt0268978"
-    title = "a beautiful mind"
-    formatter = Formatter(directory=directory, verbose=True)
-    formatter.search_by_search_terms(search_terms=search_terms)
-    formatter.search_by_imdb_id(imdb_id=imdb_id)
-    formatter.search_by_title(title=title)
+# if __name__ == "__main__":
+#     directory = r"C:\Users\Neophile\Desktop\sandboxes\python\movie-file-fixer\src\tests\test_input"
+#     search_terms = "a beautiful mind"
+#     imdb_id = "tt0268978"
+#     title = "a beautiful mind"
+#     formatter = Formatter(directory=directory, verbose=True)
+#     formatter.search_by_search_terms(search_terms=search_terms)
+#     formatter.search_by_imdb_id(imdb_id=imdb_id)
+#     formatter.search_by_title(title=title)

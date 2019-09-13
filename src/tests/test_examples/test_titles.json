@@ -1,18 +1,12 @@
 [
   {
-    "description": "Normal titles.",
+    "description": "Titles with duplicate results.",
     "examples": [
       {
         "original_filename": "The.Bay.2012.LiMiTED.BRRip.XviD.RoSubbed-playXD",
         "imdb_id": "tt1713476",
         "title": "The Bay",
         "release_year": "2012"
-      },
-      {
-        "original_filename": "Hansel.&.Gretel.Witch.Hunters.2013.DVDRip.XviD-P2P",
-        "imdb_id": "tt1428538",
-        "title": "Hansel & Gretel: Witch Hunters",
-        "release_year": "2013"
       }
     ]
   },
@@ -47,12 +41,6 @@
         "imdb_id": "tt0115683",
         "title": "Bio-Dome",
         "release_year": "1996"
-      },
-      {
-        "original_filename": "The.X-Files-Fight.the.Future[1998]DvDrip-aXXo",
-        "imdb_id": "tt0120902",
-        "title": "The X Files",
-        "release_year": "1998"
       }
     ]
   },
@@ -94,15 +82,21 @@
     "description": "Titles containing colons.",
     "examples": [
       {
+        "original_filename": "Hansel.&.Gretel.Witch.Hunters.2013.DVDRip.XviD-P2P",
+        "imdb_id": "tt1428538",
+        "title": "Hansel & Gretel Witch Hunters",
+        "release_year": "2013"
+      },
+      {
         "original_filename": "Avengers Age of Ultron (2015) [1080p]",
         "imdb_id": "tt2395427",
-        "title": "Avengers: Age of Ultron",
+        "title": "Avengers Age of Ultron",
         "release_year": "2015"
       },
       {
         "original_filename": "Sherlock Holmes A Game of Shadows (2011) DVDRip XviD-MAXSPEED",
         "imdb_id": "tt1515091",
-        "title": "Sherlock Holmes: A Game of Shadows",
+        "title": "Sherlock Holmes A Game of Shadows",
         "release_year": "2011"
       }
     ]
@@ -130,7 +124,7 @@
       {
         "original_filename": "What the #$! Do We (K)now!",
         "imdb_id": "tt0399877",
-        "title": "What the #$*! Do We (K)now!?",
+        "title": "What the #$! Do We Know!",
         "release_year": "2004"
       },
       {
@@ -225,6 +219,17 @@
         "imdb_id": "tt0120029",
         "title": "RocketMan",
         "release_year": "1997"
+      }
+    ]
+  },
+  {
+    "description": "Titles that contain more title than IMDb does.",
+    "examples": [
+      {
+        "original_filename": "The.X-Files-Fight.the.Future[1998]DvDrip-aXXo",
+        "imdb_id": "tt0120902",
+        "title": "The X Files",
+        "release_year": "1998"
       }
     ]
   }

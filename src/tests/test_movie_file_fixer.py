@@ -93,7 +93,7 @@ class FolderizerTestCase(TestCase):
         test_environment = blockbuster.BlockBusterBuilder(
             level="pg-13",
             test_folder=blockbuster.TEST_INPUT_FOLDER,
-            file_extensions=["file"],
+            file_extensions=[".file"],
             use_extensions=True,
         )
         self.test_folder, self.example_titles = (
@@ -241,7 +241,7 @@ class FormatterTestCase(TestCase):
         self.mock_print_patch = mock.patch("builtins.print")
         self.mock_print = self.mock_print_patch.start()
 
-        self.file_extensions = ["file"]
+        self.file_extensions = [".file"]
         test_environment = blockbuster.BlockBusterBuilder(
             level="pg-13",
             test_folder=blockbuster.TEST_INPUT_FOLDER,
@@ -390,11 +390,11 @@ class FormatterTestCase(TestCase):
                 title = metadata.get('title')
                 # Punctuation-free title, safe for searching
                 search_safe_title = self.formatter._strip_punctuation(phrase=title)
-                # Original (pre-formatted) file names all start as "file safe", meaning they don't contain illegal characters:
-                file_safe_title = self.formatter._strip_illegal_characters(phrase=search_safe_title)
+                # Final (formatted) file names are all "folder/file safe", meaning they don't contain illegal characters:
                 release_year = metadata.get('release_year')
-                clean_title_candidate, test_release_year = self.formatter._get_clean_title_candidate_and_release_year(search_terms=original_filename)
-                self.assertIn(file_safe_title, clean_title_candidate)
+                test_filename = " ".join([search_safe_title, release_year])
+                test_clean_title_candidate, test_release_year = self.formatter._get_clean_title_candidate_and_release_year(search_terms=test_filename)
+                self.assertEqual(test_clean_title_candidate, search_safe_title)
                 if test_release_year is not None:
                     self.assertEqual(test_release_year, release_year)
 
@@ -468,7 +468,7 @@ class FormatterTestCase(TestCase):
             }
             fake_search_list.append(fake_data)
 
-        test_result_value = self.formatter._fuzzy_search(search_query=fake_search_query, search_key=fake_search_key, search_list=fake_search_list, result_key=fake_result_key)
+        test_result_value, fuzzy_score = self.formatter._fuzzy_search(search_query=fake_search_query, search_key=fake_search_key, search_list=fake_search_list, result_key=fake_result_key)
 
         self.assertEqual(test_result_value, fake_result_value)
 
@@ -762,73 +762,106 @@ class FormatterTestCase(TestCase):
         get_release_year_method.assert_not_called()
         self.assertEqual(search_method.call_count, call_counter)
 
-    # TODO: Write this test.
     def test_get_imdb_object_by_search_query(self):
         """Ensure that an IMDb object can be correctly retrieved, given a `search_query`"""
-        pass
 
-    # TODO: Write this test.
+        for example_title in self.example_titles:
+            for original_filename, metadata in example_title.items():
+                imdb_id = metadata.get('imdb_id')
+                title = metadata.get('title')
+                release_year = metadata.get('release_year')
+
+                # Get a test IMDb object from the "formatted" title and release year:
+                test_imdb_object = self.formatter.get_imdb_object(search_query=title, release_year=release_year)
+                # This should return an object that contains the correct IMDb object:
+                test_imdb_id = test_imdb_object.get('imdbID')
+                test_title = self.formatter._strip_illegal_characters(phrase=test_imdb_object.get('Title'))
+                test_release_year = test_imdb_object.get('Year')
+
+                self.assertEqual(test_imdb_id, imdb_id)
+                self.assertEqual(test_title, title)
+                self.assertEqual(test_release_year, release_year)
+
     def test_get_imdb_object_by_imdb_id(self):
         """Ensure that an IMDb object can be correctly retrieved, given an `imdb_id"""
-        pass
+        for example_title in self.example_titles:
+            for original_filename, metadata in example_title.items():
+                imdb_id = metadata.get('imdb_id')
+                title = metadata.get('title')
+                release_year = metadata.get('release_year')
 
-    # def test_format_creates_correct_files_and_folders(self):
-    #     """Ensure formatting happens as expected, given a directory of poorly formatted title folders with files."""
-    #     self.formatter.format()
-    #
-    #     root_directory = self.test_folder
-    #
-    #     for example_title in self.example_titles:
-    #         for original_filename, metadata in example_title.items():
-    #             # Original file should no longer exist:
-    #             original_folder_path = os.path.join(root_directory, original_filename)
-    #             self.assertFalse(os.path.exists(original_folder_path))
-    #             formatted_filename = f"{metadata.get('title')} [{metadata.get('release_year')}]"
-    #             formatted_folder_path = os.path.join(root_directory, formatted_filename)
-    #             # Check that all the file extensions are formatted:
-    #             for file_extension in self.file_extensions:
-    #                 formatted_filename_with_extension = formatted_filename + file_extension
-    #                 formatted_filepath = os.path.join(formatted_folder_path, formatted_filename_with_extension)
-    #                 bad_filepath = os.path.join(original_folder_path, formatted_filename_with_extension)
-    #                 self.assertFalse(os.path.exists(bad_filepath))
-    #                 self.assertTrue(os.path.exists(formatted_filepath))
-    #
-    # def test_format_writes_correct_metadata(self):
-    #     """Ensure `format()` writes the correct metadata to the metadata file."""
-    #     self.formatter.format()
-    #
-    #     title_data = {}
-    #     metadata_data = {}
-    #
-    #     metadata_file = self.formatter._initialize_metadata_file()
-    #     for title in metadata_file.get('titles'):
-    #         title_data[title.get('imdb_id')] = {
-    #             'original_filename': title.get('original_filename'),
-    #             'imdb_id': title.get('imdb_id'),
-    #             'title': title.get('title'),
-    #         }
-    #
-    #     for metadata in metadata_file.get('metadata'):
-    #         metadata_data[metadata.get('imdb_id')] = {
-    #             'title': metadata.get('Title'),
-    #             'release_year': metadata.get('Year'),
-    #             'imdb_id': metadata.get('imdbID'),
-    #         }
-    #
-    #     for example_title in self.example_titles:
-    #         for original_filename, metadata in example_title.items():
-    #             title = metadata.get('title')
-    #             imdb_id = metadata.get('imdb_id')
-    #             release_year = metadata.get('release_year')
-    #
-    #             # First check titles:
-    #             title_data_object = title_data[imdb_id]
-    #             self.assertEqual(original_filename, title_data_object.get('original_filename'))
-    #             self.assertEqual(imdb_id, title_data_object.get('imdb_id'))
-    #             self.assertEqual(f"{title} [{release_year}]", title_data_object.get('title'))
-    #
-    #             # Then check metadata:
-    #             metadata_data_object = metadata_data[imdb_id]
-    #             self.assertEqual(title, metadata_data_object.get('title'))
-    #             self.assertEqual(release_year, metadata_data_object.get('release_year'))
-    #             self.assertEqual(imdb_id, metadata_data_object.get('imdb_id'))
+                # Get a test IMDb object from the "formatted" title, an IMDb ID, and release year:
+                test_imdb_object = self.formatter.get_imdb_object(search_query=title, imdb_id=imdb_id, release_year=release_year)
+                # This should return an object that contains the correct IMDb object:
+                test_imdb_id = test_imdb_object.get('imdbID')
+                test_title = self.formatter._strip_illegal_characters(phrase=test_imdb_object.get('Title'))
+                test_release_year = test_imdb_object.get('Year')
+
+                self.assertEqual(test_imdb_id, imdb_id)
+                self.assertEqual(test_title, title)
+                self.assertEqual(test_release_year, release_year)
+
+    def test_format_creates_correct_files_and_folders(self):
+        """Ensure formatting happens as expected, given a directory of poorly formatted title folders with files."""
+        self.formatter.format()
+
+        root_directory = self.test_folder
+
+        for example_title in self.example_titles:
+            for original_filename, metadata in example_title.items():
+                # Original file should no longer exist:
+                original_folder_path = os.path.join(root_directory, original_filename)
+                self.assertFalse(os.path.exists(original_folder_path))
+                formatted_filename = f"{metadata.get('title')} [{metadata.get('release_year')}]"
+                formatted_folder_path = os.path.join(root_directory, formatted_filename)
+                # Check that all the file extensions are formatted:
+                for file_extension in self.file_extensions:
+                    formatted_filename_with_extension = formatted_filename + file_extension
+                    formatted_filepath = os.path.join(formatted_folder_path, formatted_filename_with_extension)
+                    bad_filepath = os.path.join(original_folder_path, formatted_filename_with_extension)
+                    self.assertFalse(os.path.exists(bad_filepath))
+                    print('formatted_filepath:', formatted_filepath)
+                    self.assertTrue(os.path.exists(formatted_filepath))
+
+    def test_format_writes_correct_metadata(self):
+        """Ensure `format()` writes the correct metadata to the metadata file."""
+        self.formatter.format()
+
+        title_data = {}
+        metadata_data = {}
+
+        metadata_file = self.formatter._initialize_metadata_file()
+        for title in metadata_file.get('titles'):
+            title_data[title.get('imdb_id')] = {
+                'original_filename': title.get('original_filename'),
+                'imdb_id': title.get('imdb_id'),
+                'title': title.get('title'),
+            }
+
+        for metadata in metadata_file.get('metadata'):
+            metadata_data[metadata.get('imdbID')] = {
+                'title': metadata.get('Title'),
+                'release_year': metadata.get('Year'),
+                'imdb_id': metadata.get('imdbID'),
+            }
+
+        for example_title in self.example_titles:
+            for original_filename, metadata in example_title.items():
+                title = metadata.get('title')
+                imdb_id = metadata.get('imdb_id')
+                release_year = metadata.get('release_year')
+
+                # First check titles:
+                title_data_object = title_data[imdb_id]
+                self.assertEqual(original_filename, title_data_object.get('original_filename'))
+                self.assertEqual(imdb_id, title_data_object.get('imdb_id'))
+                self.assertEqual(f"{title} [{release_year}]", title_data_object.get('title'))
+
+                # Then check metadata:
+                metadata_data_object = metadata_data[imdb_id]
+                test_title = self.formatter._strip_illegal_characters(phrase=metadata_data_object.get('title'))
+                test_release_year = metadata_data_object.get('release_year')
+                test_imdb_id = metadata_data_object.get('imdb_id')
+                self.assertEqual(test_title, title)
+                self.assertEqual(test_release_year, release_year)
+                self.assertEqual(test_imdb_id, imdb_id)
