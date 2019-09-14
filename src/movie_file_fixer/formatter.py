@@ -661,13 +661,3 @@ class Formatter:
 
                     error_data = {'original_filename': title, 'title_candidate': title_candidate}
                     self._write_metadata(new_content=error_data, content_key='errors', directory=directory, metadata_filename=metadata_filename)
-
-# if __name__ == "__main__":
-#     directory = r"C:\Users\Neophile\Desktop\sandboxes\python\movie-file-fixer\src\tests\test_input"
-#     search_terms = "a beautiful mind"
-#     imdb_id = "tt0268978"
-#     title = "a beautiful mind"
-#     formatter = Formatter(directory=directory, verbose=True)
-#     formatter.search_by_search_terms(search_terms=search_terms)
-#     formatter.search_by_imdb_id(imdb_id=imdb_id)
-#     formatter.search_by_title(title=title)
