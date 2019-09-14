@@ -865,3 +865,106 @@ class FormatterTestCase(TestCase):
                 self.assertEqual(test_title, title)
                 self.assertEqual(test_release_year, release_year)
                 self.assertEqual(test_imdb_id, imdb_id)
+
+class PosterFinderTestCase(TestCase):
+    def setUp(self):
+        # To suppress the stdout by having verbose=True on Formatter instantiation:
+        self.mock_print_patch = mock.patch("builtins.print")
+        self.mock_print = self.mock_print_patch.start()
+
+        self.mock_requests_patch = mock.patch(
+            f"{module_under_test}.poster_finder.requests", autospec=True
+        )
+        self.mock_requests = self.mock_requests_patch.start()
+
+        self.file_extensions = [".file"]
+        test_environment = blockbuster.BlockBusterBuilder(
+            level="pg-13",
+            test_folder=blockbuster.TEST_INPUT_FOLDER,
+            file_extensions=self.file_extensions,
+            use_extensions=False,
+        )
+        self.test_folder, self.example_titles = (
+            test_environment.create_empty_environment()
+        )
+
+        self.formatter = movie_file_fixer.Formatter(
+            directory=blockbuster.TEST_INPUT_FOLDER,
+            metadata_filename=blockbuster.METADATA_FILENAME,
+            verbose=True,
+        )
+
+        self.poster_finder = movie_file_fixer.PosterFinder(
+            directory=blockbuster.TEST_INPUT_FOLDER,
+            metadata_filename=blockbuster.METADATA_FILENAME,
+            verbose=True,
+        )
+
+    def tearDown(self):
+        shutil.rmtree(self.test_folder)
+        self.mock_print_patch.stop()
+        self.mock_requests_patch.stop()
+
+    def test_download_with_headers(self):
+        """Ensure the `requests.get()` method is called."""
+        fake_url = fake.url()
+        fake_headers = fake.pydict()
+        self.poster_finder._download(url=fake_url, headers=fake_headers)
+        self.mock_requests.get.assert_called_once()
+
+    def test_download_without_headers(self):
+        """Ensure the `requests.get()` method is called."""
+        fake_url = fake.url()
+        self.poster_finder._download(url=fake_url)
+        self.mock_requests.get.assert_called_once()
+
+    @patch(f'{module_under_test}.PosterFinder._download')
+    def test_download_posters_if_folder_exists(self, download_method):
+        """Ensure Posterfinder is calling the `_download()` method when the correct parameter values are specified and the folder exists."""
+        min_value = 0
+        max_value = 10
+        iterations = fake.pyint(min_value=min_value, max_value=max_value)
+        fake_poster_urls = []
+
+        # Create a new metadata file:
+        self.formatter._initialize_metadata_file()
+
+        for iteration in range(iterations):
+            fake_poster_url = fake.url()
+            fake_poster_urls.append(fake_poster_url)
+            poster_folder_name = fake.word()
+            full_poster_folder_path = os.path.join(self.test_folder, poster_folder_name)
+            os.mkdir(full_poster_folder_path)
+            fake_title_data = {
+                'title': poster_folder_name,
+                'poster': fake_poster_url
+            }
+            self.formatter._write_metadata(new_content=fake_title_data, content_key='titles')
+
+        self.poster_finder.download_posters()
+
+        for fake_poster_url in fake_poster_urls:
+            download_method.assert_any_call(url=fake_poster_url)
+
+    @patch(f'{module_under_test}.PosterFinder._download')
+    def test_download_posters_if_folder_is_nonexistent(self, download_method):
+        """Ensure Posterfinder is calling the `_download()` method when the correct parameter values are specified, but the folder does not exist."""
+        min_value = 0
+        max_value = 10
+        iterations = fake.pyint(min_value=min_value, max_value=max_value)
+
+        # Create a new metadata file:
+        self.formatter._initialize_metadata_file()
+
+        for iteration in range(iterations):
+            fake_poster_url = fake.url()
+            poster_folder_name = fake.word()
+            fake_title_data = {
+                'title': poster_folder_name,
+                'poster': fake_poster_url
+            }
+            self.formatter._write_metadata(new_content=fake_title_data, content_key='titles')
+
+        self.poster_finder.download_posters()
+
+        download_method.assert_not_called()

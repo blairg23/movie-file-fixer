@@ -32,14 +32,14 @@ class MovieFileFixer:
     def __init__(
         self,
         directory,
-        extensions=[".nfo", ".dat", ".jpg", ".png", ".txt", ".exe"],
-        metadata_filename=["contents.json", "errors.json"],
+        file_extensions=[".nfo", ".dat", ".jpg", ".png", ".txt", ".exe"],
+        metadata_filename='metadata.json',
         verbose=False,
     ):
         self.folderize(
             directory=directory, metadata_filename=metadata_filename, verbose=verbose
         )
-        self.cleanup(directory=directory, extensions=extensions, verbose=verbose)
+        self.cleanup(directory=directory, file_extensions=file_extensions, verbose=verbose)
         self.format(directory=directory, verbose=verbose)
         self.get_posters(
             directory=directory, metadata_filename=metadata_filename, verbose=verbose
@@ -68,18 +68,18 @@ class MovieFileFixer:
         folderizer.folderize()
         folderizer.unfolderize(folder_name=folder_name)
 
-    def cleanup(self, directory, extensions, verbose=False):
+    def cleanup(self, directory, file_extensions, verbose=False):
         """
 
         :param str directory: The directory of movie folders to clean.
-        :param list extensions: A list of file extensions to remove.
+        :param list file_extensions: A list of file extensions to remove.
         :param bool verbose: Whether or not to activate verbose mode.
         :return: None
 
         2. Remove all non-movie files, based on a list of "bad" extensions (i.e., .nfo, .txt, etc)
         """
         file_remover = FileRemover(
-            directory=directory, extensions=extensions, verbose=verbose
+            directory=directory, file_extensions=file_extensions, verbose=verbose
         )
         file_remover.remove_files()
 
@@ -106,8 +106,9 @@ class MovieFileFixer:
         4. Download the movie poster and name the file poster.<extension>
         (where <extension> is the original extension of the poster file)
         """
-        contents_file = metadata_filename[0]
-        PosterFinder(directory=directory, contents_file=contents_file, verbose=verbose)
+
+        poster_finder = PosterFinder(directory=directory, metadata_filename=metadata_filename, verbose=verbose)
+        poster_finder.download_posters()
 
     def get_subtitles(self, directory, metadata_filename, language="en", verbose=False):
         """

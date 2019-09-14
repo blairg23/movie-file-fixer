@@ -57,9 +57,10 @@ class BlockBusterBuilder:
         self._file_extensions = file_extensions
         self._use_extensions = use_extensions
 
-    def _create(self, file_extensions=None, folderized=False, use_extensions=None):
+    def _create(self, empty=False, file_extensions=None, folderized=False, use_extensions=None):
         """
 
+        :param bool empty: Set to `True` to create an empty input directory.
         :param list file_extensions: A list of file extensions to create individual files, for testing file support.
         :param bool folderized: Whether to folderize the files or keep them unfoldered.
         :param bool use_extensions: Whether to use file extensions to create the files.
@@ -93,25 +94,27 @@ class BlockBusterBuilder:
                 example_title = example["title"]
                 example_release_year = example["release_year"]
 
-                # Create a folder with the example title if folderized is True:
-                if folderized:
-                    os.makedirs(os.path.join(self._test_folder, example_filename))
-                    filename = os.path.join(
-                        self._test_folder, example_filename, example_filename
-                    )
-                else:
-                    filename = os.path.join(self._test_folder, example_filename)
-
-                if use_extensions:
-                    for extension in file_extensions:
-                        new_filename = (
-                            filename + extension
-                            if "." in extension
-                            else ".".join([filename, extension])
+                # If we're not creating an empty directory:
+                if not empty:
+                    # Create a folder with the example title if folderized is True:
+                    if folderized:
+                        os.makedirs(os.path.join(self._test_folder, example_filename))
+                        filename = os.path.join(
+                            self._test_folder, example_filename, example_filename
                         )
-                        open(new_filename, "a").close()
-                else:
-                    open(filename, "a").close()
+                    else:
+                        filename = os.path.join(self._test_folder, example_filename)
+
+                    if use_extensions:
+                        for extension in file_extensions:
+                            new_filename = (
+                                filename + extension
+                                if "." in extension
+                                else ".".join([filename, extension])
+                            )
+                            open(new_filename, "a").close()
+                    else:
+                        open(filename, "a").close()
 
                 example_title = {
                     example_filename: {
@@ -123,6 +126,15 @@ class BlockBusterBuilder:
                 example_titles.append(example_title)
 
         return self._test_folder, example_titles
+
+    def create_empty_environment(self):
+        """
+
+        :return tuple: The environment test_folder and the example titles used to create the test environment.
+
+        Creates an empty test environment.
+        """
+        return self._create(empty=True)
 
     def create_single_file_environment(self, file_extensions=None, use_extensions=None):
         """

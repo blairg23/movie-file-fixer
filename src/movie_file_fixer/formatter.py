@@ -34,17 +34,17 @@ class Formatter:
 
         Initialize some JSON files for containing formatting metadata and error logs.
         """
-        if self._verbose:
-            print(
-                f'[{self._action_counter}] [INITIALIZING METADATA FILE] "{metadata_filename}"\n'
-            )
-            self._action_counter += 1
-
         if directory is None:
             directory = self._directory
 
         if metadata_filename is None:
             metadata_filename = self._metadata_filename
+
+        if self._verbose:
+            print(
+                f'[{self._action_counter}] [INITIALIZING METADATA FILE] "{metadata_filename}"\n'
+            )
+            self._action_counter += 1
 
         # If we couldn't find a metadata file containing the table of contents, create a new one:
         if not os.path.exists(os.path.join(directory, metadata_filename)):
