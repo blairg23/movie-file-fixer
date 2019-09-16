@@ -48,12 +48,10 @@ class MovieFileFixer:
             directory=directory, metadata_filename=metadata_filename, verbose=verbose
         )
 
-    def folderize(
-        self, directory, metadata_filename, folder_name="subs", verbose=False
-    ):
+    def folderize(self, directory=None, metadata_filename=None, folder_name="subs", verbose=False):
         """
 
-        :param str directory: The directory to single files to folderize.
+        :param str directory: The directory of single files to folderize.
         :param str metadata_filename: The metadata file to ignore when folderizing.
         :param str folder_name: Folder to unfolderize files from.
         :param bool verbose: Whether or not to activate verbose mode.
@@ -62,13 +60,19 @@ class MovieFileFixer:
         1. Place all single files in folders of the same name.
             a. Pull all subtitle files out of folders if they are in them.
         """
+        if directory is None:
+            directory = self._directory
+
+        if metadata_filename is None:
+            metadata_filename = self._metadata_filename
+
         folderizer = Folderizer(
             directory=directory, metadata_filename=metadata_filename, verbose=verbose
         )
         folderizer.folderize()
         folderizer.unfolderize(folder_name=folder_name)
 
-    def cleanup(self, directory, file_extensions, verbose=False):
+    def cleanup(self, directory=None, file_extensions=None, verbose=False):
         """
 
         :param str directory: The directory of movie folders to clean.
@@ -78,24 +82,36 @@ class MovieFileFixer:
 
         2. Remove all non-movie files, based on a list of "bad" extensions (i.e., .nfo, .txt, etc)
         """
+        if directory is None:
+            directory = self._directory
+
+        if file_extensions is None:
+            file_extensions = self._file_extensions
+
         file_remover = FileRemover(
             directory=directory, file_extensions=file_extensions, verbose=verbose
         )
         file_remover.remove_files()
 
-    def format(self, directory, verbose=False):
+    def format(self, directory=None, result_type=None, verbose=False):
         """
 
         :param str directory: The directory of movie folders to format.
+        :param str result_type: What type of IMDb object you want returned. Valid Options: [`movie`, `series`, `episode`]
         :param bool verbose: Whether or not to activate verbose mode.
         :return: None
 
         3. Pull the names of all folders and decide what the title is, based on movie titles in OMDb API.
             a. Rename the movie file and folders (i.e., <movie_title> [<year_of_release>])
         """
-        Formatter(directory=directory, verbose=verbose)
+        if directory is None:
+            directory = self._directory
 
-    def get_posters(self, directory, metadata_filename, verbose=False):
+        formatter = Formatter(directory=directory, verbose=verbose)
+        formatter.format(result_type=result_type)
+
+
+    def get_posters(self, directory=None, metadata_filename=None, verbose=False):
         """
 
         :param str directory: The directory of movie folders to get posters for.
@@ -106,11 +122,16 @@ class MovieFileFixer:
         4. Download the movie poster and name the file poster.<extension>
         (where <extension> is the original extension of the poster file)
         """
+        if directory is None:
+            directory = self._directory
+
+        if metadata_filename is None:
+            metadata_filename = self._metadata_filename
 
         poster_finder = PosterFinder(directory=directory, metadata_filename=metadata_filename, verbose=verbose)
         poster_finder.download_posters()
 
-    def get_subtitles(self, directory, metadata_filename, language="en", verbose=False):
+    def get_subtitles(self, directory=None, metadata_filename=None, language="en", verbose=False):
         """
 
         :param str directory: The directory of movie folders to get subtitles for.
@@ -121,6 +142,12 @@ class MovieFileFixer:
 
         5. Download the movie subtitles and name the file <language>_subtitles.srt
         """
+        if directory is None:
+            directory = self._directory
+
+        if metadata_filename is None:
+            metadata_filename = self._metadata_filename
+
         contents_file = metadata_filename[0]
         SubtitleFinder(
             directory=directory,

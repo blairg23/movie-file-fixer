@@ -435,12 +435,12 @@ class Formatter:
                     f'[RENAMING] from [FILEPATH] "{old_filepath}" to [FILEPATH] "{new_filepath}"\n'
                 )
 
-    def _rename_folder_and_contents(self, directory, original_name, new_name):
+    def _rename_folder_and_contents(self, original_name, new_name, directory=None):
         """
 
-        :param str directory: The directory containing the folder to be renamed.
         :param str original_name: The original name of the folder to be renamed.
         :param str new_name: The name to use to rename the folder and its contents.
+        :param str directory: The directory containing the folder to be renamed.
         :return: None
         """
         if directory is None:
@@ -641,23 +641,24 @@ class Formatter:
             self._action_counter += 1
 
         for title in os.listdir(directory):
-            if self._verbose:
-                print(f'[{self._action_counter}] [FORMATTING] [FOLDER] "{title}"\n')
-                self._action_counter += 1
+            if title != self._metadata_filename:
+                if self._verbose:
+                    print(f'[{self._action_counter}] [FORMATTING] [FOLDER] "{title}"\n')
+                    self._action_counter += 1
 
-            # Let's not process the metadata file or duplicate our work:
-            if str(title) not in metadata_filename and title not in [entry.get("title") for entry in self._metadata.get("titles")]:
-                # Retrieve the release year to increase dependability of search query results:
-                title_candidate, release_year = self._get_clean_title_candidate_and_release_year(search_terms=title)
-                try:
-                    imdb_object = self.get_imdb_object(search_query=title_candidate, release_year=release_year, result_type=result_type)
-                    final_title = f"{imdb_object.get('Title')} [{imdb_object.get('Year')}]"
-                    final_title = self._strip_illegal_characters(phrase=final_title)
-                    self._write_all_metadata(imdb_object=imdb_object, original_filename=title, final_title=final_title)
-                    self._rename_folder_and_contents(directory=directory, original_name=title, new_name=final_title)
-                except Exception as error:
-                    if self._verbose:
-                        print(f'[ERROR] No result for [FOLDER] "{title}"\n[ERROR] {error}\n')
+                # Let's not process the metadata file or duplicate our work:
+                if str(title) not in metadata_filename and title not in [entry.get("title") for entry in self._metadata.get("titles")]:
+                    # Retrieve the release year to increase dependability of search query results:
+                    title_candidate, release_year = self._get_clean_title_candidate_and_release_year(search_terms=title)
+                    try:
+                        imdb_object = self.get_imdb_object(search_query=title_candidate, release_year=release_year, result_type=result_type)
+                        final_title = f"{imdb_object.get('Title')} [{imdb_object.get('Year')}]"
+                        final_title = self._strip_illegal_characters(phrase=final_title)
+                        self._write_all_metadata(imdb_object=imdb_object, original_filename=title, final_title=final_title)
+                        self._rename_folder_and_contents(directory=directory, original_name=title, new_name=final_title)
+                    except Exception as error:
+                        if self._verbose:
+                            print(f'[ERROR] No result for [FOLDER] "{title}"\n[ERROR] {error}\n')
 
-                    error_data = {'original_filename': title, 'title_candidate': title_candidate}
-                    self._write_metadata(new_content=error_data, content_key='errors', directory=directory, metadata_filename=metadata_filename)
+                        error_data = {'original_filename': title, 'title_candidate': title_candidate}
+                        self._write_metadata(new_content=error_data, content_key='errors', directory=directory, metadata_filename=metadata_filename)

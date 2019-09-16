@@ -1,5 +1,6 @@
 import json
 import os
+import random
 import shutil
 from unittest import mock, TestCase
 from unittest.mock import patch
@@ -622,45 +623,75 @@ class FormatterTestCase(TestCase):
         """Ensure files are being renamed appropriately if more than one file with that filename exists."""
         fake_new_filenames = []
         original_filenames = []
+        min_value = 0
+        max_value = 10
+        root = self.test_folder
+
+        # Create a special separate area to do this testing:
+        special_test_folder = os.path.join(root, 'special_test_folder')
+        os.makedirs(special_test_folder)
 
         # This time, we'll use the same fake new filename for all the files
         # to test the recursive renaming functionality:
-        fake_new_filename = fake.word()
-        counter = 1
+        fake_new_name = fake.word()
+        fake_file_extension = fake.word()
+        fake_new_filename = '.'.join([fake_new_name, fake_file_extension])
 
-        # Rename all the files in the `test_folder`:
-        for root, dirs, files in os.walk(self.test_folder):
-            for file in files:
-                # Keep track of the original filenames:
-                original_filenames.append(file)
+        # Create a fake file to conflict with the first renaming:
+        fake_new_filepath = os.path.join(special_test_folder, fake_new_filename)
+        open(fake_new_filepath, "a").close()
+        counter = 2
 
-                # and keep track of those fake new filenames:
-                fake_new_filename_to_append = (
-                    "_".join([fake_new_filename, str(counter)])
-                    if counter > 1
-                    else fake_new_filename
-                )
-                counter += 1
-                fake_new_filenames.append(fake_new_filename_to_append)
-                # Rename that file!
-                self.formatter._rename_file(
-                    current_filepath=root,
-                    original_filename=file,
-                    proposed_new_filename=fake_new_filename,
-                )
+        print('fake_new_name:', fake_new_name)
+        print('fake_new_filename:', fake_new_filename)
+        print('fake_new_filepath:', fake_new_filepath)
+
+        # Add the first fake new filename to the list:
+        fake_new_filenames.append(fake_new_name)
+
+        # For a random number of times, rename the file that many times.
+        iterations = fake.pyint(min_value=min_value, max_value=max_value)
+        for iteration in range(iterations):
+            # Create a random file:
+            fake_name = fake.word()
+            # But use the same extension:
+            fake_filename = '.'.join([fake_name, fake_file_extension])
+            fake_filepath = os.path.join(special_test_folder, fake_filename)
+            open(fake_filepath, "a").close()
+
+            print('fake_name:', fake_new_name)
+            print('fake_filename:', fake_new_filename)
+            print('fake_filepath:', fake_new_filepath)
+
+            # Keep track of the original filenames:
+            original_filenames.append(fake_name)
+
+            # Rename the first file to the second's name:
+            self.formatter._rename_file(
+                current_filepath=special_test_folder,
+                original_filename=fake_filename,
+                proposed_new_filename=fake_new_name,
+            )
+
+            # Update the counter suffix for the next iteration:
+            fake_new_filename_to_add = ("_".join([fake_new_name, str(counter)]))
+            counter += 1
+
+            # and keep track of those fake new filenames
+            # (this should be identical to the list of the files that were actually created):
+            fake_new_filenames.append(fake_new_filename_to_add)
 
         # Now let's check that all the files were renamed:
-        for root, dirs, files in os.walk(self.test_folder):
-            for file in files:
-                filename, extension = os.path.splitext(file)
-                # They should exist in the fake new filenames list:
-                self.assertIn(filename, fake_new_filenames)
-                # and not in the original filenames list:
-                self.assertNotIn(filename, original_filenames)
+        for file in os.listdir(special_test_folder):
+            filename, extension = os.path.splitext(file)
+            # They should exist in the fake new filenames list:
+            self.assertIn(filename, fake_new_filenames)
+            # and not in the original filenames list:
+            self.assertNotIn(filename, original_filenames)
 
     @patch(f"{module_under_test}.Formatter._rename_file")
-    def test_rename_folder_and_contents(self, rename_file_method):
-        """Ensure folders and their contents are renamed correctly."""
+    def test_rename_folder_and_contents_with_directory(self, rename_file_method):
+        """Ensure folders and their contents are renamed correctly, when a valid directory is provided."""
         min_value = 0
         max_value = 10
         num_files = fake.pyint(min_value=min_value, max_value=max_value)
@@ -677,6 +708,27 @@ class FormatterTestCase(TestCase):
             open(fake_filepath, "a").close()
 
         self.formatter._rename_folder_and_contents(directory=self.test_folder, original_name=fake_folder_name, new_name=fake_new_name)
+        self.assertEqual(rename_file_method.call_count, num_files)
+
+    @patch(f"{module_under_test}.Formatter._rename_file")
+    def test_rename_folder_and_contents_without_directory(self, rename_file_method):
+        """Ensure folders and their contents are renamed correctly, when a valid directory is not provided."""
+        min_value = 0
+        max_value = 10
+        num_files = fake.pyint(min_value=min_value, max_value=max_value)
+        fake_folder_name = " ".join(fake.words())
+        fake_new_name = " ".join(fake.words())
+
+        # Create a fake folder:
+        fake_folder_path = os.path.join(self.test_folder, fake_folder_name)
+        os.makedirs(fake_folder_path)
+        # And fake files:
+        for i in range(num_files):
+            fake_filename = " ".join(fake.words())
+            fake_filepath = os.path.join(fake_folder_path, fake_filename)
+            open(fake_filepath, "a").close()
+
+        self.formatter._rename_folder_and_contents(original_name=fake_folder_name, new_name=fake_new_name)
         self.assertEqual(rename_file_method.call_count, num_files)
 
     @patch(f"{module_under_test}.Formatter._get_release_year")
@@ -865,6 +917,52 @@ class FormatterTestCase(TestCase):
                 self.assertEqual(test_title, title)
                 self.assertEqual(test_release_year, release_year)
                 self.assertEqual(test_imdb_id, imdb_id)
+
+    def test_format_with_crazy_data(self):
+        """Ensure `format()` raises an exception and writes to error log appropriately, if input is insane."""
+        min_value = 1
+        max_value = 10
+        iterations = fake.pyint(min_value=min_value, max_value=max_value)
+        root = self.test_folder
+        error_titles = []
+
+        # Create a special separate area to do this testing:
+        special_test_folder = os.path.join(root, 'special_test_folder')
+        os.makedirs(special_test_folder)
+
+        for iteration in range(iterations):
+            # Minimum release year range (between 0 and 1900)
+            min_year_start = 0
+            min_year_end = 1900
+            min_year = fake.pyint(min_value=min_year_start, max_value=min_year_end)
+
+            # Maximum release year range (between 2100 and 9999)
+            max_year_start = 2100
+            max_year_end = 9999
+            max_year = fake.pyint(min_value=max_year_start, max_value=max_year_end)
+
+            # Choose a random year that is before or after the threshold release years:
+            release_year = random.choice([min_year, max_year])
+            folder_name = fake.word() + str(release_year)
+            error_titles.append(folder_name)
+            folder_path = os.path.join(special_test_folder, folder_name)
+            os.makedirs(folder_path)
+
+        self.formatter._initialize_metadata_file(directory=special_test_folder)
+
+        self.formatter.format(directory=special_test_folder)
+
+        metadata = self.formatter._initialize_metadata_file(directory=special_test_folder)
+
+        # There should be errors:
+        self.assertNotEqual(len(metadata.get('errors')), 0)
+        # In fact, there should be exactly `iterations` amount of errors:
+        self.assertEqual(len(metadata.get('errors')), iterations)
+
+        # And all of those errors should be the fake filenames we created:
+        for error_data in metadata.get('errors'):
+            self.assertIn(error_data.get('original_filename'), error_titles)
+
 
 class PosterFinderTestCase(TestCase):
     def setUp(self):
