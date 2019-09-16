@@ -12,7 +12,7 @@ class Folderizer:
     def __init__(
         self,
         directory,
-        metadata_filename=["contents.json", "errors.json"],
+        metadata_filename="metadata.json",
         verbose=False,
     ):
         self._directory = directory
@@ -67,28 +67,26 @@ class Folderizer:
         if metadata_filename is None:
             metadata_filename = self._metadata_filename
 
-        valid_filenames = [
-            filename for filename in filenames if filename not in metadata_filename
-        ]
-        for filename in valid_filenames:
-            old_filepath = os.path.join(os.getcwd(), directory, filename)
-            stripped_filename, file_ext = os.path.splitext(
-                filename
-            )  # Extract the filename from the extension
-            new_filepath = os.path.join(os.getcwd(), directory, stripped_filename)
+        for filename in filenames:
+            if filename != self._metadata_filename:
+                old_filepath = os.path.join(os.getcwd(), directory, filename)
+                stripped_filename, file_ext = os.path.splitext(
+                    filename
+                )  # Extract the filename from the extension
+                new_filepath = os.path.join(os.getcwd(), directory, stripped_filename)
 
-            if not os.path.exists(new_filepath):  # If the folder doesn't already exist:
-                os.mkdir(new_filepath)  # Then create it
+                if not os.path.exists(new_filepath):  # If the folder doesn't already exist:
+                    os.mkdir(new_filepath)  # Then create it
+                    if self._verbose:
+                        print(f'[{self._action_counter}] [CREATED FOLDER] "{filename}"')
+                        self._action_counter += 1
+
+                shutil.move(old_filepath, new_filepath)
                 if self._verbose:
-                    print(f'[{self._action_counter}] [CREATED FOLDER] "{filename}"')
+                    print(
+                        f'[{self._action_counter}] [MOVED FILE] "{filename}" -> [FOLDER] "{filename}"'
+                    )
                     self._action_counter += 1
-
-            shutil.move(old_filepath, new_filepath)
-            if self._verbose:
-                print(
-                    f'[{self._action_counter}] [MOVED FILE] "{filename}" -> [FOLDER] "{filename}"'
-                )
-                self._action_counter += 1
 
     def folderize(self, directory=None, metadata_filename=None):
         """

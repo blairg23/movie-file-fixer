@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Name: subtitle_finder.py
-Author: Blair Gemmer
-Version: 20180313
 
-Description: Reads the "titles.json" file and downloads the subtitle for each title, given a language of preference.
+Description: Reads the "metadata.json" file and downloads the subtitle for each title, given a language of preference.
 """
 
 import hashlib
@@ -15,13 +12,7 @@ import requests
 
 
 class SubtitleFinder:
-    def __init__(
-        self,
-        directory=None,
-        contents_file="contents.json",
-        language="en",
-        verbose=False,
-    ):
+    def __init__(self, directory=None, contents_file="contents.json", language="en", verbose=False):
         if verbose:
             print("[CURRENT ACTION: LOCATING MOVIE SUBTITLES]\n")
         self.get_subtitles(
