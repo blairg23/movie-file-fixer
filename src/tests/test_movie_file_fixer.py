@@ -3,11 +3,10 @@ import os
 import random
 import shutil
 import sys
-from unittest import mock, TestCase
+from unittest import TestCase, mock
 from unittest.mock import patch
 
 import faker
-
 import movie_file_fixer
 import src.tests.blockbuster as blockbuster
 import utils

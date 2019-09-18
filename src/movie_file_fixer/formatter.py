@@ -9,8 +9,9 @@ import json
 import os
 import re
 
-import omdb
 from fuzzywuzzy import process as fuzzywuzzy_process
+
+import omdb
 
 
 class Formatter:

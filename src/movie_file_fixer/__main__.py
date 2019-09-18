@@ -2,4 +2,5 @@
 """The main application runner."""
 
 from .movie_file_fixer import main
+
 main()
