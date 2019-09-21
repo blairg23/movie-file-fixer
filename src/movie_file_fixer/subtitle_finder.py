@@ -12,7 +12,13 @@ import requests
 
 
 class SubtitleFinder:
-    def __init__(self, directory=None, contents_file="contents.json", language="en", verbose=False):
+    def __init__(
+        self,
+        directory=None,
+        contents_file="contents.json",
+        language="en",
+        verbose=False,
+    ):
         if verbose:
             print("[CURRENT ACTION: LOCATING MOVIE SUBTITLES]\n")
         self.get_subtitles(
@@ -36,7 +42,7 @@ class SubtitleFinder:
         """
         readsize = 64 * 1024
         with open(filepath, "rb") as f:
-            size = os.path.getsize(filepath)
+            # size = os.path.getsize(filepath)
             data = f.read(readsize)
             f.seek(-readsize, os.SEEK_END)
             data += f.read(readsize)
@@ -120,16 +126,13 @@ class SubtitleFinder:
                             subtitles_available = self.search_subtitles(
                                 hashcode=hashcode
                             )
-
                             if (
                                 subtitles_available not in ["", None, " "]
                                 and language in subtitles_available
                             ):
                                 if verbose:
                                     print(
-                                        "[ADDING SUBTITLE FILE: {language}_subtitles.srt]\n".format(
-                                            language=language
-                                        )
+                                        f"[ADDING SUBTITLE FILE: {language}_subtitles.srt]\n"
                                     )
 
                                 try:

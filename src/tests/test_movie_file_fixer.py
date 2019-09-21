@@ -7,9 +7,10 @@ from unittest import TestCase, mock
 from unittest.mock import patch
 
 import faker
-import movie_file_fixer
 import src.tests.blockbuster as blockbuster
 import utils
+
+import movie_file_fixer
 
 module_under_test = "movie_file_fixer"
 
@@ -67,9 +68,29 @@ class MovieFileFixerTestCase(TestCase):
     def test_parse_args_with_real_data(self):
         """Ensure the `parse_args() method sets the Namespace object attributes correctly with realistic data."""
         directory = blockbuster.TEST_INPUT_FOLDER
-        file_extensions = ['.nfo', '.dat', '.jpg', '.png', '.txt', '.exe']
-        metadata_filename = 'metadata.json'
-        test_parser = movie_file_fixer.parse_args(['-d', directory, '-e', '.nfo', '-e', '.dat', '-e', '.jpg', '-e', '.png', '-e', '.txt', '-e', '.exe', '-f', metadata_filename, '-v'])
+        file_extensions = [".nfo", ".dat", ".jpg", ".png", ".txt", ".exe"]
+        metadata_filename = "metadata.json"
+        test_parser = movie_file_fixer.parse_args(
+            [
+                "-d",
+                directory,
+                "-e",
+                ".nfo",
+                "-e",
+                ".dat",
+                "-e",
+                ".jpg",
+                "-e",
+                ".png",
+                "-e",
+                ".txt",
+                "-e",
+                ".exe",
+                "-f",
+                metadata_filename,
+                "-v",
+            ]
+        )
         self.assertEqual(test_parser.directory, directory)
         self.assertEqual(test_parser.file_extensions, file_extensions)
         self.assertEqual(test_parser.metadata_filename, metadata_filename)
@@ -78,9 +99,25 @@ class MovieFileFixerTestCase(TestCase):
     def test_parse_args_with_fake_data(self):
         """Ensure the `parse_args() method sets the Namespace object attributes correctly with completely fake data."""
         fake_directory = os.path.join(fake.word(), fake.word(), fake.word())
-        fake_file_extensions = ['.' + word for word in [fake.word(), fake.word(), fake.word()]]
-        fake_metadata_filename = '.'.join([fake.word(), fake.word()])
-        test_parser = movie_file_fixer.parse_args(['-d', fake_directory, '-e', fake_file_extensions[0], '-e', fake_file_extensions[1], '-e', fake_file_extensions[2], '-f', fake_metadata_filename, '-v'])
+        fake_file_extensions = [
+            "." + word for word in [fake.word(), fake.word(), fake.word()]
+        ]
+        fake_metadata_filename = ".".join([fake.word(), fake.word()])
+        test_parser = movie_file_fixer.parse_args(
+            [
+                "-d",
+                fake_directory,
+                "-e",
+                fake_file_extensions[0],
+                "-e",
+                fake_file_extensions[1],
+                "-e",
+                fake_file_extensions[2],
+                "-f",
+                fake_metadata_filename,
+                "-v",
+            ]
+        )
         self.assertEqual(test_parser.directory, fake_directory)
         self.assertEqual(test_parser.file_extensions, fake_file_extensions)
         self.assertEqual(test_parser.metadata_filename, fake_metadata_filename)
@@ -114,50 +151,125 @@ class MovieFileFixerTestCase(TestCase):
     def test_folderize_is_called_from_main(self):
         """Ensure the `folderize()` method is being called when a valid instance of `MovieFileFixer` is instantiated when `main()` is called."""
         fake_directory = os.path.join(fake.word(), fake.word(), fake.word())
-        fake_file_extensions = ['.' + word for word in [fake.word(), fake.word(), fake.word()]]
-        fake_metadata_filename = '.'.join([fake.word(), fake.word()])
-        test_args = [f'{module_under_test}', '-d', fake_directory, '-e', fake_file_extensions[0], '-e', fake_file_extensions[1], '-e', fake_file_extensions[2], '-f', fake_metadata_filename, '-v']
-        with patch.object(sys, 'argv', test_args):
+        fake_file_extensions = [
+            "." + word for word in [fake.word(), fake.word(), fake.word()]
+        ]
+        fake_metadata_filename = ".".join([fake.word(), fake.word()])
+        test_args = [
+            f"{module_under_test}",
+            "-d",
+            fake_directory,
+            "-e",
+            fake_file_extensions[0],
+            "-e",
+            fake_file_extensions[1],
+            "-e",
+            fake_file_extensions[2],
+            "-f",
+            fake_metadata_filename,
+            "-v",
+        ]
+        with patch.object(sys, "argv", test_args):
             movie_file_fixer.main()
         self.mock_folderize.assert_called_once()
 
     def test_cleanup_is_called_from_main(self):
         """Ensure the `cleanup()` method is being called when a valid instance of `MovieFileFixer` is instantiated when `main()` is called."""
         fake_directory = os.path.join(fake.word(), fake.word(), fake.word())
-        fake_file_extensions = ['.' + word for word in [fake.word(), fake.word(), fake.word()]]
-        fake_metadata_filename = '.'.join([fake.word(), fake.word()])
-        test_args = [f'{module_under_test}', '-d', fake_directory, '-e', fake_file_extensions[0], '-e', fake_file_extensions[1], '-e', fake_file_extensions[2], '-f', fake_metadata_filename, '-v']
-        with patch.object(sys, 'argv', test_args):
+        fake_file_extensions = [
+            "." + word for word in [fake.word(), fake.word(), fake.word()]
+        ]
+        fake_metadata_filename = ".".join([fake.word(), fake.word()])
+        test_args = [
+            f"{module_under_test}",
+            "-d",
+            fake_directory,
+            "-e",
+            fake_file_extensions[0],
+            "-e",
+            fake_file_extensions[1],
+            "-e",
+            fake_file_extensions[2],
+            "-f",
+            fake_metadata_filename,
+            "-v",
+        ]
+        with patch.object(sys, "argv", test_args):
             movie_file_fixer.main()
         self.mock_cleanup.assert_called_once()
 
     def test_format_is_called_from_main(self):
         """Ensure the `format()` method is being called when a valid instance of `MovieFileFixer` is instantiated when `main()` is called."""
         fake_directory = os.path.join(fake.word(), fake.word(), fake.word())
-        fake_file_extensions = ['.' + word for word in [fake.word(), fake.word(), fake.word()]]
-        fake_metadata_filename = '.'.join([fake.word(), fake.word()])
-        test_args = [f'{module_under_test}', '-d', fake_directory, '-e', fake_file_extensions[0], '-e', fake_file_extensions[1], '-e', fake_file_extensions[2], '-f', fake_metadata_filename, '-v']
-        with patch.object(sys, 'argv', test_args):
+        fake_file_extensions = [
+            "." + word for word in [fake.word(), fake.word(), fake.word()]
+        ]
+        fake_metadata_filename = ".".join([fake.word(), fake.word()])
+        test_args = [
+            f"{module_under_test}",
+            "-d",
+            fake_directory,
+            "-e",
+            fake_file_extensions[0],
+            "-e",
+            fake_file_extensions[1],
+            "-e",
+            fake_file_extensions[2],
+            "-f",
+            fake_metadata_filename,
+            "-v",
+        ]
+        with patch.object(sys, "argv", test_args):
             movie_file_fixer.main()
         self.mock_format.assert_called_once()
 
     def test_get_posters_is_called_from_main(self):
         """Ensure the `get_posters()` method is being called when a valid instance of `MovieFileFixer` is instantiated when `main()` is called."""
         fake_directory = os.path.join(fake.word(), fake.word(), fake.word())
-        fake_file_extensions = ['.' + word for word in [fake.word(), fake.word(), fake.word()]]
-        fake_metadata_filename = '.'.join([fake.word(), fake.word()])
-        test_args = [f'{module_under_test}', '-d', fake_directory, '-e', fake_file_extensions[0], '-e', fake_file_extensions[1], '-e', fake_file_extensions[2], '-f', fake_metadata_filename, '-v']
-        with patch.object(sys, 'argv', test_args):
+        fake_file_extensions = [
+            "." + word for word in [fake.word(), fake.word(), fake.word()]
+        ]
+        fake_metadata_filename = ".".join([fake.word(), fake.word()])
+        test_args = [
+            f"{module_under_test}",
+            "-d",
+            fake_directory,
+            "-e",
+            fake_file_extensions[0],
+            "-e",
+            fake_file_extensions[1],
+            "-e",
+            fake_file_extensions[2],
+            "-f",
+            fake_metadata_filename,
+            "-v",
+        ]
+        with patch.object(sys, "argv", test_args):
             movie_file_fixer.main()
         self.mock_get_posters.assert_called_once()
 
     def test_get_subtitles_is_called_from_main(self):
         """Ensure the `folderize()` method is being called when a valid instance of `MovieFileFixer` is instantiated when `main()` is called."""
         fake_directory = os.path.join(fake.word(), fake.word(), fake.word())
-        fake_file_extensions = ['.' + word for word in [fake.word(), fake.word(), fake.word()]]
-        fake_metadata_filename = '.'.join([fake.word(), fake.word()])
-        test_args = [f'{module_under_test}', '-d', fake_directory, '-e', fake_file_extensions[0], '-e', fake_file_extensions[1], '-e', fake_file_extensions[2], '-f', fake_metadata_filename, '-v']
-        with patch.object(sys, 'argv', test_args):
+        fake_file_extensions = [
+            "." + word for word in [fake.word(), fake.word(), fake.word()]
+        ]
+        fake_metadata_filename = ".".join([fake.word(), fake.word()])
+        test_args = [
+            f"{module_under_test}",
+            "-d",
+            fake_directory,
+            "-e",
+            fake_file_extensions[0],
+            "-e",
+            fake_file_extensions[1],
+            "-e",
+            fake_file_extensions[2],
+            "-f",
+            fake_metadata_filename,
+            "-v",
+        ]
+        with patch.object(sys, "argv", test_args):
             movie_file_fixer.main()
         self.mock_get_subtitles.assert_called_once()
 
@@ -230,7 +342,9 @@ class FolderizerTestCase(TestCase):
 
     @patch(f"{module_under_test}.Folderizer._move_files_into_folders")
     @patch(f"{module_under_test}.Folderizer._find_single_files")
-    def test_folderize(self, find_single_files_method_patch, move_files_into_folders_method_patch):
+    def test_folderize(
+        self, find_single_files_method_patch, move_files_into_folders_method_patch
+    ):
         """Ensure all internal methods got called when the folderize() method was called."""
         self.folderizer.folderize()
         find_single_files_method_patch.assert_called_once()
@@ -482,25 +596,31 @@ class FormatterTestCase(TestCase):
         """Ensure title and release year can be found, given real world example titles."""
         for example_title in self.example_titles:
             for original_filename, metadata in example_title.items():
-                title = metadata.get('title')
+                title = metadata.get("title")
                 # Punctuation-free title, safe for searching
                 search_safe_title = self.formatter._strip_punctuation(phrase=title)
                 # Final (formatted) file names are all "folder/file safe", meaning they don't contain illegal characters:
-                release_year = metadata.get('release_year')
+                release_year = metadata.get("release_year")
                 test_filename = " ".join([search_safe_title, release_year])
-                test_clean_title_candidate, test_release_year = self.formatter._get_clean_title_candidate_and_release_year(search_terms=test_filename)
+                test_clean_title_candidate, test_release_year = self.formatter._get_clean_title_candidate_and_release_year(
+                    search_terms=test_filename
+                )
                 self.assertEqual(test_clean_title_candidate, search_safe_title)
                 if test_release_year is not None:
                     self.assertEqual(test_release_year, release_year)
 
-    def test_get_clean_title_candidate_and_release_year_with_contrived_title_and_release_year(self):
+    def test_get_clean_title_candidate_and_release_year_with_contrived_title_and_release_year(
+        self
+    ):
         """Ensure title and release year can be found, given a contrived example title and release year."""
         fake_title = " ".join(fake.words())
         fake_title_list = fake_title.split()
         fake_release_year = fake.year()
-        fake_title_list.extend([fake_release_year, '1080', '720', '480'])
+        fake_title_list.extend([fake_release_year, "1080", "720", "480"])
         fake_search_terms = ".".join(fake_title_list)
-        test_title_candidate, test_release_year = self.formatter._get_clean_title_candidate_and_release_year(search_terms=fake_search_terms)
+        test_title_candidate, test_release_year = self.formatter._get_clean_title_candidate_and_release_year(
+            search_terms=fake_search_terms
+        )
 
         self.assertEqual(test_title_candidate, fake_title.lower())
         self.assertEqual(test_release_year, fake_release_year)
@@ -543,10 +663,7 @@ class FormatterTestCase(TestCase):
         fake_result_value = fake.word()
 
         fake_search_list = [
-            {
-                fake_search_key: fake_search_query,
-                fake_result_key: fake_result_value
-            }
+            {fake_search_key: fake_search_query, fake_result_key: fake_result_value}
         ]
 
         # Create a bunch of extraneous bad matches to test against:
@@ -558,12 +675,16 @@ class FormatterTestCase(TestCase):
             new_fake_result_value = fake.word()
             fake_data = {
                 fake_search_key: fake_search_query + (fake_random_words * iteration),
-                fake_result_key: new_fake_result_value
-
+                fake_result_key: new_fake_result_value,
             }
             fake_search_list.append(fake_data)
 
-        test_result_value, fuzzy_score = self.formatter._fuzzy_search(search_query=fake_search_query, search_key=fake_search_key, search_list=fake_search_list, result_key=fake_result_key)
+        test_result_value, fuzzy_score = self.formatter._fuzzy_search(
+            search_query=fake_search_query,
+            search_key=fake_search_key,
+            search_list=fake_search_list,
+            result_key=fake_result_key,
+        )
 
         self.assertEqual(test_result_value, fake_result_value)
 
@@ -663,24 +784,35 @@ class FormatterTestCase(TestCase):
         """Ensure all metadata gets written as expected."""
         fake_imdb_id = fake.word()
         fake_poster = fake.url()
-        fake_imdb_object = {
-            'imdbID': fake_imdb_id,
-            'Poster': fake_poster,
-        }
+        fake_imdb_object = {"imdbID": fake_imdb_id, "Poster": fake_poster}
         fake_original_filename = " ".join(fake.words())
         fake_final_title = " ".join(fake.words())
 
         fake_title_metadata = {
             "original_filename": fake_original_filename,
-            'title': fake_final_title,
-            'imdb_id': fake_imdb_id,
-            'poster': fake_poster
+            "title": fake_final_title,
+            "imdb_id": fake_imdb_id,
+            "poster": fake_poster,
         }
 
-        self.formatter._write_all_metadata(imdb_object=fake_imdb_object, original_filename=fake_original_filename, final_title=fake_final_title)
+        self.formatter._write_all_metadata(
+            imdb_object=fake_imdb_object,
+            original_filename=fake_original_filename,
+            final_title=fake_final_title,
+        )
 
-        write_metadata_method_patch.assert_any_call(new_content=fake_title_metadata, content_key='titles', directory=blockbuster.TEST_INPUT_FOLDER, metadata_filename=blockbuster.METADATA_FILENAME)
-        write_metadata_method_patch.assert_any_call(new_content=fake_imdb_object, content_key='metadata', directory=blockbuster.TEST_INPUT_FOLDER, metadata_filename=blockbuster.METADATA_FILENAME)
+        write_metadata_method_patch.assert_any_call(
+            new_content=fake_title_metadata,
+            content_key="titles",
+            directory=blockbuster.TEST_INPUT_FOLDER,
+            metadata_filename=blockbuster.METADATA_FILENAME,
+        )
+        write_metadata_method_patch.assert_any_call(
+            new_content=fake_imdb_object,
+            content_key="metadata",
+            directory=blockbuster.TEST_INPUT_FOLDER,
+            metadata_filename=blockbuster.METADATA_FILENAME,
+        )
 
     def test_rename_file_without_recursion(self):
         """Ensure files are being renamed appropriately."""
@@ -722,23 +854,23 @@ class FormatterTestCase(TestCase):
         root = self.test_folder
 
         # Create a special separate area to do this testing:
-        special_test_folder = os.path.join(root, 'special_test_folder')
+        special_test_folder = os.path.join(root, "special_test_folder")
         os.makedirs(special_test_folder)
 
         # This time, we'll use the same fake new filename for all the files
         # to test the recursive renaming functionality:
         fake_new_name = fake.word()
         fake_file_extension = fake.word()
-        fake_new_filename = '.'.join([fake_new_name, fake_file_extension])
+        fake_new_filename = ".".join([fake_new_name, fake_file_extension])
 
         # Create a fake file to conflict with the first renaming:
         fake_new_filepath = os.path.join(special_test_folder, fake_new_filename)
         open(fake_new_filepath, "a").close()
         counter = 2
 
-        print('fake_new_name:', fake_new_name)
-        print('fake_new_filename:', fake_new_filename)
-        print('fake_new_filepath:', fake_new_filepath)
+        print("fake_new_name:", fake_new_name)
+        print("fake_new_filename:", fake_new_filename)
+        print("fake_new_filepath:", fake_new_filepath)
 
         # Add the first fake new filename to the list:
         fake_new_filenames.append(fake_new_name)
@@ -749,13 +881,13 @@ class FormatterTestCase(TestCase):
             # Create a random file:
             fake_name = fake.word()
             # But use the same extension:
-            fake_filename = '.'.join([fake_name, fake_file_extension])
+            fake_filename = ".".join([fake_name, fake_file_extension])
             fake_filepath = os.path.join(special_test_folder, fake_filename)
             open(fake_filepath, "a").close()
 
-            print('fake_name:', fake_new_name)
-            print('fake_filename:', fake_new_filename)
-            print('fake_filepath:', fake_new_filepath)
+            print("fake_name:", fake_new_name)
+            print("fake_filename:", fake_new_filename)
+            print("fake_filepath:", fake_new_filepath)
 
             # Keep track of the original filenames:
             original_filenames.append(fake_name)
@@ -768,7 +900,7 @@ class FormatterTestCase(TestCase):
             )
 
             # Update the counter suffix for the next iteration:
-            fake_new_filename_to_add = ("_".join([fake_new_name, str(counter)]))
+            fake_new_filename_to_add = "_".join([fake_new_name, str(counter)])
             counter += 1
 
             # and keep track of those fake new filenames
@@ -801,11 +933,17 @@ class FormatterTestCase(TestCase):
             fake_filepath = os.path.join(fake_folder_path, fake_filename)
             open(fake_filepath, "a").close()
 
-        self.formatter._rename_folder_and_contents(directory=self.test_folder, original_name=fake_folder_name, new_name=fake_new_name)
+        self.formatter._rename_folder_and_contents(
+            directory=self.test_folder,
+            original_name=fake_folder_name,
+            new_name=fake_new_name,
+        )
         self.assertEqual(rename_file_method_patch.call_count, num_files)
 
     @patch(f"{module_under_test}.Formatter._rename_file")
-    def test_rename_folder_and_contents_without_directory(self, rename_file_method_patch):
+    def test_rename_folder_and_contents_without_directory(
+        self, rename_file_method_patch
+    ):
         """Ensure folders and their contents are renamed correctly, when a valid directory is not provided."""
         min_value = 0
         max_value = 10
@@ -822,12 +960,16 @@ class FormatterTestCase(TestCase):
             fake_filepath = os.path.join(fake_folder_path, fake_filename)
             open(fake_filepath, "a").close()
 
-        self.formatter._rename_folder_and_contents(original_name=fake_folder_name, new_name=fake_new_name)
+        self.formatter._rename_folder_and_contents(
+            original_name=fake_folder_name, new_name=fake_new_name
+        )
         self.assertEqual(rename_file_method_patch.call_count, num_files)
 
     @patch(f"{module_under_test}.Formatter._get_release_year")
     @patch(f"{module_under_test}.Formatter._search")
-    def test_search_by_search_terms_without_release_year(self, search_method_patch, get_release_year_method_patch):
+    def test_search_by_search_terms_without_release_year(
+        self, search_method_patch, get_release_year_method_patch
+    ):
         """
 
         Ensure searching by some `search_terms` without the `release_year`
@@ -844,7 +986,9 @@ class FormatterTestCase(TestCase):
 
     @patch(f"{module_under_test}.Formatter._get_release_year")
     @patch(f"{module_under_test}.Formatter._search")
-    def test_search_by_search_terms_with_release_year(self, search_method_patch, get_release_year_method_patch):
+    def test_search_by_search_terms_with_release_year(
+        self, search_method_patch, get_release_year_method_patch
+    ):
         """
 
         Ensure searching by some `search_terms` with the `release_year` calls the `_search()`
@@ -875,7 +1019,9 @@ class FormatterTestCase(TestCase):
 
     @patch(f"{module_under_test}.Formatter._get_release_year")
     @patch(f"{module_under_test}.Formatter._search")
-    def test_search_by_title_without_release_year(self, search_method_patch, get_release_year_method_patch):
+    def test_search_by_title_without_release_year(
+        self, search_method_patch, get_release_year_method_patch
+    ):
         """
 
         Ensure searching by a title without the `release_year` calls the `_get_release_year()`
@@ -892,7 +1038,9 @@ class FormatterTestCase(TestCase):
 
     @patch(f"{module_under_test}.Formatter._get_release_year")
     @patch(f"{module_under_test}.Formatter._search")
-    def test_search_by_title_with_release_year(self, search_method_patch, get_release_year_method_patch):
+    def test_search_by_title_with_release_year(
+        self, search_method_patch, get_release_year_method_patch
+    ):
         """
 
         Ensure searching by a title with the `release_year` calls the `_search()` method,
@@ -913,16 +1061,20 @@ class FormatterTestCase(TestCase):
 
         for example_title in self.example_titles:
             for original_filename, metadata in example_title.items():
-                imdb_id = metadata.get('imdb_id')
-                title = metadata.get('title')
-                release_year = metadata.get('release_year')
+                imdb_id = metadata.get("imdb_id")
+                title = metadata.get("title")
+                release_year = metadata.get("release_year")
 
                 # Get a test IMDb object from the "formatted" title and release year:
-                test_imdb_object = self.formatter.get_imdb_object(search_query=title, release_year=release_year)
+                test_imdb_object = self.formatter.get_imdb_object(
+                    search_query=title, release_year=release_year
+                )
                 # This should return an object that contains the correct IMDb object:
-                test_imdb_id = test_imdb_object.get('imdbID')
-                test_title = self.formatter._strip_illegal_characters(phrase=test_imdb_object.get('Title'))
-                test_release_year = test_imdb_object.get('Year')
+                test_imdb_id = test_imdb_object.get("imdbID")
+                test_title = self.formatter._strip_illegal_characters(
+                    phrase=test_imdb_object.get("Title")
+                )
+                test_release_year = test_imdb_object.get("Year")
 
                 self.assertEqual(test_imdb_id, imdb_id)
                 self.assertEqual(test_title, title)
@@ -932,16 +1084,20 @@ class FormatterTestCase(TestCase):
         """Ensure that an IMDb object can be correctly retrieved, given an `imdb_id"""
         for example_title in self.example_titles:
             for original_filename, metadata in example_title.items():
-                imdb_id = metadata.get('imdb_id')
-                title = metadata.get('title')
-                release_year = metadata.get('release_year')
+                imdb_id = metadata.get("imdb_id")
+                title = metadata.get("title")
+                release_year = metadata.get("release_year")
 
                 # Get a test IMDb object from the "formatted" title, an IMDb ID, and release year:
-                test_imdb_object = self.formatter.get_imdb_object(search_query=title, imdb_id=imdb_id, release_year=release_year)
+                test_imdb_object = self.formatter.get_imdb_object(
+                    search_query=title, imdb_id=imdb_id, release_year=release_year
+                )
                 # This should return an object that contains the correct IMDb object:
-                test_imdb_id = test_imdb_object.get('imdbID')
-                test_title = self.formatter._strip_illegal_characters(phrase=test_imdb_object.get('Title'))
-                test_release_year = test_imdb_object.get('Year')
+                test_imdb_id = test_imdb_object.get("imdbID")
+                test_title = self.formatter._strip_illegal_characters(
+                    phrase=test_imdb_object.get("Title")
+                )
+                test_release_year = test_imdb_object.get("Year")
 
                 self.assertEqual(test_imdb_id, imdb_id)
                 self.assertEqual(test_title, title)
@@ -958,15 +1114,23 @@ class FormatterTestCase(TestCase):
                 # Original file should no longer exist:
                 original_folder_path = os.path.join(root_directory, original_filename)
                 self.assertFalse(os.path.exists(original_folder_path))
-                formatted_filename = f"{metadata.get('title')} [{metadata.get('release_year')}]"
+                formatted_filename = (
+                    f"{metadata.get('title')} [{metadata.get('release_year')}]"
+                )
                 formatted_folder_path = os.path.join(root_directory, formatted_filename)
                 # Check that all the file extensions are formatted:
                 for file_extension in self.file_extensions:
-                    formatted_filename_with_extension = formatted_filename + file_extension
-                    formatted_filepath = os.path.join(formatted_folder_path, formatted_filename_with_extension)
-                    bad_filepath = os.path.join(original_folder_path, formatted_filename_with_extension)
+                    formatted_filename_with_extension = (
+                        formatted_filename + file_extension
+                    )
+                    formatted_filepath = os.path.join(
+                        formatted_folder_path, formatted_filename_with_extension
+                    )
+                    bad_filepath = os.path.join(
+                        original_folder_path, formatted_filename_with_extension
+                    )
                     self.assertFalse(os.path.exists(bad_filepath))
-                    print('formatted_filepath:', formatted_filepath)
+                    print("formatted_filepath:", formatted_filepath)
                     self.assertTrue(os.path.exists(formatted_filepath))
 
     def test_format_writes_correct_metadata(self):
@@ -977,37 +1141,43 @@ class FormatterTestCase(TestCase):
         metadata_data = {}
 
         metadata_file = self.formatter._initialize_metadata_file()
-        for title in metadata_file.get('titles'):
-            title_data[title.get('imdb_id')] = {
-                'original_filename': title.get('original_filename'),
-                'imdb_id': title.get('imdb_id'),
-                'title': title.get('title'),
+        for title in metadata_file.get("titles"):
+            title_data[title.get("imdb_id")] = {
+                "original_filename": title.get("original_filename"),
+                "imdb_id": title.get("imdb_id"),
+                "title": title.get("title"),
             }
 
-        for metadata in metadata_file.get('metadata'):
-            metadata_data[metadata.get('imdbID')] = {
-                'title': metadata.get('Title'),
-                'release_year': metadata.get('Year'),
-                'imdb_id': metadata.get('imdbID'),
+        for metadata in metadata_file.get("metadata"):
+            metadata_data[metadata.get("imdbID")] = {
+                "title": metadata.get("Title"),
+                "release_year": metadata.get("Year"),
+                "imdb_id": metadata.get("imdbID"),
             }
 
         for example_title in self.example_titles:
             for original_filename, metadata in example_title.items():
-                title = metadata.get('title')
-                imdb_id = metadata.get('imdb_id')
-                release_year = metadata.get('release_year')
+                title = metadata.get("title")
+                imdb_id = metadata.get("imdb_id")
+                release_year = metadata.get("release_year")
 
                 # First check titles:
                 title_data_object = title_data[imdb_id]
-                self.assertEqual(original_filename, title_data_object.get('original_filename'))
-                self.assertEqual(imdb_id, title_data_object.get('imdb_id'))
-                self.assertEqual(f"{title} [{release_year}]", title_data_object.get('title'))
+                self.assertEqual(
+                    original_filename, title_data_object.get("original_filename")
+                )
+                self.assertEqual(imdb_id, title_data_object.get("imdb_id"))
+                self.assertEqual(
+                    f"{title} [{release_year}]", title_data_object.get("title")
+                )
 
                 # Then check metadata:
                 metadata_data_object = metadata_data[imdb_id]
-                test_title = self.formatter._strip_illegal_characters(phrase=metadata_data_object.get('title'))
-                test_release_year = metadata_data_object.get('release_year')
-                test_imdb_id = metadata_data_object.get('imdb_id')
+                test_title = self.formatter._strip_illegal_characters(
+                    phrase=metadata_data_object.get("title")
+                )
+                test_release_year = metadata_data_object.get("release_year")
+                test_imdb_id = metadata_data_object.get("imdb_id")
                 self.assertEqual(test_title, title)
                 self.assertEqual(test_release_year, release_year)
                 self.assertEqual(test_imdb_id, imdb_id)
@@ -1021,7 +1191,7 @@ class FormatterTestCase(TestCase):
         error_titles = []
 
         # Create a special separate area to do this testing:
-        special_test_folder = os.path.join(root, 'special_test_folder')
+        special_test_folder = os.path.join(root, "special_test_folder")
         os.makedirs(special_test_folder)
 
         for iteration in range(iterations):
@@ -1046,16 +1216,18 @@ class FormatterTestCase(TestCase):
 
         self.formatter.format(directory=special_test_folder)
 
-        metadata = self.formatter._initialize_metadata_file(directory=special_test_folder)
+        metadata = self.formatter._initialize_metadata_file(
+            directory=special_test_folder
+        )
 
         # There should be errors:
-        self.assertNotEqual(len(metadata.get('errors')), 0)
+        self.assertNotEqual(len(metadata.get("errors")), 0)
         # In fact, there should be exactly `iterations` amount of errors:
-        self.assertEqual(len(metadata.get('errors')), iterations)
+        self.assertEqual(len(metadata.get("errors")), iterations)
 
         # And all of those errors should be the fake filenames we created:
-        for error_data in metadata.get('errors'):
-            self.assertIn(error_data.get('original_filename'), error_titles)
+        for error_data in metadata.get("errors"):
+            self.assertIn(error_data.get("original_filename"), error_titles)
 
 
 class PosterFinderTestCase(TestCase):
@@ -1110,7 +1282,7 @@ class PosterFinderTestCase(TestCase):
         self.poster_finder._download(url=fake_url)
         self.mock_requests.get.assert_called_once()
 
-    @patch(f'{module_under_test}.PosterFinder._download')
+    @patch(f"{module_under_test}.PosterFinder._download")
     def test_download_posters_if_folder_exists(self, download_method_patch):
         """Ensure Posterfinder is calling the `_download()` method when the correct parameter values are specified and the folder exists."""
         min_value = 0
@@ -1127,18 +1299,17 @@ class PosterFinderTestCase(TestCase):
             poster_folder_name = fake.word()
             full_poster_folder_path = os.path.join(self.test_folder, poster_folder_name)
             os.mkdir(full_poster_folder_path)
-            fake_title_data = {
-                'title': poster_folder_name,
-                'poster': fake_poster_url
-            }
-            self.formatter._write_metadata(new_content=fake_title_data, content_key='titles')
+            fake_title_data = {"title": poster_folder_name, "poster": fake_poster_url}
+            self.formatter._write_metadata(
+                new_content=fake_title_data, content_key="titles"
+            )
 
         self.poster_finder.download_posters()
 
         for fake_poster_url in fake_poster_urls:
             download_method_patch.assert_any_call(url=fake_poster_url)
 
-    @patch(f'{module_under_test}.PosterFinder._download')
+    @patch(f"{module_under_test}.PosterFinder._download")
     def test_download_posters_if_folder_is_nonexistent(self, download_method_patch):
         """Ensure Posterfinder is calling the `_download()` method when the correct parameter values are specified, but the folder does not exist."""
         min_value = 0
@@ -1151,11 +1322,10 @@ class PosterFinderTestCase(TestCase):
         for iteration in range(iterations):
             fake_poster_url = fake.url()
             poster_folder_name = fake.word()
-            fake_title_data = {
-                'title': poster_folder_name,
-                'poster': fake_poster_url
-            }
-            self.formatter._write_metadata(new_content=fake_title_data, content_key='titles')
+            fake_title_data = {"title": poster_folder_name, "poster": fake_poster_url}
+            self.formatter._write_metadata(
+                new_content=fake_title_data, content_key="titles"
+            )
 
         self.poster_finder.download_posters()
 

@@ -11,12 +11,14 @@ import requests
 
 
 class PosterFinder:
-    def __init__(self, directory=None, metadata_filename="metadata.json", verbose=False):
+    def __init__(
+        self, directory=None, metadata_filename="metadata.json", verbose=False
+    ):
         self._directory = directory
         self._metadata_filename = metadata_filename
         self._verbose = verbose
         self._action_counter = 0
-        
+
         if self._verbose:
             print("[CURRENT ACTION: LOCATING MOVIE POSTERS]\n")
 
@@ -69,7 +71,9 @@ class PosterFinder:
                 title_path = os.path.join(directory, title["title"])
                 # If the title folder exists
                 if os.path.exists(title_path):
-                    poster_filepath = os.path.join(directory, title["title"], "poster.jpg")
+                    poster_filepath = os.path.join(
+                        directory, title["title"], "poster.jpg"
+                    )
 
                     if self._verbose:
                         print(f'[PROCESSING TITLE] "{title}]"\n')

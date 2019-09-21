@@ -57,7 +57,9 @@ class BlockBusterBuilder:
         self._file_extensions = file_extensions
         self._use_extensions = use_extensions
 
-    def _create(self, empty=False, file_extensions=None, folderized=False, use_extensions=None):
+    def _create(
+        self, empty=False, file_extensions=None, folderized=False, use_extensions=None
+    ):
         """
 
         :param bool empty: Set to `True` to create an empty input directory.

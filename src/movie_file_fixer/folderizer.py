@@ -9,12 +9,7 @@ import shutil
 
 
 class Folderizer:
-    def __init__(
-        self,
-        directory,
-        metadata_filename="metadata.json",
-        verbose=False,
-    ):
+    def __init__(self, directory, metadata_filename="metadata.json", verbose=False):
         self._directory = directory
         self._metadata_filename = metadata_filename
         self._verbose = verbose
@@ -75,7 +70,9 @@ class Folderizer:
                 )  # Extract the filename from the extension
                 new_filepath = os.path.join(os.getcwd(), directory, stripped_filename)
 
-                if not os.path.exists(new_filepath):  # If the folder doesn't already exist:
+                if not os.path.exists(
+                    new_filepath
+                ):  # If the folder doesn't already exist:
                     os.mkdir(new_filepath)  # Then create it
                     if self._verbose:
                         print(f'[{self._action_counter}] [CREATED FOLDER] "{filename}"')
