@@ -1,3 +1,4 @@
+import requests
 import json
 import os
 import random
@@ -70,6 +71,7 @@ class MovieFileFixerTestCase(TestCase):
         directory = blockbuster.TEST_INPUT_FOLDER
         file_extensions = [".nfo", ".dat", ".jpg", ".png", ".txt", ".exe"]
         metadata_filename = "metadata.json"
+        language = 'en'
         test_parser = movie_file_fixer.parse_args(
             [
                 "-d",
@@ -94,6 +96,7 @@ class MovieFileFixerTestCase(TestCase):
         self.assertEqual(test_parser.directory, directory)
         self.assertEqual(test_parser.file_extensions, file_extensions)
         self.assertEqual(test_parser.metadata_filename, metadata_filename)
+        self.assertEqual(test_parser.language, language)
         self.assertTrue(test_parser.verbose)
 
     def test_parse_args_with_fake_data(self):
@@ -1330,3 +1333,69 @@ class PosterFinderTestCase(TestCase):
         self.poster_finder.download_posters()
 
         download_method_patch.assert_not_called()
+
+
+class SubtitleFinderTestCase(TestCase):
+    def setUp(self):
+        # To suppress the stdout by having verbose=True on SubtitleFinder instantiation:
+        self.mock_print_patch = mock.patch("builtins.print")
+        self.mock_print = self.mock_print_patch.start()
+
+        self.mock_requests_patch = mock.patch(
+            f"{module_under_test}.subtitle_finder.requests", autospec=True
+        )
+        self.mock_requests = self.mock_requests_patch.start()
+
+        self.file_extensions = [".file"]
+        test_environment = blockbuster.BlockBusterBuilder(
+            level="pg-13",
+            test_folder=blockbuster.TEST_INPUT_FOLDER,
+            file_extensions=self.file_extensions,
+            use_extensions=False,
+        )
+        self.test_folder, self.example_titles = (
+            test_environment.create_empty_environment()
+        )
+
+        self.formatter = movie_file_fixer.Formatter(
+            directory=blockbuster.TEST_INPUT_FOLDER,
+            metadata_filename=blockbuster.METADATA_FILENAME,
+            verbose=True,
+        )
+
+        self.subtitle_finder = movie_file_fixer.SubtitleFinder(
+            directory=blockbuster.TEST_INPUT_FOLDER,
+            metadata_filename=blockbuster.METADATA_FILENAME,
+            language='en',
+            verbose=True,
+        )
+
+    def tearDown(self):
+        shutil.rmtree(self.test_folder)
+        self.mock_print_patch.stop()
+        self.mock_requests_patch.stop()
+
+    def test_is_movie_file_with_legit_extension(self):
+        """Ensures that a legit movie filename (one that ends in a legit file extension) returns True."""
+        legit_movie_file_extensions = ['.avi', '.mp4', '.mk4', '.mov']
+        fake_legit_movie_filename = fake.word() + random.choice(legit_movie_file_extensions)
+        test_is_movie_file = self.subtitle_finder._is_movie_file(filename=fake_legit_movie_filename)
+        self.assertTrue(test_is_movie_file)
+
+    def test_is_movie_file_with_a_non_movie_extension(self):
+        """Ensures that a non-movie filename (one that does not end in a legit file extension) returns False."""
+        not_movie_file_extensions = ['.jpg', '.mp3', '.png', '.exe', fake.word()]
+        fake_not_a_movie_filename = fake.word() + random.choice(not_movie_file_extensions)
+        test_is_movie_file = self.subtitle_finder._is_movie_file(filename=fake_not_a_movie_filename)
+        self.assertFalse(test_is_movie_file)
+
+    # TODO: Get this test working:
+    # @patch(f"{module_under_test}.subtitle_finder.hashlib")
+    # def test_get_hash_calls_hash_function(self, hashlib_method_patch):
+    #     """Ensure that `hashlib.md5.hexdigest() is called when `_get_hash()` is called."""
+    #     # root = self.test_folder
+    #     # filename = random.choice(os.listdir(root))
+    #     # filepath = os.path.join(root, filename)
+    #     remote_file = requests.get(url='http://thesubdb.com/api/samples/dexter.mp4')
+    #     self.subtitle_finder._get_hash(filepath=remote_file)
+    #     hashlib_method_patch.assert_called_once()

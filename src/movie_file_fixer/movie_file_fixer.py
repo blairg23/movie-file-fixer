@@ -36,6 +36,7 @@ def main():
         directory=args.directory,
         file_extensions=args.file_extensions,
         metadata_filename=args.metadata_filename,
+        language=args.language,
         verbose=args.verbose,
     )
     movie_file_fixer.folderize()
@@ -78,6 +79,13 @@ def parse_args(args):
         help="If you want to specify a pre-built or custom metadata filename.",
     )
     parser.add_argument(
+        "--language",
+        "-l",
+        type=str,
+        default="en",
+        help="If you want to specify a pre-built or custom metadata filename.",
+    )
+    parser.add_argument(
         "--verbose",
         "-v",
         action="store_true",
@@ -93,6 +101,7 @@ class MovieFileFixer:
         directory,
         file_extensions=[".nfo", ".dat", ".jpg", ".png", ".txt", ".exe"],
         metadata_filename="metadata.json",
+        language='en',
         verbose=False,
     ):
         default_file_extensions = [".nfo", ".dat", ".jpg", ".png", ".txt", ".exe"]
