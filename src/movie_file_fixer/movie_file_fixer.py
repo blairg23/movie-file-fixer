@@ -99,12 +99,12 @@ class MovieFileFixer:
     def __init__(
         self,
         directory,
-        file_extensions=[".nfo", ".dat", ".jpg", ".png", ".txt", ".exe"],
+        file_extensions=[".idx", ".sub", ".nfo", ".dat", ".jpg", ".png", ".txt", ".exe"],
         metadata_filename="metadata.json",
         language='en',
         verbose=False,
     ):
-        default_file_extensions = [".nfo", ".dat", ".jpg", ".png", ".txt", ".exe"]
+        default_file_extensions = [".idx", ".sub", ".nfo", ".dat", ".jpg", ".png", ".txt", ".exe"]
         self._directory = directory
         self._file_extensions = (
             file_extensions if file_extensions else default_file_extensions

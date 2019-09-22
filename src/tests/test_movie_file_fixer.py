@@ -69,13 +69,17 @@ class MovieFileFixerTestCase(TestCase):
     def test_parse_args_with_real_data(self):
         """Ensure the `parse_args() method sets the Namespace object attributes correctly with realistic data."""
         directory = blockbuster.TEST_INPUT_FOLDER
-        file_extensions = [".nfo", ".dat", ".jpg", ".png", ".txt", ".exe"]
+        file_extensions = [".idx", ".sub", ".nfo", ".dat", ".jpg", ".png", ".txt", ".exe"]
         metadata_filename = "metadata.json"
         language = 'en'
         test_parser = movie_file_fixer.parse_args(
             [
                 "-d",
                 directory,
+                "-e",
+                ".idx",
+                "-e",
+                ".sub",
                 "-e",
                 ".nfo",
                 "-e",
