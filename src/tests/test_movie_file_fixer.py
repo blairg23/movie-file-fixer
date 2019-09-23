@@ -1291,7 +1291,11 @@ class PosterFinderTestCase(TestCase):
 
     @patch(f"{module_under_test}.PosterFinder._download")
     def test_download_posters_if_folder_exists(self, download_method_patch):
-        """Ensure Posterfinder is calling the `_download()` method when the correct parameter values are specified and the folder exists."""
+        """
+
+        Ensure Posterfinder is calling the `_download()` method when the correct parameter
+        values are specified and the folder and `poster.jpg` files exist.
+        """
         min_value = 0
         max_value = 10
         iterations = fake.pyint(min_value=min_value, max_value=max_value)
@@ -1311,14 +1315,29 @@ class PosterFinderTestCase(TestCase):
                 new_content=fake_title_data, content_key="titles"
             )
 
+        fake_content = ' '.join([word for word in fake.words()])
+        download_method_patch.return_value.status_code = 200
+        download_method_patch.return_value.content = bytes(fake_content, encoding='UTF-8')
+
         self.poster_finder.download_posters()
 
         for fake_poster_url in fake_poster_urls:
             download_method_patch.assert_any_call(url=fake_poster_url)
 
+        metadata = self.formatter._initialize_metadata_file(directory=self.test_folder)
+
+        for title in metadata.get('titles', []):
+            filepath = os.path.join(self.test_folder, title['title'], 'poster.jpg')
+            self.assertTrue(os.path.exists(filepath))
+            self.assertTrue(os.path.isfile(filepath))
+
     @patch(f"{module_under_test}.PosterFinder._download")
     def test_download_posters_if_folder_is_nonexistent(self, download_method_patch):
-        """Ensure Posterfinder is calling the `_download()` method when the correct parameter values are specified, but the folder does not exist."""
+        """
+
+        Ensure Posterfinder is not calling the `_download()` method when the correct
+        parameter values are specified, but the folder does not exist.
+        """
         min_value = 0
         max_value = 10
         iterations = fake.pyint(min_value=min_value, max_value=max_value)
@@ -1381,7 +1400,7 @@ class SubtitleFinderTestCase(TestCase):
 
     def test_is_movie_file_with_legit_extension(self):
         """Ensures that a legit movie filename (one that ends in a legit file extension) returns True."""
-        legit_movie_file_extensions = ['.avi', '.mp4', '.mk4', '.mov']
+        legit_movie_file_extensions = ['.avi', '.mp4', '.mkv', '.mov']
         fake_legit_movie_filename = fake.word() + random.choice(legit_movie_file_extensions)
         test_is_movie_file = self.subtitle_finder._is_movie_file(filename=fake_legit_movie_filename)
         self.assertTrue(test_is_movie_file)
@@ -1393,13 +1412,42 @@ class SubtitleFinderTestCase(TestCase):
         test_is_movie_file = self.subtitle_finder._is_movie_file(filename=fake_not_a_movie_filename)
         self.assertFalse(test_is_movie_file)
 
-    # TODO: Get this test working:
-    # @patch(f"{module_under_test}.subtitle_finder.hashlib")
-    # def test_get_hash_calls_hash_function(self, hashlib_method_patch):
-    #     """Ensure that `hashlib.md5.hexdigest() is called when `_get_hash()` is called."""
-    #     # root = self.test_folder
-    #     # filename = random.choice(os.listdir(root))
-    #     # filepath = os.path.join(root, filename)
-    #     remote_file = requests.get(url='http://thesubdb.com/api/samples/dexter.mp4')
-    #     self.subtitle_finder._get_hash(filepath=remote_file)
-    #     hashlib_method_patch.assert_called_once()
+    def test_get_hash_with_real_files(self):
+        """
+
+        Ensure that `_get_hash()` returns the right hash when using real movie files.
+
+        Example files taken from http://thesubdb.com/api/samples/dexter.mp4
+        and http://thesubdb.com/api/samples/justified.mp4 and trimmed down to 128KB
+        using utils.utils.create_trimmed_file() to save space on the GIT repo.
+        """
+
+        dexter_hash = 'ffd8d4aa68033dc03d1c8ef373b9028c'
+        justified_hash = 'edc1981d6459c6111fe36205b4aff6c2'
+        file_hashes = [dexter_hash, justified_hash]
+
+        root = os.path.join(blockbuster.TEST_FOLDER, 'test_examples')
+        for file_hash in file_hashes:
+            filepath = os.path.join(root, file_hash)
+            test_hash = self.subtitle_finder._get_hash(filepath=filepath)
+            self.assertEqual(test_hash, file_hash)
+
+    def test_get_hash_with_contrived_files(self):
+        """
+
+        Ensure that `_get_hash()` returns the right hash when using contrived files.
+        """
+        root = self.test_folder
+        min_value = 0
+        max_value = 10
+        iterations = fake.pyint(min_value=min_value, max_value=max_value)
+
+        for iteration in range(iterations):
+            # First, create a file that is 3x the size we want to test against:
+            large_filename = 'testing'
+            utils.create_random_file(directory=root, filename=large_filename, filesize=3*128)
+            large_filepath = os.path.join(root, large_filename)
+            file_hash = utils.create_trimmed_file(filepath=large_filepath)
+            filepath = os.path.join(root, file_hash)
+            test_hash = self.subtitle_finder._get_hash(filepath=filepath)
+            self.assertEqual(test_hash, file_hash)

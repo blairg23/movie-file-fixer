@@ -43,17 +43,22 @@ class SubtitleFinder:
         else:
             return False
 
-    def _get_hash(self, filepath):
+    def _get_hash(self, filepath, size=64):
         """
         
-        :param filepath: The path to the file to be hashed.
-        :return str: The `md5` hash of the file at the given filepath.
+        :param str filepath: The path to the file to be hashed.
+        :param int size: The size (in KB) of the chunks to hash.
+        :return str: The `md5` hash of the end chunks from the file at the given filepath.
 
-        This hash function receives the name of the file and returns the hash code.
+        This hash function receives the name of the file and returns the `md5` hash of the beginning
+        and end `size` KB sized chunks.
+
+        i.e. If `size=64`, we will take a 64KB chunk from the beginning and end of the file and return
+        the `md5` hash of those chunks.
         """
-        readsize = 64 * 1024
+        readsize = size * 1024
         with open(filepath, "rb") as f:
-            size = os.path.getsize(filepath)
+            # size = os.path.getsize(filepath)
             data = f.read(readsize)
             f.seek(-readsize, os.SEEK_END)
             data += f.read(readsize)
