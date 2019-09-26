@@ -25,8 +25,6 @@ class Formatter:
         if self._verbose:
             print("[CURRENT ACTION: FORMATTING MOVIE TITLES]\n")
 
-        self._metadata = self._initialize_metadata_file()
-
     def _initialize_metadata_file(self, directory=None, metadata_filename=None):
         """
 
@@ -353,6 +351,10 @@ class Formatter:
         if metadata_filename is None:
             metadata_filename = self._metadata_filename
 
+        metadata_filepath = os.path.join(directory, metadata_filename)
+        if not os.path.exists(metadata_filepath):
+            self._initialize_metadata_file(directory=directory, metadata_filename=metadata_filename)
+
         if self._verbose:
             print(
                 f'[{self._action_counter}] [WRITING METADATA] for [CONTENT KEY] "{content_key}" to [FILE] "{metadata_filename}"\n'
@@ -360,14 +362,14 @@ class Formatter:
             self._action_counter += 1
 
         # Open file for reading:
-        with open(os.path.join(directory, metadata_filename), mode="r") as infile:
+        with open(metadata_filepath, mode="r") as infile:
             # Load existing data into titles index list:
             contents_file = json.load(infile)
 
         # Check that the `content_key` exists:
         if contents_file.get(content_key) is not None:
             # Open file for writing:
-            with open(os.path.join(directory, metadata_filename), mode="w") as outfile:
+            with open(metadata_filepath, mode="w") as outfile:
                 # Append the new data to the titles index list:
                 contents_file[content_key].append(new_content)
                 # Write that updated list to the existing file:
@@ -388,6 +390,10 @@ class Formatter:
 
         if metadata_filename is None:
             metadata_filename = self._metadata_filename
+
+        metadata_filepath = os.path.join(directory, metadata_filename)
+        if not os.path.exists(metadata_filepath):
+            self._initialize_metadata_file(directory=directory, metadata_filename=metadata_filename)
 
         if self._verbose:
             print(
@@ -702,13 +708,14 @@ class Formatter:
 
         for title in os.listdir(directory):
             if title != self._metadata_filename:
+                metadata = self._initialize_metadata_file()
                 if self._verbose:
                     print(f'[{self._action_counter}] [FORMATTING] [FOLDER] "{title}"\n')
                     self._action_counter += 1
 
                 # Let's not process the metadata file or duplicate our work:
                 if str(title) not in metadata_filename and title not in [
-                    entry.get("title") for entry in self._metadata.get("titles")
+                    entry.get("title") for entry in metadata.get("titles")
                 ]:
                     # Retrieve the release year to increase dependability of search query results:
                     title_candidate, release_year = self._get_clean_title_candidate_and_release_year(

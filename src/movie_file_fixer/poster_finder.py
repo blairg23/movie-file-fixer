@@ -35,11 +35,12 @@ class PosterFinder:
             }
 
         if self._verbose:
-            print(f'[DOWNLOADING] [FILE] from [URL] "{url}"\n')
+            print(f'[{self._action_counter}] [DOWNLOADING] [FILE] from [URL] "{url}"\n')
+            self._action_counter += 1
 
         return requests.get(url=url, headers=headers)
 
-    def download_posters(self, directory=None, metadata_filename=None):
+    def get_posters(self, directory=None, metadata_filename=None):
         """
 
         :param str directory: The directory containing the metadata file.
@@ -57,7 +58,8 @@ class PosterFinder:
         full_metadata_filepath = os.path.join(directory, metadata_filename)
 
         if self._verbose:
-            print(f'[PROCESSING METADATA] from [FILE] "{full_metadata_filepath}"\n')
+            print(f'[{self._action_counter}] [PROCESSING METADATA] from [FILE] "{full_metadata_filepath}"\n')
+            self._action_counter += 1
 
         # If the metadata file exists:
         if os.path.exists(full_metadata_filepath):
@@ -82,14 +84,16 @@ class PosterFinder:
 
                     if poster_url not in ["", None, " ", "N/A"]:
                         if self._verbose:
-                            print(f'[DOWNLOADING] [POSTER URL] {poster_url}"\n')
+                            print(f'[{self._action_counter}] [DOWNLOADING] [POSTER URL] {poster_url}"\n')
+                            self._action_counter += 1
 
                         response = self._download(url=poster_url)
 
                         if response.status_code == 200:
                             if self._verbose:
                                 print("[DOWNLOAD COMPLETE]\n")
-                                print(f'[WRITING FILE] -> "{poster_filepath}"\n')
+                                print(f'[{self._action_counter}] [WRITING FILE] -> "{poster_filepath}"\n')
+                                self._action_counter += 1
 
                             with open(poster_filepath, "wb") as outfile:
                                 outfile.write(response.content)

@@ -38,7 +38,7 @@ class Folderizer:
         single_files = [
             f
             for f in os.listdir(directory)
-            if os.path.isfile(os.path.join(os.getcwd(), directory, f))
+            if os.path.isfile(os.path.join(directory, f))
         ]
 
         return single_files
@@ -64,11 +64,11 @@ class Folderizer:
 
         for filename in filenames:
             if filename != self._metadata_filename:
-                old_filepath = os.path.join(os.getcwd(), directory, filename)
+                old_filepath = os.path.join(directory, filename)
                 stripped_filename, file_ext = os.path.splitext(
                     filename
                 )  # Extract the filename from the extension
-                new_filepath = os.path.join(os.getcwd(), directory, stripped_filename)
+                new_filepath = os.path.join(directory, stripped_filename)
 
                 if not os.path.exists(
                     new_filepath

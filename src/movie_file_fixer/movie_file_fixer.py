@@ -215,7 +215,7 @@ class MovieFileFixer:
         poster_finder = PosterFinder(
             directory=directory, metadata_filename=metadata_filename, verbose=verbose
         )
-        poster_finder.download_posters()
+        poster_finder.get_posters()
 
     def get_subtitles(
         self, directory=None, metadata_filename=None, language="en", verbose=None
@@ -245,7 +245,7 @@ class MovieFileFixer:
             language=language,
             verbose=verbose,
         )
-        subtitle_finder.download_subtitles()
+        subtitle_finder.get_subtitles()
 
 
 #
