@@ -9,6 +9,7 @@ import hashlib
 import math
 import os
 import pathlib
+import shutil
 
 
 def listdir_fullpath(directory):
@@ -56,9 +57,7 @@ def find_single_files(directory):
 
     Finds all the files without a folder within a given directory
     """
-    return [
-        f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))
-    ]
+    return [f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))]
 
 
 def find_folders(directory):
@@ -69,11 +68,7 @@ def find_folders(directory):
 
     Finds all the folders in a given directory
     """
-    return [
-        os.path.join(directory, o)
-        for o in os.listdir(directory)
-        if os.path.isdir(os.path.join(directory, o))
-    ]
+    return [os.path.join(directory, o) for o in os.listdir(directory) if os.path.isdir(os.path.join(directory, o))]
 
 
 def get_child_file_or_folder_name(path):
@@ -95,7 +90,7 @@ def get_parent_folder_name(path):
 
     Returns the parent folder name, given a full path.
     """
-    return pathlib.Path(path).parent
+    return str(pathlib.Path(path).parent)
 
 
 def get_parent_and_child(path):
@@ -109,16 +104,19 @@ def get_parent_and_child(path):
     return get_parent_folder_name(path=path), get_child_file_or_folder_name(path=path)
 
 
-def silent_remove(filename):
+def silent_remove(path):
     """
-    Removes a given filename, unless it raises an error.
-    Doesn't throw an error if there isn't such a file existent.
+
+    :param str path: The path of the file or folder to remove.
+    :return None:
+
+    Removes a given file or folder path, unless it raises an error.
+    Doesn't throw an error if the file or folder is non-existent.
     """
-    try:
-        os.remove(filename)
-    except OSError as e:  # this would be "except OSError, e:" before Python 2.6
-        if e.errno != errno.ENOENT:  # errno.ENOENT = no such file or directory
-            raise  # re-raise exception if a different error occurred
+    if os.path.isfile(path):
+        os.remove(path)
+    else:
+        shutil.rmtree(path)
 
 
 def create_trimmed_file(filepath, chunksize=64):

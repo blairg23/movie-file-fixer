@@ -195,7 +195,19 @@ class Formatter:
 
         return title, release_year
 
-    def _search(self, search_terms=None, imdb_id=None, title=None, result_type=None, release_year=None, plot="full", page=None, callback=None, season=None, episode=None):
+    def _search(
+        self,
+        search_terms=None,
+        imdb_id=None,
+        title=None,
+        result_type=None,
+        release_year=None,
+        plot="full",
+        page=None,
+        callback=None,
+        season=None,
+        episode=None,
+    ):
         """
 
         :param str search_terms: Any search phrase that might identify a possible movie title. [optional]
@@ -268,7 +280,14 @@ class Formatter:
 
         return response
 
-    def _fuzzy_search(self, search_query, search_key, search_list, result_key="imdbID", result_type=None):
+    def _fuzzy_search(
+        self,
+        search_query,
+        search_key,
+        search_list,
+        result_key="imdbID",
+        result_type=None,
+    ):
         """
 
         :param str search_query: Query phrase to search by.
@@ -333,7 +352,9 @@ class Formatter:
 
         return re.sub(r'[(<>:"/\\|?*)]', "", phrase)
 
-    def _write_metadata(self, new_content, content_key, directory=None, metadata_filename=None):
+    def _write_metadata(
+        self, new_content, content_key, directory=None, metadata_filename=None
+    ):
         """
 
         :param str directory: The directory containing the metadata file.
@@ -353,7 +374,9 @@ class Formatter:
 
         metadata_filepath = os.path.join(directory, metadata_filename)
         if not os.path.exists(metadata_filepath):
-            self._initialize_metadata_file(directory=directory, metadata_filename=metadata_filename)
+            self._initialize_metadata_file(
+                directory=directory, metadata_filename=metadata_filename
+            )
 
         if self._verbose:
             print(
@@ -377,7 +400,14 @@ class Formatter:
         else:
             raise KeyError(content_key)
 
-    def _write_all_metadata(self, imdb_object, original_filename, final_title, directory=None, metadata_filename=None):
+    def _write_all_metadata(
+        self,
+        imdb_object,
+        original_filename,
+        final_title,
+        directory=None,
+        metadata_filename=None,
+    ):
         """
 
         :param dict imdb_object: An IMDb object to collect metadata from.
@@ -393,7 +423,9 @@ class Formatter:
 
         metadata_filepath = os.path.join(directory, metadata_filename)
         if not os.path.exists(metadata_filepath):
-            self._initialize_metadata_file(directory=directory, metadata_filename=metadata_filename)
+            self._initialize_metadata_file(
+                directory=directory, metadata_filename=metadata_filename
+            )
 
         if self._verbose:
             print(

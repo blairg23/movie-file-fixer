@@ -58,7 +58,9 @@ class PosterFinder:
         full_metadata_filepath = os.path.join(directory, metadata_filename)
 
         if self._verbose:
-            print(f'[{self._action_counter}] [PROCESSING METADATA] from [FILE] "{full_metadata_filepath}"\n')
+            print(
+                f'[{self._action_counter}] [PROCESSING METADATA] from [FILE] "{full_metadata_filepath}"\n'
+            )
             self._action_counter += 1
 
         # If the metadata file exists:
@@ -84,7 +86,9 @@ class PosterFinder:
 
                     if poster_url not in ["", None, " ", "N/A"]:
                         if self._verbose:
-                            print(f'[{self._action_counter}] [DOWNLOADING] [POSTER URL] {poster_url}"\n')
+                            print(
+                                f'[{self._action_counter}] [DOWNLOADING] [POSTER URL] {poster_url}"\n'
+                            )
                             self._action_counter += 1
 
                         response = self._download(url=poster_url)
@@ -92,7 +96,9 @@ class PosterFinder:
                         if response.status_code == 200:
                             if self._verbose:
                                 print("[DOWNLOAD COMPLETE]\n")
-                                print(f'[{self._action_counter}] [WRITING FILE] -> "{poster_filepath}"\n')
+                                print(
+                                    f'[{self._action_counter}] [WRITING FILE] -> "{poster_filepath}"\n'
+                                )
                                 self._action_counter += 1
 
                             with open(poster_filepath, "wb") as outfile:

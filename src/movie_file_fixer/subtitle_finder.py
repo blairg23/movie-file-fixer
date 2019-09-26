@@ -30,8 +30,8 @@ class SubtitleFinder:
 
     def _is_movie_file(self, filename):
         """
-        
-        :param filename: The filename to assess. 
+
+        :param filename: The filename to assess.
         :return bool: Whether the given filename is a movie file or not.
 
         This method returns True if the given filename is a movie file and False if not.
@@ -70,7 +70,7 @@ class SubtitleFinder:
 
     def _get_hash(self, filepath, size=64):
         """
-        
+
         :param str filepath: The path to the file to be hashed.
         :param int size: The size (in KB) of the chunks to hash.
         :return str: The `md5` hash of the end chunks from the file at the given filepath.
@@ -82,7 +82,9 @@ class SubtitleFinder:
         the `md5` hash of those chunks.
         """
         if self._verbose:
-            print(f'[{self._action_counter}] [PROCESSING FILE] [HASHING] [FILEPATH] "{filepath}"\n')
+            print(
+                f'[{self._action_counter}] [PROCESSING FILE] [HASHING] [FILEPATH] "{filepath}"\n'
+            )
             self._action_counter += 1
 
         readsize = size * 1024
@@ -96,12 +98,10 @@ class SubtitleFinder:
         if self._verbose:
             if self._verbose:
                 print(f'[INFO] "{filepath}": [HASH] "{file_hash}"\n')
-        
+
         return file_hash
 
-    def _download(
-        self, url="http://api.thesubdb.com/", payload=None, headers=None
-    ):
+    def _download(self, url="http://api.thesubdb.com/", payload=None, headers=None):
         """
 
         :param str url: The SubDb API URL.
@@ -131,7 +131,9 @@ class SubtitleFinder:
         the subtitle exists in.
         """
         if self._verbose:
-            print(f'[{self._action_counter}] [SEARCHING] [SUBTITLE] for [HASHCODE] "{hashcode}"\n')
+            print(
+                f'[{self._action_counter}] [SEARCHING] [SUBTITLE] for [HASHCODE] "{hashcode}"\n'
+            )
             self._action_counter += 1
 
         payload = {"action": "search", "hash": hashcode}
@@ -149,7 +151,9 @@ class SubtitleFinder:
         This method downloads subtitles from the SubDB API, given the specified `hashcode` and `language`.
         """
         if self._verbose:
-            print(f'[{self._action_counter}] [DOWNLOADING] [SUBTITLE] for [HASHCODE] "{hashcode}"\n')
+            print(
+                f'[{self._action_counter}] [DOWNLOADING] [SUBTITLE] for [HASHCODE] "{hashcode}"\n'
+            )
             self._action_counter += 1
 
         payload = {"action": "download", "hash": hashcode, "language": language}
@@ -182,12 +186,14 @@ class SubtitleFinder:
                 # Load existing data into titles index list:
                 titles = json.load(infile)
 
-            for title in titles.get('titles', []):
+            for title in titles.get("titles", []):
                 title_filename = title.get("title")
                 title_folder_path = os.path.join(directory, title_filename)
                 subtitle_filename = f"{language}_subtitles.srt"
                 subtitle_path = os.path.join(title_folder_path, subtitle_filename)
-                movie_file_paths = self._get_movie_file_paths(directory=title_folder_path)
+                movie_file_paths = self._get_movie_file_paths(
+                    directory=title_folder_path
+                )
 
                 for movie_file_path in movie_file_paths:
                     if self._verbose:
@@ -200,23 +206,34 @@ class SubtitleFinder:
                         if response.status_code == 200:
                             subtitles_available = response.text
 
-                        print('SUBTITLES:', subtitles_available)
-                        if subtitles_available not in ["", None, " "] and language in subtitles_available:
+                        print("SUBTITLES:", subtitles_available)
+                        if (
+                            subtitles_available not in ["", None, " "]
+                            and language in subtitles_available
+                        ):
                             if self._verbose:
-                                print(f'[ADDING SUBTITLE FILE] "{language}_subtitles.srt" at [FILEPATH] "{subtitle_path}"\n')
+                                print(
+                                    f'[ADDING SUBTITLE FILE] "{language}_subtitles.srt" at [FILEPATH] "{subtitle_path}"\n'
+                                )
 
-                            response = self._download_subtitles(language=language, hashcode=hashcode)
+                            response = self._download_subtitles(
+                                language=language, hashcode=hashcode
+                            )
                             if response.status_code == 200:
                                 subtitles = response.text
 
                                 if self._verbose:
                                     print("[INFO] [DOWNLOAD COMPLETE]\n")
-                                    print(f'[WRITING SUBTITLE FILE] "{language}_subtitles.srt" at [FILEPATH] "{subtitle_path}"\n')
+                                    print(
+                                        f'[WRITING SUBTITLE FILE] "{language}_subtitles.srt" at [FILEPATH] "{subtitle_path}"\n'
+                                    )
 
-                                with open(subtitle_path, "w+", encoding="UTF-8") as outfile:
+                                with open(
+                                    subtitle_path, "w+", encoding="UTF-8"
+                                ) as outfile:
                                     outfile.writelines(subtitles)
                                     if self._verbose:
-                                        print('[WRITE COMPLETE]')
+                                        print("[WRITE COMPLETE]")
                             else:
                                 print(
                                     f'[ERROR] [RESPONSE STATUS CODE] "{response.status_code}".\n'
@@ -224,7 +241,9 @@ class SubtitleFinder:
                                 )
                         else:
                             if self._verbose:
-                                print(f'[ERROR] No Subtitles Available for [LANGUAGE] "{language}".\n')
+                                print(
+                                    f'[ERROR] No Subtitles Available for [LANGUAGE] "{language}".\n'
+                                )
                     else:
                         print("[INFO] Subtitle already exists. Skipping...\n")
 
