@@ -385,7 +385,7 @@ class Formatter:
             self._action_counter += 1
 
         # Open file for reading:
-        with open(metadata_filepath, mode="r") as infile:
+        with open(metadata_filepath, mode="rb") as infile:
             # Load existing data into titles index list:
             contents_file = json.load(infile)
 

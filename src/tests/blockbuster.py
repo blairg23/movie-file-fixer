@@ -82,7 +82,7 @@ class BlockBusterBuilder:
             os.mkdir(TEST_INPUT_FOLDER)
 
         # Create a bunch of random fake files:
-        with open(TEST_TITLES[self._level], "r") as infile:
+        with open(TEST_TITLES[self._level], "rb") as infile:
             title_examples = json.load(infile)
 
         for title_example in title_examples:

@@ -182,7 +182,7 @@ class SubtitleFinder:
                 self._action_counter += 1
 
             # Open file for reading:
-            with open(full_filepath, mode="r", encoding="UTF-8") as infile:
+            with open(full_filepath, mode="rb") as infile:
                 # Load existing data into titles index list:
                 titles = json.load(infile)
 
@@ -206,7 +206,6 @@ class SubtitleFinder:
                         if response.status_code == 200:
                             subtitles_available = response.text
 
-                        print("SUBTITLES:", subtitles_available)
                         if (
                             subtitles_available not in ["", None, " "]
                             and language in subtitles_available

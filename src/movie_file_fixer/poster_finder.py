@@ -66,7 +66,7 @@ class PosterFinder:
         # If the metadata file exists:
         if os.path.exists(full_metadata_filepath):
             # Open file for reading:
-            with open(full_metadata_filepath, mode="r", encoding="UTF-8") as infile:
+            with open(full_metadata_filepath, mode="rb") as infile:
                 # Load existing data into titles index list:
                 metadata_file = json.load(infile)
 

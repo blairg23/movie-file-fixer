@@ -130,12 +130,6 @@ class MovieFileFixer:
         self._metadata_filename = metadata_filename
         self._verbose = verbose
 
-        # TODO: delete these print statements:
-        print("_directory:", self._directory)
-        print("_file_extensions:", self._file_extensions)
-        print("_metadata_filename:", self._metadata_filename)
-        print("_verbose:", self._verbose)
-
     def folderize(
         self, directory=None, metadata_filename=None, folder_name="subs", verbose=None
     ):
@@ -162,7 +156,6 @@ class MovieFileFixer:
         folderizer = Folderizer(
             directory=directory, metadata_filename=metadata_filename, verbose=verbose
         )
-        print("folderize:", folderizer)
         folderizer.folderize()
         folderizer.unfolderize(folder_name=folder_name)
 
