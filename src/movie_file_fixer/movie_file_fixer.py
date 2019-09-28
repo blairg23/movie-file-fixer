@@ -37,6 +37,7 @@ def main():
         file_extensions=args.file_extensions,
         metadata_filename=args.metadata_filename,
         language=args.language,
+        result_type=args.result_type,
         verbose=args.verbose,
     )
     movie_file_fixer.folderize()
@@ -76,14 +77,22 @@ def parse_args(args):
         "-f",
         type=str,
         default="metadata.json",
-        help="If you want to specify a pre-built or custom metadata filename.",
+        help="To specify a pre-built or custom metadata filename.",
     )
     parser.add_argument(
         "--language",
         "-l",
         type=str,
         default="en",
-        help="If you want to specify a pre-built or custom metadata filename.",
+        help="To specify a two-character language encoding for subtitles.",
+    )
+    parser.add_argument(
+        "--result_type",
+        "-r",
+        type=str,
+        default="movie",
+        choices=['movie', 'series', 'episode'],
+        help="To specify a type of IMDb object result to return metadata and poster information for.",
     )
     parser.add_argument(
         "--verbose",
@@ -111,6 +120,7 @@ class MovieFileFixer:
         ],
         metadata_filename="metadata.json",
         language="en",
+        result_type='movie',
         verbose=False,
     ):
         default_file_extensions = [
@@ -128,6 +138,8 @@ class MovieFileFixer:
             file_extensions if file_extensions else default_file_extensions
         )
         self._metadata_filename = metadata_filename
+        self._language = language
+        self._result_type = result_type
         self._verbose = verbose
 
     def folderize(
@@ -200,8 +212,11 @@ class MovieFileFixer:
         if verbose is None:
             verbose = self._verbose
 
-        formatter = Formatter(directory=directory, verbose=verbose)
-        formatter.format(result_type=result_type)
+        if result_type is None:
+            result_type = self._result_type
+
+        formatter = Formatter(directory=directory, result_type=result_type, verbose=verbose)
+        formatter.format()
 
     def get_posters(self, directory=None, metadata_filename=None, verbose=None):
         """
@@ -229,7 +244,7 @@ class MovieFileFixer:
         poster_finder.get_posters()
 
     def get_subtitles(
-        self, directory=None, metadata_filename=None, language="en", verbose=None
+        self, directory=None, metadata_filename=None, language=None, verbose=None
     ):
         """
 
@@ -246,6 +261,9 @@ class MovieFileFixer:
 
         if metadata_filename is None:
             metadata_filename = self._metadata_filename
+
+        if language is None:
+            language = self._language
 
         if verbose is None:
             verbose = self._verbose
