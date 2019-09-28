@@ -66,5 +66,22 @@
         "release_year": "2012"
       }
     ]
+  },
+  {
+    "description": "Titles that contain extra prefacing words.",
+    "examples": [
+      {
+        "original_filename": "The.Blues.Brothers.2000.1998.1080p.BluRay.H264.AAC-RARBG",
+        "imdb_id": "tt0118747",
+        "title": "Blues Brothers 2000",
+        "release_year": "1998"
+      },
+      {
+        "original_filename": "Rambo.First.Blood.1982.REMASTERED.1080p.BluRay.H264.AAC-RARBG",
+        "imdb_id": "tt0083944",
+        "title": "First Blood",
+        "release_year": "1982"
+      }
+    ]
   }
 ]
