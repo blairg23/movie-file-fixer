@@ -83,5 +83,16 @@
         "release_year": "1982"
       }
     ]
+  },
+  {
+    "description": "Titles that contain the wrong release year.",
+    "examples": [
+      {
+        "original_filename": "The.Cabin.in.the.Woods.2012.1080p.BluRay.H264.AAC-RARBG",
+        "imdb_id": "tt1259521",
+        "title": "The Cabin in the Woods",
+        "release_year": "2011"
+      }
+    ]
   }
 ]
