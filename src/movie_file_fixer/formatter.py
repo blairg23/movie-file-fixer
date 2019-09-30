@@ -15,7 +15,11 @@ from fuzzywuzzy import process as fuzzywuzzy_process
 
 class Formatter:
     def __init__(
-        self, directory=None, metadata_filename="metadata.json", result_type=None, verbose=False
+        self,
+        directory=None,
+        metadata_filename="metadata.json",
+        result_type=None,
+        verbose=False,
     ):
         self._directory = directory
         self._metadata_filename = metadata_filename
