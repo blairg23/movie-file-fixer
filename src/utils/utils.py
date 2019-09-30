@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 
-Description: A compilation of utility methods for testing.
+Description: A compilation of utility methods for testing or production purposes.
 """
 
 import errno

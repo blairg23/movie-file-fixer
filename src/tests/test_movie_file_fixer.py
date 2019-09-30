@@ -413,7 +413,7 @@ class FormatterTestCase(TestCase):
         self.assertFalse(os.path.exists(metadata_filepath))
 
         # Now, this should create a new metadata file:
-        metadata_file = self.formatter._initialize_metadata_file()
+        metadata_file = self.formatter.initialize_metadata_file()
 
         # So let's ensure that that is indeed created:
         self.assertTrue(os.path.exists(metadata_filepath))
@@ -456,7 +456,7 @@ class FormatterTestCase(TestCase):
         self.assertTrue(os.path.exists(metadata_filepath))
 
         # Now, this should not create a new one:
-        metadata_file = self.formatter._initialize_metadata_file()
+        metadata_file = self.formatter.initialize_metadata_file()
 
         # So let's ensure the file was initialized correctly:
         test_titles = metadata_file.get("titles")
@@ -667,7 +667,7 @@ class FormatterTestCase(TestCase):
                 new_content=fake_data, content_key=content_key
             )
 
-        metadata_file = self.formatter._initialize_metadata_file()
+        metadata_file = self.formatter.initialize_metadata_file()
 
         # Ensure all the data is congruent:
         for content_key in content_keys:
@@ -681,7 +681,7 @@ class FormatterTestCase(TestCase):
             fake_key = fake.word()
             fake_value = fake.word()
             fake_data = {fake_key: fake_value}
-            self.formatter._initialize_metadata_file()
+            self.formatter.initialize_metadata_file()
             self.formatter._write_metadata(
                 new_content=fake_data, content_key=fake_content_key
             )
@@ -704,7 +704,7 @@ class FormatterTestCase(TestCase):
         except Exception as error:
             self.assertIsInstance(error, KeyError)
 
-        metadata = self.formatter._initialize_metadata_file()
+        metadata = self.formatter.initialize_metadata_file()
 
         for content_key in content_keys:
             self.assertNotEqual(metadata.get(content_key), fake_data)
@@ -855,7 +855,7 @@ class FormatterTestCase(TestCase):
             fake_filepath = os.path.join(fake_folder_path, fake_filename)
             open(fake_filepath, "a").close()
 
-        self.formatter._rename_folder_and_contents(
+        self.formatter.rename_folder_and_contents(
             directory=self.test_folder,
             original_name=fake_folder_name,
             new_name=fake_new_name,
@@ -882,7 +882,7 @@ class FormatterTestCase(TestCase):
             fake_filepath = os.path.join(fake_folder_path, fake_filename)
             open(fake_filepath, "a").close()
 
-        self.formatter._rename_folder_and_contents(
+        self.formatter.rename_folder_and_contents(
             original_name=fake_folder_name, new_name=fake_new_name
         )
         self.assertEqual(rename_file_method_patch.call_count, num_files)
@@ -1061,7 +1061,7 @@ class FormatterTestCase(TestCase):
         title_data = {}
         metadata_data = {}
 
-        metadata_file = self.formatter._initialize_metadata_file()
+        metadata_file = self.formatter.initialize_metadata_file()
         for title in metadata_file.get("titles"):
             title_data[title.get("imdb_id")] = {
                 "original_filename": title.get("original_filename"),
@@ -1133,11 +1133,11 @@ class FormatterTestCase(TestCase):
             folder_path = os.path.join(special_test_folder, folder_name)
             os.makedirs(folder_path)
 
-        self.formatter._initialize_metadata_file(directory=special_test_folder)
+        self.formatter.initialize_metadata_file(directory=special_test_folder)
 
         self.formatter.format(directory=special_test_folder)
 
-        metadata = self.formatter._initialize_metadata_file(
+        metadata = self.formatter.initialize_metadata_file(
             directory=special_test_folder
         )
 
@@ -1216,7 +1216,7 @@ class PosterFinderTestCase(TestCase):
         fake_poster_urls = []
 
         # Create a new metadata file:
-        self.formatter._initialize_metadata_file()
+        self.formatter.initialize_metadata_file()
 
         for iteration in range(iterations):
             fake_poster_url = fake.url()
@@ -1240,7 +1240,7 @@ class PosterFinderTestCase(TestCase):
         for fake_poster_url in fake_poster_urls:
             download_method_patch.assert_any_call(url=fake_poster_url)
 
-        metadata = self.formatter._initialize_metadata_file(directory=self.test_folder)
+        metadata = self.formatter.initialize_metadata_file(directory=self.test_folder)
 
         for title in metadata.get("titles", []):
             filepath = os.path.join(self.test_folder, title["title"], "poster.jpg")
@@ -1259,7 +1259,7 @@ class PosterFinderTestCase(TestCase):
         iterations = fake.pyint(min_value=min_value, max_value=max_value)
 
         # Create a new metadata file:
-        self.formatter._initialize_metadata_file()
+        self.formatter.initialize_metadata_file()
 
         for iteration in range(iterations):
             fake_poster_url = fake.url()
@@ -1441,7 +1441,7 @@ class SubtitleFinderTestCase(TestCase):
 
         example_root = os.path.join(blockbuster.TEST_FOLDER, "test_examples")
         test_root = self.test_folder
-        self.formatter._initialize_metadata_file(directory=test_root)
+        self.formatter.initialize_metadata_file(directory=test_root)
 
         for file_hash in file_hashes:
             filepath = os.path.join(example_root, file_hash)
@@ -1488,7 +1488,7 @@ class SubtitleFinderTestCase(TestCase):
 
         example_root = os.path.join(blockbuster.TEST_FOLDER, "test_examples")
         test_root = self.test_folder
-        self.formatter._initialize_metadata_file(directory=test_root)
+        self.formatter.initialize_metadata_file(directory=test_root)
 
         for file_hash in file_hashes:
             filepath = os.path.join(example_root, file_hash)
@@ -1533,7 +1533,7 @@ class SubtitleFinderTestCase(TestCase):
         file_hashes = [dexter_hash, justified_hash]
 
         test_root = self.test_folder
-        self.formatter._initialize_metadata_file(directory=test_root)
+        self.formatter.initialize_metadata_file(directory=test_root)
 
         for file_hash in file_hashes:
             fake_original_filename = fake.word()
@@ -1576,7 +1576,7 @@ class SubtitleFinderTestCase(TestCase):
 
         example_root = os.path.join(blockbuster.TEST_FOLDER, "test_examples")
         test_root = self.test_folder
-        self.formatter._initialize_metadata_file(directory=test_root)
+        self.formatter.initialize_metadata_file(directory=test_root)
 
         for file_hash in file_hashes:
             filepath = os.path.join(example_root, file_hash)
@@ -1627,7 +1627,7 @@ class SubtitleFinderTestCase(TestCase):
 
         example_root = os.path.join(blockbuster.TEST_FOLDER, "test_examples")
         test_root = self.test_folder
-        self.formatter._initialize_metadata_file(directory=test_root)
+        self.formatter.initialize_metadata_file(directory=test_root)
 
         for file_hash in file_hashes:
             filepath = os.path.join(example_root, file_hash)
@@ -1668,7 +1668,7 @@ class SubtitleFinderTestCase(TestCase):
 
         example_root = os.path.join(blockbuster.TEST_FOLDER, "test_examples")
         test_root = self.test_folder
-        self.formatter._initialize_metadata_file(directory=test_root)
+        self.formatter.initialize_metadata_file(directory=test_root)
 
         for file_hash in file_hashes:
             filepath = os.path.join(example_root, file_hash)

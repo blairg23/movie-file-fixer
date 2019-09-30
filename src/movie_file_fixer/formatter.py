@@ -26,7 +26,7 @@ class Formatter:
         if self._verbose:
             print("[CURRENT ACTION: FORMATTING MOVIE TITLES]\n")
 
-    def _initialize_metadata_file(self, directory=None, metadata_filename=None):
+    def initialize_metadata_file(self, directory=None, metadata_filename=None):
         """
 
         :param str directory: The directory to locate or create data files.
@@ -375,7 +375,7 @@ class Formatter:
 
         metadata_filepath = os.path.join(directory, metadata_filename)
         if not os.path.exists(metadata_filepath):
-            self._initialize_metadata_file(
+            self.initialize_metadata_file(
                 directory=directory, metadata_filename=metadata_filename
             )
 
@@ -424,7 +424,7 @@ class Formatter:
 
         metadata_filepath = os.path.join(directory, metadata_filename)
         if not os.path.exists(metadata_filepath):
-            self._initialize_metadata_file(
+            self.initialize_metadata_file(
                 directory=directory, metadata_filename=metadata_filename
             )
 
@@ -498,7 +498,7 @@ class Formatter:
                     f'[RENAMING] from [FILEPATH] "{old_filepath}" to [FILEPATH] "{new_filepath}"\n'
                 )
 
-    def _rename_folder_and_contents(self, original_name, new_name, directory=None):
+    def rename_folder_and_contents(self, original_name, new_name, directory=None):
         """
 
         :param str original_name: The original name of the folder to be renamed.
@@ -744,7 +744,7 @@ class Formatter:
 
         for title in os.listdir(directory):
             if title != self._metadata_filename:
-                metadata = self._initialize_metadata_file()
+                metadata = self.initialize_metadata_file()
                 if self._verbose:
                     print(f'[{self._action_counter}] [FORMATTING] [FOLDER] "{title}"\n')
                     self._action_counter += 1
@@ -772,7 +772,7 @@ class Formatter:
                             original_filename=title,
                             final_title=final_title,
                         )
-                        self._rename_folder_and_contents(
+                        self.rename_folder_and_contents(
                             directory=directory,
                             original_name=title,
                             new_name=final_title,

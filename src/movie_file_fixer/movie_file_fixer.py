@@ -20,6 +20,8 @@ and creates a title directory called "contents.json", which also contains poster
 """
 
 import argparse
+import json
+import os
 import sys
 
 from movie_file_fixer.file_remover import FileRemover
@@ -32,19 +34,24 @@ from movie_file_fixer.subtitle_finder import SubtitleFinder
 def main():
     args = parse_args(sys.argv[1:])
 
-    movie_file_fixer = MovieFileFixer(
-        directory=args.directory,
-        file_extensions=args.file_extensions,
-        metadata_filename=args.metadata_filename,
-        language=args.language,
-        result_type=args.result_type,
-        verbose=args.verbose,
-    )
-    movie_file_fixer.folderize()
-    movie_file_fixer.cleanup()
-    movie_file_fixer.format()
-    movie_file_fixer.get_posters()
-    movie_file_fixer.get_subtitles()
+    utils = args.utils
+    if utils:
+        movie_file_fixer = MovieFileFixer(directory=args.directory, util='title_fixer')
+        movie_file_fixer.run()
+    else:
+        movie_file_fixer = MovieFileFixer(
+            directory=args.directory,
+            file_extensions=args.file_extensions,
+            metadata_filename=args.metadata_filename,
+            language=args.language,
+            result_type=args.result_type,
+            verbose=args.verbose,
+        )
+        movie_file_fixer.folderize()
+        movie_file_fixer.cleanup()
+        movie_file_fixer.format()
+        movie_file_fixer.get_posters()
+        movie_file_fixer.get_subtitles()
 
 
 def parse_args(args):
@@ -69,7 +76,16 @@ def parse_args(args):
         "--file_extensions",
         "-e",
         action="append",
-        default=[],
+        default=[
+            ".idx",
+            ".sub",
+            ".nfo",
+            ".dat",
+            ".jpg",
+            ".png",
+            ".txt",
+            ".exe",
+        ],
         help="A directory containing raw movie files and folders.",
     )
     parser.add_argument(
@@ -101,6 +117,21 @@ def parse_args(args):
         default=False,
         help="Set this flag to enable verbose print statements.",
     )
+    parser.add_argument(
+        "--utils",
+        "-u",
+        action="store_true",
+        default=False,
+        help="Set this flag to use a utility function.",
+    )
+    parser.add_argument(
+        "--util_name",
+        "-n",
+        type=str,
+        default="title_fixer",
+        choices=["title_fixer"],
+        help="Choose a stand-alone utility to run",
+    )
     return parser.parse_args(args)
 
 
@@ -121,6 +152,7 @@ class MovieFileFixer:
         metadata_filename="metadata.json",
         language="en",
         result_type='movie',
+        util='title_fixer',
         verbose=False,
     ):
         default_file_extensions = [
@@ -140,6 +172,7 @@ class MovieFileFixer:
         self._metadata_filename = metadata_filename
         self._language = language
         self._result_type = result_type
+        self._util = util
         self._verbose = verbose
 
     def folderize(
@@ -276,15 +309,113 @@ class MovieFileFixer:
         )
         subtitle_finder.get_subtitles()
 
+    def title_fixer(self, directory=None, metadata_filename=None, verbose=None):
+        """
 
-#
-# if __name__ == "__main__":
-#     fake_directory = os.path.join(os.getcwd(), "test", "data", "Fake_Directory")
-#     directory = fake_directory
-#     directory = os.path.join(os.getcwd(), "input")
-#     directory = os.path.join("H:", "tosort", "input")
-#     MovieFileFixer(
-#         directory=directory,
-#         metadata_filename=["contents.json", "errors.json"],
-#         verbose=False,
-#     )
+        :param str directory: The directory of movie folders to fix titles in.
+        :param str metadata_filename: The metadata file to get `titles` metadata from.
+        :param bool verbose: Whether or not to activate verbose mode.
+        :return None:
+
+        Given a directory and metadata file, will use the `original_filename` and `imdb_id`
+        to determine the correct title information for the files/folders in the directory.
+        """
+        if directory is None:
+            directory = self._directory
+
+        if metadata_filename is None:
+            metadata_filename = self._metadata_filename
+
+        if verbose is None:
+            verbose = self._verbose
+
+        formatter = Formatter(directory=directory, verbose=verbose)
+
+        metadata = formatter.initialize_metadata_file(directory=directory, metadata_filename=metadata_filename)
+
+        all_folders = [folder_name for folder_name in os.listdir(directory) if folder_name != metadata_filename]
+
+        titles = metadata.get('titles')
+        changed_titles = []
+        while len(all_folders) > 0:
+            for title_index in range(len(titles)):
+                title_data = titles[title_index]
+                # See if the file is in the given directory:
+                original_filename = title_data.get('original_filename')
+                # formatted_title = title_data.get('title')
+
+                # If a file hasn't been formatted OR it has already been formatted, such as
+                if original_filename in all_folders:
+                    # Use the IMDb ID to find the IMDb object metadata:
+                    imdb_id = title_data.get('imdb_id')
+                    imdb_object = formatter.get_imdb_object(search_query='', imdb_id=imdb_id)
+                    metadata['metadata'].append(imdb_object)
+
+                    # Gather the important bits of metadata:
+                    title = imdb_object.get('Title')
+                    poster = imdb_object.get('Poster')
+                    release_year = imdb_object.get('Year')
+                    formatted_title = title + ' [' + release_year + ']'
+                    # If it is, rename the folder and its contents:
+                    formatter.rename_folder_and_contents(original_name=original_filename, new_name=formatted_title, directory=directory)
+                    # mark that folder complete:
+                    all_folders.remove(original_filename)
+                    print(f'{original_filename} removed!')
+                    print(f'All Folders:{all_folders}\n')
+
+                    # set the potentially incorrect or missing metadata:
+                    print('title data before:', title_data)
+                    title_data['title'] = formatted_title
+                    title_data['poster'] = poster
+                    print('title data after:', title_data)
+                    # and write it back to the titles data
+                    # print('deleting:', metadata['titles'][title_index])
+                    # del metadata['titles'][title_index]
+                    # print('appending title data:', title_data)
+                    # metadata['titles'].append(title_data)
+                    # changed_titles.append(title_data)
+                # or if the utility was interrupted halfway through formatting the directory.
+                # elif formatted_title in all_folders:
+                #     # mark that folder complete:
+                #     folders_done.add(formatted_title)
+                #     print('Sorted Folders Done:', sorted(folders_done))
+                #     print('Sorted All Folders:', sorted(all_folders))
+
+        # Finally, write the updated metadata to the metadata file:
+        # metadata['titles'] = titles
+        metadata_filepath = os.path.join(directory, metadata_filename)
+        with open(metadata_filepath, 'w+') as outfile:
+            # print('writing metadata to ', metadata_filename)
+            json.dump(metadata, outfile, indent=4)
+            # print('titles:', json.dumps(changed_titles, indent=4))
+
+    def run(self, directory=None, metadata_filename=None, util=None, verbose=None):
+
+        """
+        :param str directory: The directory of movie folders to run the given `util` on.
+        :param str metadata_filename: The metadata file to get metadata from.
+        :param str util: The name of the utility function to run.
+        :param bool verbose: Whether or not to activate verbose mode.
+        :return None:
+
+        Runs stand-alone utility functions.
+
+        Utility Functions Available:
+
+        `title_fixer`: Fixes titles (folders, directories, and subtitles files) based on
+        given metadata file `titles.original_filename` and `titles.imdb_id` values.
+        """
+        if directory is None:
+            directory = self._directory
+
+        if metadata_filename is None:
+            metadata_filename = self._metadata_filename
+
+        if verbose is None:
+            verbose = self._verbose
+
+        if util is None:
+            util = self._util
+
+        if util == "title_fixer":
+            self.title_fixer(directory=directory, metadata_filename=metadata_filename, verbose=verbose)
