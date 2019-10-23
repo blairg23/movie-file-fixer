@@ -1,8 +1,10 @@
 from .movie_file_fixer import (
-    MovieFileFixer,
     FileRemover,
     Folderizer,
     Formatter,
+    MovieFileFixer,
     PosterFinder,
     SubtitleFinder,
+    main,
+    parse_args,
 )

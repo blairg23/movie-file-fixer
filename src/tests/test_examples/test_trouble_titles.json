@@ -1,0 +1,104 @@
+[
+  {
+    "description": "Titles containing numbers.",
+    "examples": [
+      {
+        "original_filename": "12 Monkeys (1995)",
+        "imdb_id": "tt0114746",
+        "title": "Twelve Monkeys",
+        "release_year": "1995"
+      },
+      {
+        "original_filename": "2001 - A Space Odyssey",
+        "imdb_id": "tt0062622",
+        "title": "2001: A Space Odyssey",
+        "release_year": "1968"
+      }
+    ]
+  },
+  {
+    "description": "Titles containing periods.",
+    "examples": [
+      {
+        "original_filename": "G.I.Joe.The.Rise.of.Cobra.2009.HDRip",
+        "imdb_id": "tt1046173",
+        "title": "G.I. Joe: The Rise of Cobra",
+        "release_year": "2009"
+      },
+      {
+        "original_filename": "G.I. Joe Retaliation (2013) [1080p]",
+        "imdb_id": "tt1583421",
+        "title": "G.I. Joe: Retaliation",
+        "release_year": "2013"
+      },
+      {
+        "original_filename": "Fantastic.Mr.Fox.DVDRip.XviD-MOViERUSH",
+        "imdb_id": "tt0432283",
+        "title": "Fantastic Mr. Fox",
+        "release_year": "2009"
+      },
+      {
+        "original_filename": "W.[2008]DvDrip-aXXo",
+        "imdb_id": "tt1175491",
+        "title": "W.",
+        "release_year": "2008"
+      }
+    ]
+  },
+  {
+    "description": "Titles that don't contain release year.",
+    "examples": [
+      {
+        "original_filename": "Ordinary_Decent_Criminal.DVDRip_devilwarez.pl",
+        "imdb_id": "tt0160611",
+        "title": "Ordinary Decent Criminal",
+        "release_year": "2000"
+      }
+    ]
+  },
+  {
+    "description": "Titles with colons in them.",
+    "examples": [
+      {
+        "original_filename": "Abraham.Lincoln.Vampire.Hunter.2012.DVDRip.XviD-ALLiANCE",
+        "imdb_id": "tt1611224",
+        "title": "Abraham Lincoln: Vampire Hunter",
+        "release_year": "2012"
+      }
+    ]
+  },
+  {
+    "description": "Titles that contain extra prefacing words.",
+    "examples": [
+      {
+        "original_filename": "The.Blues.Brothers.2000.1998.1080p.BluRay.H264.AAC-RARBG",
+        "imdb_id": "tt0118747",
+        "title": "Blues Brothers 2000",
+        "release_year": "1998"
+      },
+      {
+        "original_filename": "Rambo.First.Blood.1982.REMASTERED.1080p.BluRay.H264.AAC-RARBG",
+        "imdb_id": "tt0083944",
+        "title": "First Blood",
+        "release_year": "1982"
+      }
+    ]
+  },
+  {
+    "description": "Titles that contain the wrong release year.",
+    "examples": [
+      {
+        "original_filename": "The.Cabin.in.the.Woods.2012.1080p.BluRay.H264.AAC-RARBG",
+        "imdb_id": "tt1259521",
+        "title": "The Cabin in the Woods",
+        "release_year": "2011"
+      },
+      {
+        "original_filename": "Once.Upon.a.Time.in.the.West.1969.RESTORED.1080p.BluRay.H264.AAC-RARBG",
+        "imdb_id": "tt0064116",
+        "title": "Once Upon a Time in the West",
+        "release_year": "1968"
+      }
+    ]
+  }
+]

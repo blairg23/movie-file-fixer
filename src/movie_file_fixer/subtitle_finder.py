@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Name: subtitle_finder.py
-Author: Blair Gemmer
-Version: 20180313
 
-Description: Reads the "titles.json" file and downloads the subtitle for each title, given a language of preference.
+Description: Reads the "metadata.json" file and downloads the subtitle for each title, given a language of preference.
 """
 
 import hashlib
@@ -18,167 +15,235 @@ class SubtitleFinder:
     def __init__(
         self,
         directory=None,
-        contents_file="contents.json",
+        metadata_filename="metadata.json",
         language="en",
         verbose=False,
     ):
-        if verbose:
-            print("[CURRENT ACTION: LOCATING MOVIE SUBTITLES]\n")
-        self.get_subtitles(
-            directory=directory,
-            contents_file=contents_file,
-            language=language,
-            verbose=verbose,
-        )
+        self._directory = directory
+        self._metadata_filename = metadata_filename
+        self._language = language
+        self._verbose = verbose
+        self._action_counter = 0
 
-    def is_movie_file(self, filename):
+        if self._verbose:
+            print("[CURRENT ACTION: LOCATING MOVIE SUBTITLES]\n")
+
+    def _is_movie_file(self, filename):
+        """
+
+        :param filename: The filename to assess.
+        :return bool: Whether the given filename is a movie file or not.
+
+        This method returns True if the given filename is a movie file and False if not.
+        """
+        if self._verbose:
+            print(f'[{self._action_counter}] [PROCESSING FILE] "{filename}"\n')
+            self._action_counter += 1
+
         movie_file_extensions = [".avi", ".mp4", ".mkv", ".mov"]
         filename, extension = os.path.splitext(filename)
         if extension in movie_file_extensions:
+            if self._verbose:
+                print(f'[INFO] "{filename}" [IS A] [MOVIE FILE]\n')
             return True
         else:
+            if self._verbose:
+                print(f'[INFO] "{filename}" [IS NOT A] [MOVIE FILE]\n')
             return False
 
-    def get_hash(self, filepath):
+    def _get_movie_file_paths(self, directory):
         """
-        This hash function receives the name of the file and returns the hash code.
+
+        :param str directory: A directory containing movie files.
+        :return list: A list of movie file paths.
+
+        This method takes a directory that contains files and returns all files that are movie files.
         """
-        readsize = 64 * 1024
+        movie_file_paths = []
+        if os.path.exists(directory):
+            for filename in os.listdir(directory):
+                if self._is_movie_file(filename=filename):
+                    movie_file_path = os.path.join(directory, filename)
+                    movie_file_paths.append(movie_file_path)
+
+        return movie_file_paths
+
+    def _get_hash(self, filepath, size=64):
+        """
+
+        :param str filepath: The path to the file to be hashed.
+        :param int size: The size (in KB) of the chunks to hash.
+        :return str: The `md5` hash of the end chunks from the file at the given filepath.
+
+        This hash function receives the name of the file and returns the `md5` hash of the beginning
+        and end `size` KB sized chunks.
+
+        i.e. If `size=64`, we will take a 64KB chunk from the beginning and end of the file and return
+        the `md5` hash of those chunks.
+        """
+        if self._verbose:
+            print(
+                f'[{self._action_counter}] [PROCESSING FILE] [HASHING] [FILEPATH] "{filepath}"\n'
+            )
+            self._action_counter += 1
+
+        readsize = size * 1024
         with open(filepath, "rb") as f:
-            size = os.path.getsize(filepath)
             data = f.read(readsize)
             f.seek(-readsize, os.SEEK_END)
             data += f.read(readsize)
 
-        return hashlib.md5(data).hexdigest()
+        file_hash = hashlib.md5(data).hexdigest()
 
-    def perform_request(
-        self, url="http://api.thesubdb.com/", payload=None, cookies=None
-    ):
-        headers = {
-            "User-Agent": "SubDB/1.0 (Windows; U; Windows NT 5.1; it; rv:1.8.1.11) Gecko/20071127 Firefox/2.0.0.11; https://github.com/blairg23/movie-file-fixer"
-        }
-        response = requests.get(
-            url=url, params=payload, headers=headers, cookies=cookies
-        )
-        if response.status_code == 200:
-            print("[REQUESTING FROM URL] {url}\n".format(url=response.url))
-            response = response.text
-        else:
+        if self._verbose:
+            if self._verbose:
+                print(f'[INFO] "{filepath}": [HASH] "{file_hash}"\n')
+
+        return file_hash
+
+    def _download(self, url="http://api.thesubdb.com/", payload=None, headers=None):
+        """
+
+        :param str url: The SubDb API URL.
+        :param dict headers: A dictionary containing custom headers. Default only contains the `User-Agent`.
+        :return requests.Response: A `requests.Response` object containing the file being requested.
+
+        This method performs a GET request on the given URL, using the given payload and headers (if desired).
+        """
+        if headers is None:
+            headers = {
+                "User-Agent": "SubDB/1.0 (Windows; U; Windows NT 5.1; it; rv:1.8.1.11) Gecko/20071127 Firefox/2.0.0.11; https://github.com/blairg23/movie-file-fixer"
+            }
+
+        if self._verbose:
+            print(f'[{self._action_counter}] [DOWNLOADING] [FILE] from [URL] "{url}"\n')
+            self._action_counter += 1
+
+        return requests.get(url=url, params=payload, headers=headers)
+
+    def _search_subtitles(self, hashcode=None):
+        """
+
+        :param str hashcode: The `md5` hash of the file to use to search for available subtitles.
+        :return str: A comma-separated list of available languages (two character language code).
+
+        This method searches the SubDB API for the given subtitles by `hashcode` and returns all available languages
+        the subtitle exists in.
+        """
+        if self._verbose:
             print(
-                "[ERROR] {url} failed with status code {status_code}\n".format(
-                    url=response.url, status_code=response.status_code
-                )
+                f'[{self._action_counter}] [SEARCHING] [SUBTITLE] for [HASHCODE] "{hashcode}"\n'
             )
-        return response
+            self._action_counter += 1
 
-    def search_subtitles(self, hashcode=None):
         payload = {"action": "search", "hash": hashcode}
-        response = self.perform_request(payload=payload)
+        response = self._download(payload=payload)
 
         return response
 
-    def download_subtitles(self, language="en", hashcode=None):
+    def _download_subtitles(self, language="en", hashcode=None):
+        """
+
+        :param str language: The language of the subtitle to download (as a two character language code, i.e., 'en' for English).
+        :param str hashcode: The `md5` hash of the file to download the subtitle for.
+        :return file: An `.srt` file containing the subtitle for the given file, named `<hashcode>.srt`.
+
+        This method downloads subtitles from the SubDB API, given the specified `hashcode` and `language`.
+        """
+        if self._verbose:
+            print(
+                f'[{self._action_counter}] [DOWNLOADING] [SUBTITLE] for [HASHCODE] "{hashcode}"\n'
+            )
+            self._action_counter += 1
+
         payload = {"action": "download", "hash": hashcode, "language": language}
-        response = self.perform_request(payload=payload)
+        response = self._download(payload=payload)
 
         return response
 
-    def get_subtitles(
-        self, directory=None, contents_file=None, language="en", verbose=None
-    ):
-        full_path = os.path.join(directory, contents_file)
-        if verbose:
-            print("[PROCESSING FILE: {full_path}]\n".format(full_path=full_path))
-        if os.path.exists(full_path):
+    def get_subtitles(self, directory=None, metadata_filename=None, language="en"):
+        """
+
+        :param str directory: The movie file directory to download subtitles for.
+        :param str metadata_filename: The metadata filename.
+        :param str language: The two character language code representing the language to download the subtitle in.
+        :return None:
+        """
+        if directory is None:
+            directory = self._directory
+
+        if metadata_filename is None:
+            metadata_filename = self._metadata_filename
+
+        full_filepath = os.path.join(directory, metadata_filename)
+        if os.path.exists(full_filepath):
+            if self._verbose:
+                print(f'[{self._action_counter}] [PROCESSING FILE] "{full_filepath}"\n')
+                self._action_counter += 1
+
             # Open file for reading:
-            with open(full_path, mode="r", encoding="UTF-8") as infile:
+            with open(full_filepath, mode="rb") as infile:
                 # Load existing data into titles index list:
-                titles_index = json.load(infile)
+                titles = json.load(infile)
 
-            for title in titles_index["Titles"]:
-                # title_path = "\\\\?\\" + os.path.join(directory, title['title'])
-                title_path = os.path.join(directory, title["title"])
-                if os.path.exists(title_path):
-                    # new_path = "\\\\?\\" + os.path.join(directory, title['title'], '{language}_subtitles.srt'.format(language=language))
-                    file_path = None
-                    for filename in os.listdir(title_path):
-                        if self.is_movie_file(filename=filename):
-                            file_path = os.path.join(title_path, filename)
+            for title in titles.get("titles", []):
+                title_filename = title.get("title")
+                title_folder_path = os.path.join(directory, title_filename)
+                subtitle_filename = f"{language}_subtitles.srt"
+                subtitle_path = os.path.join(title_folder_path, subtitle_filename)
+                movie_file_paths = self._get_movie_file_paths(
+                    directory=title_folder_path
+                )
 
-                    if file_path is not None:
-                        print(
-                            "[PROCESSING TITLE: {title}]\n".format(
-                                title=str(title["title"])
+                for movie_file_path in movie_file_paths:
+                    if self._verbose:
+                        print(f'[PROCESSING TITLE] "{title_filename}"\n')
+
+                    if not os.path.exists(subtitle_path):
+                        subtitles_available = None
+                        hashcode = self._get_hash(filepath=movie_file_path)
+                        response = self._search_subtitles(hashcode=hashcode)
+                        if response.status_code == 200:
+                            subtitles_available = response.text
+
+                        if (
+                            subtitles_available not in ["", None, " "]
+                            and language in subtitles_available
+                        ):
+                            if self._verbose:
+                                print(
+                                    f'[ADDING SUBTITLE FILE] "{language}_subtitles.srt" at [FILEPATH] "{subtitle_path}"\n'
+                                )
+
+                            response = self._download_subtitles(
+                                language=language, hashcode=hashcode
                             )
-                        )
+                            if response.status_code == 200:
+                                subtitles = response.text
 
-                        try:
-                            hashcode = self.get_hash(filepath=file_path)
-                        except Exception as e:
-                            print("[ERROR] File is Corrupt or Missing.")
-                            print(e)
-                            print("\n")
-
-                        subtitle_path = os.path.join(
-                            directory,
-                            title["title"],
-                            "{language}_subtitles.srt".format(language=language),
-                        )
-                        if not os.path.exists(subtitle_path):
-                            subtitles_available = self.search_subtitles(
-                                hashcode=hashcode
-                            )
-
-                            if (
-                                subtitles_available not in ["", None, " "]
-                                and language in subtitles_available
-                            ):
-                                if verbose:
+                                if self._verbose:
+                                    print("[INFO] [DOWNLOAD COMPLETE]\n")
                                     print(
-                                        "[ADDING SUBTITLE FILE: {language}_subtitles.srt]\n".format(
-                                            language=language
-                                        )
+                                        f'[WRITING SUBTITLE FILE] "{language}_subtitles.srt" at [FILEPATH] "{subtitle_path}"\n'
                                     )
 
-                                try:
-                                    subtitles = self.download_subtitles(
-                                        language=language, hashcode=hashcode
-                                    )
-                                    print("[DOWNLOAD COMPLETE]\n")
-                                    print(
-                                        "[WRITING FILE] -> {filepath}...\n".format(
-                                            filepath=subtitle_path
-                                        )
-                                    )
-                                    with open(
-                                        subtitle_path, "w+", encoding="UTF-8"
-                                    ) as outfile:
-                                        outfile.writelines(subtitles)
-                                except Exception as e:
-                                    print(e)
+                                with open(
+                                    subtitle_path, "w+", encoding="UTF-8"
+                                ) as outfile:
+                                    outfile.writelines(subtitles)
+                                    if self._verbose:
+                                        print("[WRITE COMPLETE]")
                             else:
                                 print(
-                                    "[ERROR] No Subtitles Available for that language ({language}).\n".format(
-                                        language=language
-                                    )
+                                    f'[ERROR] [RESPONSE STATUS CODE] "{response.status_code}".\n'
+                                    f'[SUBTITLE] for [MOVIE FILE] "{movie_file_path}" [MAY NOT EXIST]\n'
                                 )
                         else:
-                            print("Subtitle already exists. Skipping...")
+                            if self._verbose:
+                                print(
+                                    f'[ERROR] No Subtitles Available for [LANGUAGE] "{language}".\n'
+                                )
                     else:
-                        print("[ERROR] No movie file exists.\n")
+                        print("[INFO] Subtitle already exists. Skipping...\n")
 
-                    print("------------------------------------------------")
             print("[COMPLETE]")
-
-
-if __name__ == "__main__":
-    # directory = os.path.join('test', 'data', 'Fake_Directory')
-    # directory = "C:/Users/Neophile/Desktop/sandboxes/python/movie-file-fixer/input/"
-    directory = os.path.join(os.getcwd(), "input")
-    # directory = "H:\Films"
-    SubtitleFinder(directory=directory, contents_file="contents.json")
-
-    # hashcode = pf.get_hash(filename="C:/Users/Neophile/Desktop/sandboxes/python/movie-file-fixer/input/Flatliners [2017]/FLatliners [2017].mp4")
-    # print(hashcode)
-    # print(pf.search_subtitles(hashcode=hashcode))

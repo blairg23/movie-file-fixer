@@ -6,7 +6,12 @@
 #
 certifi==2019.6.16        # via requests
 chardet==3.0.4            # via requests
+fuzzywuzzy==0.17.0
 idna==2.8                 # via requests
-omdbpy==0.1.9
+omdbpy==0.1.14
+python-levenshtein==0.12.0
 requests==2.22.0
 urllib3==1.25.3           # via requests
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools==41.2.0        # via python-levenshtein
