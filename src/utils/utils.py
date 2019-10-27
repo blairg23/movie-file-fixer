@@ -4,7 +4,6 @@
 Description: A compilation of utility methods for testing or production purposes.
 """
 
-import errno
 import hashlib
 import math
 import os
