@@ -246,7 +246,7 @@ class Formatter:
             )
             self._action_counter += 1
 
-        response = None
+        response = {"Response", "False"}
         omdb_api_key = os.environ.get("OMDB_API_KEY")
         omdb_api = omdb.Api(apikey=omdb_api_key)
         omdb_response = omdb_api.search(
