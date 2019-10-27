@@ -1235,7 +1235,9 @@ class PosterFinderTestCase(TestCase):
 
         fake_content = " ".join([word for word in fake.words()])
         download_method_patch.return_value.status_code = 200
-        download_method_patch.return_value.content = bytes(fake_content, encoding='utf-8')
+        download_method_patch.return_value.content = bytes(
+            fake_content, encoding="utf-8"
+        )
 
         self.poster_finder.get_posters()
 
