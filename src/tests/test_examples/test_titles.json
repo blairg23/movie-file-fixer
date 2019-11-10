@@ -105,6 +105,12 @@
     "description": "Titles containing apostrophes.",
     "examples": [
       {
+        "original_filename": "Were.the.Millers.2013.EXTENDED.1080p.BluRay.H264.AAC-RARBG",
+        "title": "We're the Millers",
+        "imdb_id": "tt1723121",
+        "release_year": "2013"
+      },
+      {
         "original_filename": "Childs.Play.2019.1080p.BluRay.H264.AAC-RARBG",
         "imdb_id": "tt8663516",
         "title": "Child's Play",
