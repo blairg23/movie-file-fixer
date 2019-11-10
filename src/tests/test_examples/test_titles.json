@@ -105,6 +105,12 @@
     "description": "Titles containing apostrophes.",
     "examples": [
       {
+        "original_filename": "Childs.Play.2019.1080p.BluRay.H264.AAC-RARBG",
+        "imdb_id": "tt8663516",
+        "title": "Child's Play",
+        "release_year": "2019"
+      },
+      {
         "original_filename": "Ferris Bueller's Day Off (1986) [1080p]",
         "imdb_id": "tt0091042",
         "title": "Ferris Bueller's Day Off",
