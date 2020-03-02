@@ -100,5 +100,16 @@
         "release_year": "1968"
       }
     ]
+  },
+  {
+    "description": "Titles that contain two words, but use a single word.",
+    "examples": [
+      {
+        "original_filename": "Hairbrained.2013.1080p.BluRay.H264.AAC-RARBG",
+        "title": "Hair Brained [2013]",
+        "imdb_id": "tt1426363",
+        "poster": "https://m.media-amazon.com/images/M/MV5BMjMzMzQzOTUyM15BMl5BanBnXkFtZTgwNzQ1ODUxMTE@._V1_SX300.jpg"
+      }
+    ]
   }
 ]
