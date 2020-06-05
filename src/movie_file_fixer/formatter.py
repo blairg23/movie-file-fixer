@@ -250,40 +250,43 @@ class Formatter:
             "Response": "False"
         }
         omdb_api_key = os.environ.get("OMDB_API_KEY")
-        omdb_api = omdb.Api(apikey=omdb_api_key)
-        omdb_response = omdb_api.search(
-            search_terms=search_terms,
-            imdb_id=imdb_id,
-            title=title,
-            result_type=result_type,
-            release_year=release_year,
-            plot=plot,
-            return_type="json",
-            page=page,
-            callback=callback,
-            season=season,
-            episode=episode,
-        )
+        if omdb_api_key:
+            omdb_api = omdb.Api(apikey=omdb_api_key)
+            omdb_response = omdb_api.search(
+                search_terms=search_terms,
+                imdb_id=imdb_id,
+                title=title,
+                result_type=result_type,
+                release_year=release_year,
+                plot=plot,
+                return_type="json",
+                page=page,
+                callback=callback,
+                season=season,
+                episode=episode,
+            )
 
-        if omdb_response.status_code == 200:
-            json_response = omdb_response.json()
-            response = json_response
+            if omdb_response.status_code == 200:
+                json_response = omdb_response.json()
+                response = json_response
 
-            if response.get("Response") == "True":
-                if self._verbose:
-                    total_results = json_response.get("totalResults", 1)
-                    title_text = "TITLES" if int(total_results) > 1 else "TITLE"
+                if response.get("Response") == "True":
+                    if self._verbose:
+                        total_results = json_response.get("totalResults", 1)
+                        title_text = "TITLES" if int(total_results) > 1 else "TITLE"
 
-                    print(
-                        f"[FOUND {total_results} {title_text}]\n{json.dumps(json_response, indent=4)}\n"
-                    )
-            else:
-                if self._verbose:
-                    print(
-                        f'[DID NOT FIND] [TITLE] using [SEARCH CRITERIA] "{search_terms}"\n'
-                        f'[DID NOT FIND] [TITLE] using [IMDB ID] "{imdb_id}"\n'
-                        f'[DID NOT FIND] [TITLE] using [TITLE] "{title}"\n'
-                    )
+                        print(
+                            f"[FOUND {total_results} {title_text}]\n{json.dumps(json_response, indent=4)}\n"
+                        )
+                else:
+                    if self._verbose:
+                        print(
+                            f'[DID NOT FIND] [TITLE] using [SEARCH CRITERIA] "{search_terms}"\n'
+                            f'[DID NOT FIND] [TITLE] using [IMDB ID] "{imdb_id}"\n'
+                            f'[DID NOT FIND] [TITLE] using [TITLE] "{title}"\n'
+                        )
+        else:
+            raise Exception("Missing OMDB_API_KEY environment variable.")
 
         return response
 
