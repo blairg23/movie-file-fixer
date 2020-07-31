@@ -111,5 +111,16 @@
         "poster": "https://m.media-amazon.com/images/M/MV5BMjMzMzQzOTUyM15BMl5BanBnXkFtZTgwNzQ1ODUxMTE@._V1_SX300.jpg"
       }
     ]
+  },
+  {
+    "description": "Titles that are different across regions.",
+    "examples": [
+      {
+        "original_filename": "Target.Number.One.2020.1080p.WEBRip.x264-RARBG",
+        "title": "Most Wanted [2020]",
+        "imdb_id": "tt1656177",
+        "poster": "https://m.media-amazon.com/images/M/MV5BNDgwNmU1NzItYWM5MS00YWUzLTk1ZDctODBjYTQ0NDg0NjQ3XkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_SX300.jpg"
+      }
+    ]
   }
 ]
