@@ -5,13 +5,13 @@
       {
         "original_filename": "12 Monkeys (1995)",
         "imdb_id": "tt0114746",
-        "title": "Twelve Monkeys",
+        "title": "Twelve Monkeys [1995]",
         "release_year": "1995"
       },
       {
         "original_filename": "2001 - A Space Odyssey",
         "imdb_id": "tt0062622",
-        "title": "2001: A Space Odyssey",
+        "title": "2001: A Space Odyssey [1968]",
         "release_year": "1968"
       }
     ]
@@ -22,25 +22,25 @@
       {
         "original_filename": "G.I.Joe.The.Rise.of.Cobra.2009.HDRip",
         "imdb_id": "tt1046173",
-        "title": "G.I. Joe: The Rise of Cobra",
+        "title": "G.I. Joe: The Rise of Cobra [2009]",
         "release_year": "2009"
       },
       {
         "original_filename": "G.I. Joe Retaliation (2013) [1080p]",
         "imdb_id": "tt1583421",
-        "title": "G.I. Joe: Retaliation",
+        "title": "G.I. Joe: Retaliation [2013]",
         "release_year": "2013"
       },
       {
         "original_filename": "Fantastic.Mr.Fox.DVDRip.XviD-MOViERUSH",
         "imdb_id": "tt0432283",
-        "title": "Fantastic Mr. Fox",
+        "title": "Fantastic Mr. Fox [2009]",
         "release_year": "2009"
       },
       {
         "original_filename": "W.[2008]DvDrip-aXXo",
         "imdb_id": "tt1175491",
-        "title": "W.",
+        "title": "W. [2008]",
         "release_year": "2008"
       }
     ]
@@ -51,7 +51,7 @@
       {
         "original_filename": "Ordinary_Decent_Criminal.DVDRip_devilwarez.pl",
         "imdb_id": "tt0160611",
-        "title": "Ordinary Decent Criminal",
+        "title": "Ordinary Decent Criminal [2000]",
         "release_year": "2000"
       }
     ]
@@ -62,7 +62,7 @@
       {
         "original_filename": "Abraham.Lincoln.Vampire.Hunter.2012.DVDRip.XviD-ALLiANCE",
         "imdb_id": "tt1611224",
-        "title": "Abraham Lincoln: Vampire Hunter",
+        "title": "Abraham Lincoln: Vampire Hunter [2012]",
         "release_year": "2012"
       }
     ]
@@ -73,13 +73,13 @@
       {
         "original_filename": "The.Blues.Brothers.2000.1998.1080p.BluRay.H264.AAC-RARBG",
         "imdb_id": "tt0118747",
-        "title": "Blues Brothers 2000",
+        "title": "Blues Brothers 2000 [1998]",
         "release_year": "1998"
       },
       {
         "original_filename": "Rambo.First.Blood.1982.REMASTERED.1080p.BluRay.H264.AAC-RARBG",
         "imdb_id": "tt0083944",
-        "title": "First Blood",
+        "title": "First Blood [1982]",
         "release_year": "1982"
       }
     ]
@@ -90,15 +90,21 @@
       {
         "original_filename": "The.Cabin.in.the.Woods.2012.1080p.BluRay.H264.AAC-RARBG",
         "imdb_id": "tt1259521",
-        "title": "The Cabin in the Woods",
+        "title": "The Cabin in the Woods [2011]",
         "release_year": "2011"
       },
       {
         "original_filename": "Once.Upon.a.Time.in.the.West.1969.RESTORED.1080p.BluRay.H264.AAC-RARBG",
         "imdb_id": "tt0064116",
-        "title": "Once Upon a Time in the West",
+        "title": "Once Upon a Time in the West [1968]",
         "release_year": "1968"
-      }
+      },
+      {
+        "original_filename": "The.Owners.2020.1080p.WEBRip.x265-RARBG",
+        "imdb_id": "tt9806370",
+        "title": "The Owners [2021]",
+        "release_year": "2021"
+      },
     ]
   },
   {
@@ -108,7 +114,7 @@
         "original_filename": "Hairbrained.2013.1080p.BluRay.H264.AAC-RARBG",
         "title": "Hair Brained [2013]",
         "imdb_id": "tt1426363",
-        "poster": "https://m.media-amazon.com/images/M/MV5BMjMzMzQzOTUyM15BMl5BanBnXkFtZTgwNzQ1ODUxMTE@._V1_SX300.jpg"
+        "release_year": "2013"
       }
     ]
   },
@@ -119,7 +125,18 @@
         "original_filename": "Target.Number.One.2020.1080p.WEBRip.x264-RARBG",
         "title": "Most Wanted [2020]",
         "imdb_id": "tt1656177",
-        "poster": "https://m.media-amazon.com/images/M/MV5BNDgwNmU1NzItYWM5MS00YWUzLTk1ZDctODBjYTQ0NDg0NjQ3XkEyXkFqcGdeQXVyMTkxNjUyNQ@@._V1_SX300.jpg"
+        "release_year": "2020"
+      }
+    ]
+  },
+{
+    "description": "Titles with missing punctuation.",
+    "examples": [
+      {
+        "original_filename": "Im.Thinking.of.Ending.Things.2020.1080p.WEBRip.x265-RARBG",
+        "title": "I'm Thinking of Ending Things [2020]",
+        "imdb_id": "tt7939766",
+        "release_year": "2020"
       }
     ]
   }
