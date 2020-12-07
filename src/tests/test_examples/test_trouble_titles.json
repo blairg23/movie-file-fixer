@@ -1,18 +1,41 @@
 [
   {
+    "description": "Titles with duplicate results.",
+    "examples": [
+      {
+        "imdb_id": "tt1713476",
+        "original_filename": "The.Bay.2012.LiMiTED.BRRip.XviD.RoSubbed-playXD",
+        "release_year": "2012",
+        "title": "The Bay"
+      },
+      {
+        "imdb_id": "tt1821658",
+        "original_filename": "The.Nut.Job.2014.1080p.BluRay.H264.AAC-RARBG",
+        "release_year": "2014",
+        "title": "The Nut Job"
+      },
+      {
+        "imdb_id": "",
+        "original_filename": "Yesterday.2019.1080p.BluRay.x265-RARBG",
+        "release_year": "2019",
+        "title": "Yesterday"
+      }
+    ]
+  },
+  {
     "description": "Titles containing numbers.",
     "examples": [
       {
-        "original_filename": "12 Monkeys (1995)",
         "imdb_id": "tt0114746",
-        "title": "Twelve Monkeys [1995]",
-        "release_year": "1995"
+        "original_filename": "12 Monkeys (1995)",
+        "release_year": "1995",
+        "title": "Twelve Monkeys [1995]"
       },
       {
-        "original_filename": "2001 - A Space Odyssey",
         "imdb_id": "tt0062622",
-        "title": "2001: A Space Odyssey [1968]",
-        "release_year": "1968"
+        "original_filename": "2001 - A Space Odyssey",
+        "release_year": "1968",
+        "title": "2001: A Space Odyssey [1968]"
       }
     ]
   },
@@ -20,28 +43,28 @@
     "description": "Titles containing periods.",
     "examples": [
       {
-        "original_filename": "G.I.Joe.The.Rise.of.Cobra.2009.HDRip",
         "imdb_id": "tt1046173",
-        "title": "G.I. Joe: The Rise of Cobra [2009]",
-        "release_year": "2009"
+        "original_filename": "G.I.Joe.The.Rise.of.Cobra.2009.HDRip",
+        "release_year": "2009",
+        "title": "G.I. Joe: The Rise of Cobra [2009]"
       },
       {
-        "original_filename": "G.I. Joe Retaliation (2013) [1080p]",
         "imdb_id": "tt1583421",
-        "title": "G.I. Joe: Retaliation [2013]",
-        "release_year": "2013"
+        "original_filename": "G.I. Joe Retaliation (2013) [1080p]",
+        "release_year": "2013",
+        "title": "G.I. Joe: Retaliation [2013]"
       },
       {
-        "original_filename": "Fantastic.Mr.Fox.DVDRip.XviD-MOViERUSH",
         "imdb_id": "tt0432283",
-        "title": "Fantastic Mr. Fox [2009]",
-        "release_year": "2009"
+        "original_filename": "Fantastic.Mr.Fox.DVDRip.XviD-MOViERUSH",
+        "release_year": "2009",
+        "title": "Fantastic Mr. Fox [2009]"
       },
       {
-        "original_filename": "W.[2008]DvDrip-aXXo",
         "imdb_id": "tt1175491",
-        "title": "W. [2008]",
-        "release_year": "2008"
+        "original_filename": "W.[2008]DvDrip-aXXo",
+        "release_year": "2008",
+        "title": "W. [2008]"
       }
     ]
   },
@@ -49,10 +72,10 @@
     "description": "Titles that don't contain release year.",
     "examples": [
       {
-        "original_filename": "Ordinary_Decent_Criminal.DVDRip_devilwarez.pl",
         "imdb_id": "tt0160611",
-        "title": "Ordinary Decent Criminal [2000]",
-        "release_year": "2000"
+        "original_filename": "Ordinary_Decent_Criminal.DVDRip_devilwarez.pl",
+        "release_year": "2000",
+        "title": "Ordinary Decent Criminal [2000]"
       }
     ]
   },
@@ -60,10 +83,10 @@
     "description": "Titles with colons in them.",
     "examples": [
       {
-        "original_filename": "Abraham.Lincoln.Vampire.Hunter.2012.DVDRip.XviD-ALLiANCE",
         "imdb_id": "tt1611224",
-        "title": "Abraham Lincoln: Vampire Hunter [2012]",
-        "release_year": "2012"
+        "original_filename": "Abraham.Lincoln.Vampire.Hunter.2012.DVDRip.XviD-ALLiANCE",
+        "release_year": "2012",
+        "title": "Abraham Lincoln: Vampire Hunter [2012]"
       }
     ]
   },
@@ -71,16 +94,16 @@
     "description": "Titles that contain extra prefacing words.",
     "examples": [
       {
-        "original_filename": "The.Blues.Brothers.2000.1998.1080p.BluRay.H264.AAC-RARBG",
         "imdb_id": "tt0118747",
-        "title": "Blues Brothers 2000 [1998]",
-        "release_year": "1998"
+        "original_filename": "The.Blues.Brothers.2000.1998.1080p.BluRay.H264.AAC-RARBG",
+        "release_year": "1998",
+        "title": "Blues Brothers 2000 [1998]"
       },
       {
-        "original_filename": "Rambo.First.Blood.1982.REMASTERED.1080p.BluRay.H264.AAC-RARBG",
         "imdb_id": "tt0083944",
-        "title": "First Blood [1982]",
-        "release_year": "1982"
+        "original_filename": "Rambo.First.Blood.1982.REMASTERED.1080p.BluRay.H264.AAC-RARBG",
+        "release_year": "1982",
+        "title": "First Blood [1982]"
       }
     ]
   },
@@ -88,33 +111,33 @@
     "description": "Titles that contain the wrong release year.",
     "examples": [
       {
-        "original_filename": "The.Cabin.in.the.Woods.2012.1080p.BluRay.H264.AAC-RARBG",
         "imdb_id": "tt1259521",
-        "title": "The Cabin in the Woods [2011]",
-        "release_year": "2011"
+        "original_filename": "The.Cabin.in.the.Woods.2012.1080p.BluRay.H264.AAC-RARBG",
+        "release_year": "2011",
+        "title": "The Cabin in the Woods [2011]"
       },
       {
-        "original_filename": "Once.Upon.a.Time.in.the.West.1969.RESTORED.1080p.BluRay.H264.AAC-RARBG",
         "imdb_id": "tt0064116",
-        "title": "Once Upon a Time in the West [1968]",
-        "release_year": "1968"
+        "original_filename": "Once.Upon.a.Time.in.the.West.1969.RESTORED.1080p.BluRay.H264.AAC-RARBG",
+        "release_year": "1968",
+        "title": "Once Upon a Time in the West [1968]"
       },
       {
-        "original_filename": "The.Owners.2020.1080p.WEBRip.x265-RARBG",
         "imdb_id": "tt9806370",
-        "title": "The Owners [2021]",
-        "release_year": "2021"
-      },
+        "original_filename": "The.Owners.2020.1080p.WEBRip.x265-RARBG",
+        "release_year": "2021",
+        "title": "The Owners [2021]"
+      }
     ]
   },
   {
     "description": "Titles that contain two words, but use a single word.",
     "examples": [
       {
-        "original_filename": "Hairbrained.2013.1080p.BluRay.H264.AAC-RARBG",
-        "title": "Hair Brained [2013]",
         "imdb_id": "tt1426363",
-        "release_year": "2013"
+        "original_filename": "Hairbrained.2013.1080p.BluRay.H264.AAC-RARBG",
+        "release_year": "2013",
+        "title": "Hair Brained [2013]"
       }
     ]
   },
@@ -122,21 +145,21 @@
     "description": "Titles that are different across regions.",
     "examples": [
       {
-        "original_filename": "Target.Number.One.2020.1080p.WEBRip.x264-RARBG",
-        "title": "Most Wanted [2020]",
         "imdb_id": "tt1656177",
-        "release_year": "2020"
+        "original_filename": "Target.Number.One.2020.1080p.WEBRip.x264-RARBG",
+        "release_year": "2020",
+        "title": "Most Wanted [2020]"
       }
     ]
   },
-{
+  {
     "description": "Titles with missing punctuation.",
     "examples": [
       {
-        "original_filename": "Im.Thinking.of.Ending.Things.2020.1080p.WEBRip.x265-RARBG",
-        "title": "I'm Thinking of Ending Things [2020]",
         "imdb_id": "tt7939766",
-        "release_year": "2020"
+        "original_filename": "Im.Thinking.of.Ending.Things.2020.1080p.WEBRip.x265-RARBG",
+        "release_year": "2020",
+        "title": "I'm Thinking of Ending Things [2020]"
       }
     ]
   }
