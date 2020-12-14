@@ -116,6 +116,12 @@
   {
     "description": "Titles that contain the wrong release year.",
     "examples": [
+            {
+        "imdb_id": "tt4465438",
+        "original_filename": "Bodysnatch.2018.1080p.BluRay.H264.AAC-RARBG",
+        "release_year": "2017",
+        "title": "Bodysnatch [2017]"
+      },
       {
         "imdb_id": "tt1259521",
         "original_filename": "The.Cabin.in.the.Woods.2012.1080p.BluRay.H264.AAC-RARBG",
@@ -159,13 +165,25 @@
     ]
   },
   {
-    "description": "Titles with missing punctuation.",
+    "description": "Titles with missing or different punctuation.",
     "examples": [
+            {
+        "imdb_id": "tt1013752",
+        "original_filename": "Fast.and.Furious.2009.REMASTERED.1080p.BluRay.x265-RARBG",
+        "release_year": "2009",
+        "title": "Fast & Furious [2009]"
+      },
       {
         "imdb_id": "tt7939766",
         "original_filename": "Im.Thinking.of.Ending.Things.2020.1080p.WEBRip.x265-RARBG",
         "release_year": "2020",
         "title": "I'm Thinking of Ending Things [2020]"
+      },
+      {
+        "imdb_id": "tt0076538",
+        "original_filename": "Petes.Dragon.1977.PROPER.1080p.BluRay.x265-RARBG",
+        "release_year": "1977",
+        "title": "Pete's Dragon [1977]"
       }
     ]
   }
