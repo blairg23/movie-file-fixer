@@ -26,6 +26,12 @@
     "description": "Titles containing numbers.",
     "examples": [
       {
+       "imdb_id": "tt0055254",
+        "original_filename": "101.Dalmatians.1961.1080p.BluRay.H264.AAC-RARBG",
+        "release_year": "1961",
+        "title": "One Hundred and One Dalmatians [1961]" 
+      }
+      {
         "imdb_id": "tt0114746",
         "original_filename": "12 Monkeys (1995)",
         "release_year": "1995",
