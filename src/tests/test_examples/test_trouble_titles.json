@@ -15,10 +15,46 @@
         "title": "The Nut Job"
       },
       {
-        "imdb_id": "",
+        "imdb_id": "tt8079248",
         "original_filename": "Yesterday.2019.1080p.BluRay.x265-RARBG",
         "release_year": "2019",
         "title": "Yesterday"
+      },
+      {
+        "imdb_id": "tt0295700",
+        "original_filename": "Wrong.Turn.2003.1080p.BluRay.x265-RARBG",
+        "release_year": "2003",
+        "title": "Wrong Turn"
+      },
+      {
+        "imdb_id": "tt10333426",
+        "original_filename": "Bliss.2021.1080p.WEBRip.x265-RARBG",
+        "release_year": "2021",
+        "title": "Bliss"
+      },
+      {
+        "imdb_id": "tt9820556",
+        "original_filename": "Breach.2020.1080p.BluRay.x265-RARBG",
+        "release_year": "2020",
+        "title": "Breach"
+      },
+      {
+        "imdb_id": "tt1977895",
+        "original_filename": "Resolution.2012.1080p.BluRay.x265-RARBG",
+        "release_year": "2012",
+        "title": "Resolution"
+      },
+      {
+        "imdb_id": "tt2049543",
+        "original_filename": "Synchronicity.2015.1080p.BluRay.x265-RARBG",
+        "release_year": "2015",
+        "title": "Synchronicity"
+      },
+      {
+        "imdb_id": "tt3986820",
+        "original_filename": "The.Endless.2017.1080p.BluRay.x265-RARBG",
+        "release_year": "2017",
+        "title": "The Endless"
       }
     ]
   },
