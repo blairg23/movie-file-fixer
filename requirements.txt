@@ -4,14 +4,24 @@
 #
 #    pip-compile --output-file=requirements.txt requirements.in
 #
-certifi==2019.6.16        # via requests
-chardet==3.0.4            # via requests
+certifi==2019.6.16
+    # via requests
+chardet==3.0.4
+    # via requests
 fuzzywuzzy==0.17.0
-idna==2.8                 # via requests
+    # via -r requirements.in
+idna==2.8
+    # via requests
 omdbpy==0.1.14
+    # via -r requirements.in
 python-levenshtein==0.12.0
+    # via -r requirements.in
 requests==2.22.0
-urllib3==1.25.3           # via requests
+    # via
+    #   -r requirements.in
+    #   omdbpy
+urllib3==1.25.8
+    # via requests
 
 # The following packages are considered to be unsafe in a requirements file:
-# setuptools==41.2.0        # via python-levenshtein
+# setuptools
