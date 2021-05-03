@@ -55,6 +55,12 @@
         "original_filename": "The.Endless.2017.1080p.BluRay.x265-RARBG",
         "release_year": "2017",
         "title": "The Endless"
+      },
+      {
+        "imdb_id": "tt1082868",
+        "original_filename": "Quarantine.2008.1080p.BluRay.x265-RARBG",
+        "release_year": "2008",
+        "title": "Quarantine"
       }
     ]
   },
@@ -62,11 +68,11 @@
     "description": "Titles containing numbers.",
     "examples": [
       {
-       "imdb_id": "tt0055254",
+        "imdb_id": "tt0055254",
         "original_filename": "101.Dalmatians.1961.1080p.BluRay.H264.AAC-RARBG",
         "release_year": "1961",
-        "title": "One Hundred and One Dalmatians [1961]" 
-      }
+        "title": "One Hundred and One Dalmatians [1961]"
+      },
       {
         "imdb_id": "tt0114746",
         "original_filename": "12 Monkeys (1995)",
@@ -152,7 +158,7 @@
   {
     "description": "Titles that contain the wrong release year.",
     "examples": [
-            {
+      {
         "imdb_id": "tt4465438",
         "original_filename": "Bodysnatch.2018.1080p.BluRay.H264.AAC-RARBG",
         "release_year": "2017",
@@ -175,13 +181,13 @@
         "original_filename": "The.Owners.2020.1080p.WEBRip.x265-RARBG",
         "release_year": "2021",
         "title": "The Owners [2021]"
-      }
+      },
       {
         "imdb_id": "tt11734264",
         "original_filename": "Sentinelle.2021.FRENCH.1080p.WEBRip.x265-VXT",
         "release_year": "2020",
         "title": "Sentinelle [2020]"
-      },
+      }
     ]
   },
   {
@@ -194,7 +200,7 @@
         "title": "Hair Brained [2013]"
       },
       {
-        "imdb_id":"tt13061914",
+        "imdb_id": "tt13061914",
         "original_filename": "Locked.Down.2021.1080p.WEBRip.x265-RARBG",
         "release_year": "2021",
         "title": "Lockdown [2021]"
@@ -215,7 +221,7 @@
   {
     "description": "Titles with missing or different punctuation.",
     "examples": [
-            {
+      {
         "imdb_id": "tt1013752",
         "original_filename": "Fast.and.Furious.2009.REMASTERED.1080p.BluRay.x265-RARBG",
         "release_year": "2009",
@@ -232,15 +238,13 @@
         "original_filename": "Petes.Dragon.1977.PROPER.1080p.BluRay.x265-RARBG",
         "release_year": "1977",
         "title": "Pete's Dragon [1977]"
-      }
+      },
       {
         "imdb_id": "tt0091635",
         "original_filename": "Nine.Half.Weeks.1986.1080p.BluRay.x265-RARBG",
         "release_year": "1986",
         "title": "9½ Weeks [1986]"
-      },
+      }
     ]
   }
 ]
-
-
