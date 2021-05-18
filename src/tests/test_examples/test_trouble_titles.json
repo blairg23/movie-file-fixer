@@ -187,6 +187,12 @@
         "original_filename": "Sentinelle.2021.FRENCH.1080p.WEBRip.x265-VXT",
         "release_year": "2020",
         "title": "Sentinelle [2020]"
+      },
+      {
+        "imdb_id": "tt13356884",
+        "original_filename": "Yakuza.and.the.Family.2021.JAPANESE.1080p.WEBRip.x265-VXT",
+        "release_year": "2020",
+        "title": "Yakuza and the Family [2020]"
       }
     ]
   },
@@ -244,6 +250,17 @@
         "original_filename": "Nine.Half.Weeks.1986.1080p.BluRay.x265-RARBG",
         "release_year": "1986",
         "title": "9½ Weeks [1986]"
+      }
+    ]
+  },
+  {
+    "description": "Titles with no OMDb metadata.",
+    "examples": [
+      {
+        "imdb_id": "N/A",
+        "original_filename": "Maggie.Simpson.in.The.Force.Awakens.from.its.Nap.2021.1080p.WEBRip.x265-RARBG",
+        "release_year": "2021",
+        "title": "Maggie Simpson in the Force Awakens from its Nap [2021]"
       }
     ]
   }
