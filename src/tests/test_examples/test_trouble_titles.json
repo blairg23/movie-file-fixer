@@ -166,6 +166,12 @@
         "examples":
         [
             {
+                "imdb_id": "tt6461318",
+                "original_filename": "Lorelei.2021.1080p.WEBRip.x265-RARBG",
+                "release_year": "2020",
+                "title": "Lorelei [2020]"
+            },
+            {
                 "imdb_id": "tt4465438",
                 "original_filename": "Bodysnatch.2018.1080p.BluRay.H264.AAC-RARBG",
                 "release_year": "2017",
@@ -268,6 +274,12 @@
         "examples":
         [
             {
+                "imdb_id": "tt8385148",
+                "original_filename": "The.Hitmans.Wifes.Bodyguard.2021.EXTENDED.1080p.WEBRip.x265-RARBG",
+                "release_year": "2021",
+                "title": "The Hitman's Wife's Bodyguard [2021]"
+            },
+            {
                 "imdb_id": "tt1013752",
                 "original_filename": "Fast.and.Furious.2009.REMASTERED.1080p.BluRay.x265-RARBG",
                 "release_year": "2009",
@@ -314,6 +326,18 @@
                 "original_filename": "The.Castle.of.Cagliostro.1979.REMASTERED.DUBBED.1080p.BluRay.H264.AAC-RARBG",
                 "release_year": "1979",
                 "title": "Lupin the Third: Castle of Cagliostro [1979]"
+            },
+            {
+                "imdb_id": "tt9701940",
+                "original_filename": "Fear.Street.Part.2.1978.2021.1080p.WEBRip.x265-RARBG",
+                "release_year": "2021",
+                "title": "Fear Street: 1978 [2021]"
+            },
+            {
+                "imdb_id": "tt9701942",
+                "original_filename": "Fear.Street.Part.3.1666.2021.1080p.WEBRip.x265-RARBG",
+                "release_year": "2021",
+                "title": "Fear Street 3 [2021]"
             }
         ]
     }
