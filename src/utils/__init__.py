@@ -11,3 +11,5 @@ from .utils import (
     create_trimmed_file,
     create_random_file,
 )
+
+from .omdb_service import OmdbService

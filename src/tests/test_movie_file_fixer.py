@@ -7,10 +7,10 @@ from unittest import TestCase, mock
 from unittest.mock import patch
 
 import faker
-import src.tests.blockbuster as blockbuster
-import utils
 
 import movie_file_fixer
+import src.tests.blockbuster as blockbuster
+import utils
 
 module_under_test = "movie_file_fixer"
 
@@ -234,9 +234,10 @@ class FolderizerTestCase(TestCase):
             file_extensions=[".file"],
             use_extensions=True,
         )
-        self.test_folder, self.example_titles = (
-            test_environment.create_single_file_environment()
-        )
+        (
+            self.test_folder,
+            self.example_titles,
+        ) = test_environment.create_single_file_environment()
         self.folderizer = movie_file_fixer.Folderizer(
             directory=blockbuster.TEST_INPUT_FOLDER, verbose=True
         )
@@ -352,9 +353,10 @@ class FileRemoverTestCase(TestCase):
             file_extensions=self.good_file_extensions + self.bad_file_extensions,
             use_extensions=True,
         )
-        self.test_folder, self.example_titles = (
-            test_environment.create_single_file_environment()
-        )
+        (
+            self.test_folder,
+            self.example_titles,
+        ) = test_environment.create_single_file_environment()
         self.file_remover = movie_file_fixer.FileRemover(
             directory=blockbuster.TEST_INPUT_FOLDER,
             file_extensions=self.bad_file_extensions,
@@ -388,14 +390,16 @@ class FormatterTestCase(TestCase):
             file_extensions=self.file_extensions,
             use_extensions=True,
         )
-        self.test_folder, self.example_titles = (
-            test_environment.create_folderized_environment()
-        )
+        (
+            self.test_folder,
+            self.example_titles,
+        ) = test_environment.create_folderized_environment()
         self.formatter = movie_file_fixer.Formatter(
             directory=blockbuster.TEST_INPUT_FOLDER,
             metadata_filename=blockbuster.METADATA_FILENAME,
             verbose=True,
         )
+        self.omdb_service = utils.OmdbService(verbose=True)
 
     def tearDown(self):
         shutil.rmtree(self.test_folder)
@@ -533,7 +537,10 @@ class FormatterTestCase(TestCase):
                 # Final (formatted) file names are all "folder/file safe", meaning they don't contain illegal characters:
                 release_year = metadata.get("release_year")
                 test_filename = " ".join([search_safe_title, release_year])
-                test_clean_title_candidate, test_release_year = self.formatter._get_clean_title_candidate_and_release_year(
+                (
+                    test_clean_title_candidate,
+                    test_release_year,
+                ) = self.formatter._get_clean_title_candidate_and_release_year(
                     search_terms=test_filename
                 )
                 self.assertEqual(test_clean_title_candidate, search_safe_title)
@@ -541,7 +548,7 @@ class FormatterTestCase(TestCase):
                     self.assertEqual(test_release_year, release_year)
 
     def test_get_clean_title_candidate_and_release_year_with_contrived_title_and_release_year(
-        self
+        self,
     ):
         """Ensure title and release year can be found, given a contrived example title and release year."""
         fake_title = " ".join(fake.words())
@@ -549,16 +556,19 @@ class FormatterTestCase(TestCase):
         fake_release_year = fake.year()
         fake_title_list.extend([fake_release_year, "1080", "720", "480"])
         fake_search_terms = ".".join(fake_title_list)
-        test_title_candidate, test_release_year = self.formatter._get_clean_title_candidate_and_release_year(
+        (
+            test_title_candidate,
+            test_release_year,
+        ) = self.formatter._get_clean_title_candidate_and_release_year(
             search_terms=fake_search_terms
         )
 
         self.assertEqual(test_title_candidate, fake_title.lower())
         self.assertEqual(test_release_year, fake_release_year)
 
-    @patch(f"omdb.Api.search")
-    def test_search(self, omdb_search_method_patch_patch):
-        """Ensure that the `omdb.Api.search()` method is called when `formatter._search()` is called."""
+    @patch("omdb.Api.search")
+    def test_search(self, omdb_search_method_patch):
+        """Ensure that the `omdb.Api.search()` method is called when `omdb_service._search()` is called."""
 
         search_terms = fake.sentence()
         imdb_id = fake.word()
@@ -571,7 +581,7 @@ class FormatterTestCase(TestCase):
         season = fake.pyint()
         episode = fake.pyint()
 
-        self.formatter._search(
+        self.omdb_service._search(
             search_terms=search_terms,
             imdb_id=imdb_id,
             title=title,
@@ -584,7 +594,7 @@ class FormatterTestCase(TestCase):
             episode=episode,
         )
 
-        omdb_search_method_patch_patch.assert_called_once()
+        omdb_search_method_patch.assert_called_once()
 
     def test_fuzzy_search(self):
         """Ensure fuzzy searching works as expected."""
@@ -610,7 +620,7 @@ class FormatterTestCase(TestCase):
             }
             fake_search_list.append(fake_data)
 
-        test_result_value, fuzzy_score = self.formatter._fuzzy_search(
+        test_result_value, fuzzy_score = self.omdb_service._fuzzy_search(
             search_query=fake_search_query,
             search_key=fake_search_key,
             search_list=fake_search_list,
@@ -890,7 +900,7 @@ class FormatterTestCase(TestCase):
         self.assertEqual(rename_file_method_patch.call_count, num_files)
 
     @patch(f"{module_under_test}.Formatter._get_release_year")
-    @patch(f"{module_under_test}.Formatter._search")
+    @patch(f"{module_under_test}.omdb_service._search")
     def test_search_by_search_terms_without_release_year(
         self, search_method_patch, get_release_year_method_patch
     ):
@@ -903,13 +913,13 @@ class FormatterTestCase(TestCase):
         for example_title in self.example_titles:
             for original_filename, metadata in example_title.items():
                 search_terms = original_filename
-                self.formatter.search_by_search_terms(search_terms=search_terms)
+                self.omdb_service.search_by_search_terms(search_terms=search_terms)
                 call_counter += 1
         self.assertEqual(get_release_year_method_patch.call_count, call_counter)
         self.assertEqual(search_method_patch.call_count, call_counter)
 
     @patch(f"{module_under_test}.Formatter._get_release_year")
-    @patch(f"{module_under_test}.Formatter._search")
+    @patch(f"{module_under_test}.omdb_service._search")
     def test_search_by_search_terms_with_release_year(
         self, search_method_patch, get_release_year_method_patch
     ):
@@ -923,26 +933,26 @@ class FormatterTestCase(TestCase):
             for original_filename, metadata in example_title.items():
                 search_terms = original_filename
                 release_year = fake.year()
-                self.formatter.search_by_search_terms(
+                self.omdb_service.search_by_search_terms(
                     search_terms=search_terms, release_year=release_year
                 )
                 call_counter += 1
         get_release_year_method_patch.assert_not_called()
         self.assertEqual(search_method_patch.call_count, call_counter)
 
-    @patch(f"{module_under_test}.Formatter._search")
+    @patch(f"{module_under_test}.omdb_service._search")
     def test_search_by_imdb_id(self, search_method_patch):
         """Ensure searching by an IMDb ID calls the `_search()` method."""
         call_counter = 0
         for example_title in self.example_titles:
             for original_filename, metadata in example_title.items():
                 imdb_id = metadata["imdb_id"]
-                self.formatter.search_by_imdb_id(imdb_id=imdb_id)
+                self.omdb_service.search_by_imdb_id(imdb_id=imdb_id)
                 call_counter += 1
         self.assertEqual(search_method_patch.call_count, call_counter)
 
     @patch(f"{module_under_test}.Formatter._get_release_year")
-    @patch(f"{module_under_test}.Formatter._search")
+    @patch(f"{module_under_test}.omdb_service._search")
     def test_search_by_title_without_release_year(
         self, search_method_patch, get_release_year_method_patch
     ):
@@ -955,13 +965,13 @@ class FormatterTestCase(TestCase):
         for example_title in self.example_titles:
             for original_filename, metadata in example_title.items():
                 title = metadata["title"]
-                self.formatter.search_by_title(title=title)
+                self.omdb_service.search_by_title(title=title)
                 call_counter += 1
         self.assertEqual(get_release_year_method_patch.call_count, call_counter)
         self.assertEqual(search_method_patch.call_count, call_counter)
 
     @patch(f"{module_under_test}.Formatter._get_release_year")
-    @patch(f"{module_under_test}.Formatter._search")
+    @patch(f"{module_under_test}.omdb_service._search")
     def test_search_by_title_with_release_year(
         self, search_method_patch, get_release_year_method_patch
     ):
@@ -975,7 +985,9 @@ class FormatterTestCase(TestCase):
             for original_filename, metadata in example_title.items():
                 title = metadata["title"]
                 release_year = fake.year()
-                self.formatter.search_by_title(title=title, release_year=release_year)
+                self.omdb_service.search_by_title(
+                    title=title, release_year=release_year
+                )
                 call_counter += 1
         get_release_year_method_patch.assert_not_called()
         self.assertEqual(search_method_patch.call_count, call_counter)
@@ -1173,9 +1185,10 @@ class PosterFinderTestCase(TestCase):
             file_extensions=self.file_extensions,
             use_extensions=False,
         )
-        self.test_folder, self.example_titles = (
-            test_environment.create_empty_environment()
-        )
+        (
+            self.test_folder,
+            self.example_titles,
+        ) = test_environment.create_empty_environment()
 
         self.formatter = movie_file_fixer.Formatter(
             directory=blockbuster.TEST_INPUT_FOLDER,
@@ -1291,9 +1304,10 @@ class SubtitleFinderTestCase(TestCase):
             file_extensions=self.file_extensions,
             use_extensions=False,
         )
-        self.test_folder, self.example_titles = (
-            test_environment.create_empty_environment()
-        )
+        (
+            self.test_folder,
+            self.example_titles,
+        ) = test_environment.create_empty_environment()
 
         self.formatter = movie_file_fixer.Formatter(
             directory=blockbuster.TEST_INPUT_FOLDER,

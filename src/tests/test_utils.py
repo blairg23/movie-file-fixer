@@ -5,6 +5,7 @@ from unittest import TestCase, mock
 from unittest.mock import patch
 
 import faker
+
 import src.tests.blockbuster as blockbuster
 import utils
 
@@ -25,9 +26,10 @@ class UtilsTestCase(TestCase):
             file_extensions=[".file"],
             use_extensions=True,
         )
-        self.test_folder, self.example_titles = (
-            test_environment.create_empty_environment()
-        )
+        (
+            self.test_folder,
+            self.example_titles,
+        ) = test_environment.create_empty_environment()
 
     def tearDown(self):
         shutil.rmtree(self.test_folder)
