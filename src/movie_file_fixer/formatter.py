@@ -129,7 +129,9 @@ class Formatter:
         # Prepare the title by stripping the punctuation:
         stripped_search_terms = self._strip_punctuation(phrase=search_terms)
         stripped_search_terms_list = stripped_search_terms.split(" ")
-        release_year = self._omdb_service._get_release_year(search_terms=stripped_search_terms)
+        release_year = self._omdb_service._get_release_year(
+            search_terms=stripped_search_terms
+        )
         if release_year is not None:
             release_year_index = stripped_search_terms_list.index(release_year)
             # If we found the release year, we know the text BEFORE that release year is the title:

@@ -513,7 +513,9 @@ class FormatterTestCase(TestCase):
         more_random_text = fake.sentence()
         search_terms = " ".join([random_text, release_year, more_random_text])
 
-        test_release_year = self.formatter._omdb_service._get_release_year(search_terms=search_terms)
+        test_release_year = self.formatter._omdb_service._get_release_year(
+            search_terms=search_terms
+        )
 
         self.assertEqual(release_year, test_release_year)
 
@@ -524,7 +526,9 @@ class FormatterTestCase(TestCase):
         more_random_text = fake.sentence()
         search_terms = " ".join([random_text, more_random_text])
 
-        test_release_year = self.formatter._omdb_service._get_release_year(search_terms=search_terms)
+        test_release_year = self.formatter._omdb_service._get_release_year(
+            search_terms=search_terms
+        )
 
         self.assertEqual(test_release_year, release_year)
 
