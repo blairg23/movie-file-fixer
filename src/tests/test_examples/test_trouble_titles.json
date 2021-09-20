@@ -70,6 +70,12 @@
         "examples":
         [
             {
+                "imdb_id": "tt14402926",
+                "original_filename": "Batman.The.Long.Halloween.Part.2.2021.1080p.WEBRip.x265-RARBG",
+                "release_year": "2021",
+                "title": "Batman The Long Halloween, Part Two [2021]"
+            },
+            {
                 "imdb_id": "tt0055254",
                 "original_filename": "101.Dalmatians.1961.1080p.BluRay.H264.AAC-RARBG",
                 "release_year": "1961",
@@ -321,6 +327,12 @@
         "description": "Titles missing parts of the title.",
         "examples":
         [
+            {
+                "imdb_id": "tt8404256",
+                "original_filename": "Snake.Eyes.G.I.Joe.Origins.2021.1080p.WEBRip.x265-RARBG",
+                "release_year": "2021",
+                "title": "Snake Eyes [2021]"
+            },
             {
                 "imdb_id": "tt0079833",
                 "original_filename": "The.Castle.of.Cagliostro.1979.REMASTERED.DUBBED.1080p.BluRay.H264.AAC-RARBG",
