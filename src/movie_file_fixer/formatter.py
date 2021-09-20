@@ -9,9 +9,6 @@ import json
 import os
 import re
 
-import omdb
-from fuzzywuzzy import process as fuzzywuzzy_process
-
 from utils import OmdbService
 
 
@@ -115,60 +112,6 @@ class Formatter:
 
         return final_phrase
 
-    def _get_release_year(self, search_terms):
-        """
-
-        :param str search_terms: The search terms to find a release year in.
-        :return str: The best candidate for the release year of the given title.
-
-        Returns the best candidate for the release year for the given title by removing the improbable candidates.
-        """
-        release_year = None
-        found = False
-
-        if self._verbose:
-            print(
-                f'[{self._action_counter}] [FINDING RELEASE YEAR] in [SEARCH TERMS] "{search_terms}"\n'
-            )
-            self._action_counter += 1
-
-        year_candidate_list = re.findall(
-            r"\d{4}", search_terms
-        )  # Find all possible "release year" candidates
-
-        if len(year_candidate_list) > 0:  # If we found any results:
-            if self._verbose:
-                print(
-                    f'[FOUND] {len(year_candidate_list)} [RELEASE YEAR CANDIDATES] "{year_candidate_list}"]\n'
-                )
-
-            for year in year_candidate_list:
-                # Typically, we don't deal with movies before the 1900's
-                # and this script will be future proof until the 2100's!
-                if not 1900 < int(year) < 2100:
-                    # If we found an invalid year candidate, remove it:
-                    year_candidate_list.remove(str(year))
-
-            # Make sure there is still at least one candidate
-            if len(year_candidate_list) > 0:
-                # Add only the last one as that is the most likely candidate of a real candidate (files don't typically start with the release year)
-                release_year = year_candidate_list[
-                    -1
-                ]  # This will also be the only candidate if there is only one candidate.
-
-                found = True
-
-                if self._verbose:
-                    print(f'[FOUND] [RELEASE YEAR] "{release_year}"\n')
-        else:
-            found = False
-
-        if not found:
-            if self._verbose:
-                print("[DID NOT FIND] [RELEASE YEAR]\n")
-
-        return release_year
-
     def _get_clean_title_candidate_and_release_year(self, search_terms):
         """
 
@@ -186,7 +129,9 @@ class Formatter:
         # Prepare the title by stripping the punctuation:
         stripped_search_terms = self._strip_punctuation(phrase=search_terms)
         stripped_search_terms_list = stripped_search_terms.split(" ")
-        release_year = self._get_release_year(search_terms=stripped_search_terms)
+        release_year = self._omdb_service._get_release_year(
+            search_terms=stripped_search_terms
+        )
         if release_year is not None:
             release_year_index = stripped_search_terms_list.index(release_year)
             # If we found the release year, we know the text BEFORE that release year is the title:

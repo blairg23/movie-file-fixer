@@ -1,7 +1,11 @@
 import os
+import re
+import json
 import omdb
+from fuzzywuzzy import process as fuzzywuzzy_process
 
 OMDB_API_KEY = os.environ.get("OMDB_API_KEY")
+
 
 class OmdbService:
     def __init__(self, omdb_api_key=None, verbose=False):
@@ -64,7 +68,7 @@ class OmdbService:
             "Response": "False"
         }
     
-        omdb_response = self._omdb_api.omdb_api.search(
+        omdb_response = self._omdb_api.search(
             search_terms=search_terms,
             imdb_id=imdb_id,
             title=title,
@@ -335,3 +339,57 @@ class OmdbService:
                 print(f'[FOUND BEST MATCH] [IMDB ID] "{imdb_id}"')
 
             return self.get_imdb_object(search_query="", imdb_id=imdb_id)
+
+    def _get_release_year(self, search_terms):
+        """
+
+        :param str search_terms: The search terms to find a release year in.
+        :return str: The best candidate for the release year of the given title.
+
+        Returns the best candidate for the release year for the given title by removing the improbable candidates.
+        """
+        release_year = None
+        found = False
+
+        if self._verbose:
+            print(
+                f'[{self._action_counter}] [FINDING RELEASE YEAR] in [SEARCH TERMS] "{search_terms}"\n'
+            )
+            self._action_counter += 1
+
+        year_candidate_list = re.findall(
+            r"\d{4}", search_terms
+        )  # Find all possible "release year" candidates
+
+        if len(year_candidate_list) > 0:  # If we found any results:
+            if self._verbose:
+                print(
+                    f'[FOUND] {len(year_candidate_list)} [RELEASE YEAR CANDIDATES] "{year_candidate_list}"]\n'
+                )
+
+            for year in year_candidate_list:
+                # Typically, we don't deal with movies before the 1900's
+                # and this script will be future proof until the 2100's!
+                if not 1900 < int(year) < 2100:
+                    # If we found an invalid year candidate, remove it:
+                    year_candidate_list.remove(str(year))
+
+            # Make sure there is still at least one candidate
+            if len(year_candidate_list) > 0:
+                # Add only the last one as that is the most likely candidate of a real candidate (files don't typically start with the release year)
+                release_year = year_candidate_list[
+                    -1
+                ]  # This will also be the only candidate if there is only one candidate.
+
+                found = True
+
+                if self._verbose:
+                    print(f'[FOUND] [RELEASE YEAR] "{release_year}"\n')
+        else:
+            found = False
+
+        if not found:
+            if self._verbose:
+                print("[DID NOT FIND] [RELEASE YEAR]\n")
+
+        return release_year

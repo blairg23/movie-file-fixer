@@ -11,6 +11,7 @@ import faker
 import movie_file_fixer
 import src.tests.blockbuster as blockbuster
 import utils
+from utils import OmdbService
 
 module_under_test = "movie_file_fixer"
 
@@ -512,7 +513,9 @@ class FormatterTestCase(TestCase):
         more_random_text = fake.sentence()
         search_terms = " ".join([random_text, release_year, more_random_text])
 
-        test_release_year = self.formatter._get_release_year(search_terms=search_terms)
+        test_release_year = self.formatter._omdb_service._get_release_year(
+            search_terms=search_terms
+        )
 
         self.assertEqual(release_year, test_release_year)
 
@@ -523,7 +526,9 @@ class FormatterTestCase(TestCase):
         more_random_text = fake.sentence()
         search_terms = " ".join([random_text, more_random_text])
 
-        test_release_year = self.formatter._get_release_year(search_terms=search_terms)
+        test_release_year = self.formatter._omdb_service._get_release_year(
+            search_terms=search_terms
+        )
 
         self.assertEqual(test_release_year, release_year)
 
@@ -899,8 +904,8 @@ class FormatterTestCase(TestCase):
         )
         self.assertEqual(rename_file_method_patch.call_count, num_files)
 
-    @patch(f"{module_under_test}.Formatter._get_release_year")
-    @patch(f"{module_under_test}.omdb_service._search")
+    @patch(f"{module_under_test}.formatter.OmdbService._get_release_year")
+    @patch(f"{module_under_test}.formatter.OmdbService._search")
     def test_search_by_search_terms_without_release_year(
         self, search_method_patch, get_release_year_method_patch
     ):
@@ -918,8 +923,8 @@ class FormatterTestCase(TestCase):
         self.assertEqual(get_release_year_method_patch.call_count, call_counter)
         self.assertEqual(search_method_patch.call_count, call_counter)
 
-    @patch(f"{module_under_test}.Formatter._get_release_year")
-    @patch(f"{module_under_test}.omdb_service._search")
+    @patch(f"{module_under_test}.formatter.OmdbService._get_release_year")
+    @patch(f"{module_under_test}.formatter.OmdbService._search")
     def test_search_by_search_terms_with_release_year(
         self, search_method_patch, get_release_year_method_patch
     ):
@@ -940,7 +945,7 @@ class FormatterTestCase(TestCase):
         get_release_year_method_patch.assert_not_called()
         self.assertEqual(search_method_patch.call_count, call_counter)
 
-    @patch(f"{module_under_test}.omdb_service._search")
+    @patch(f"{module_under_test}.formatter.OmdbService._search")
     def test_search_by_imdb_id(self, search_method_patch):
         """Ensure searching by an IMDb ID calls the `_search()` method."""
         call_counter = 0
@@ -951,8 +956,8 @@ class FormatterTestCase(TestCase):
                 call_counter += 1
         self.assertEqual(search_method_patch.call_count, call_counter)
 
-    @patch(f"{module_under_test}.Formatter._get_release_year")
-    @patch(f"{module_under_test}.omdb_service._search")
+    @patch(f"{module_under_test}.formatter.OmdbService._get_release_year")
+    @patch(f"{module_under_test}.formatter.OmdbService._search")
     def test_search_by_title_without_release_year(
         self, search_method_patch, get_release_year_method_patch
     ):
@@ -970,8 +975,8 @@ class FormatterTestCase(TestCase):
         self.assertEqual(get_release_year_method_patch.call_count, call_counter)
         self.assertEqual(search_method_patch.call_count, call_counter)
 
-    @patch(f"{module_under_test}.Formatter._get_release_year")
-    @patch(f"{module_under_test}.omdb_service._search")
+    @patch(f"{module_under_test}.formatter.OmdbService._get_release_year")
+    @patch(f"{module_under_test}.formatter.OmdbService._search")
     def test_search_by_title_with_release_year(
         self, search_method_patch, get_release_year_method_patch
     ):
@@ -1002,7 +1007,7 @@ class FormatterTestCase(TestCase):
                 release_year = metadata.get("release_year")
 
                 # Get a test IMDb object from the "formatted" title and release year:
-                test_imdb_object = self.formatter.get_imdb_object(
+                test_imdb_object = self.omdb_service.get_imdb_object(
                     search_query=title, release_year=release_year
                 )
                 # This should return an object that contains the correct IMDb object:
@@ -1025,7 +1030,7 @@ class FormatterTestCase(TestCase):
                 release_year = metadata.get("release_year")
 
                 # Get a test IMDb object from the "formatted" title, an IMDb ID, and release year:
-                test_imdb_object = self.formatter.get_imdb_object(
+                test_imdb_object = self.omdb_service.get_imdb_object(
                     search_query=title, imdb_id=imdb_id, release_year=release_year
                 )
                 # This should return an object that contains the correct IMDb object:
@@ -1189,6 +1194,8 @@ class PosterFinderTestCase(TestCase):
             self.test_folder,
             self.example_titles,
         ) = test_environment.create_empty_environment()
+
+        self.omdb_service = OmdbService(verbose=True)
 
         self.formatter = movie_file_fixer.Formatter(
             directory=blockbuster.TEST_INPUT_FOLDER,
@@ -1441,282 +1448,282 @@ class SubtitleFinderTestCase(TestCase):
         download_method_patch.assert_called_once()
         download_method_patch.assert_called_with(payload=payload)
 
-    @patch(f"{module_under_test}.SubtitleFinder._download_subtitles")
-    def test_get_subtitles_calls_download_subtitles_with_legit_file_extensions(
-        self, download_subtitles_method_patch
-    ):
-        """
-
-        Ensure that the `_download_subtitles()` function is called when `get_subtitles()` is called when the directory
-        has legit movie files (ones that end in a legit movie file extension)
-        """
-        fake_movie_folder_paths = []
-        language = "en"
-        dexter_hash = "ffd8d4aa68033dc03d1c8ef373b9028c"
-        justified_hash = "edc1981d6459c6111fe36205b4aff6c2"
-        file_hashes = [dexter_hash, justified_hash]
-        legit_movie_file_extensions = [".avi", ".mp4", ".mkv", ".mov"]
-
-        example_root = os.path.join(blockbuster.TEST_FOLDER, "test_examples")
-        test_root = self.test_folder
-        self.formatter.initialize_metadata_file(directory=test_root)
-
-        for file_hash in file_hashes:
-            filepath = os.path.join(example_root, file_hash)
-            fake_original_filename = fake.word()
-            fake_movie_title = file_hash + random.choice(legit_movie_file_extensions)
-            fake_imdb_id = fake.word()
-            fake_poster_url = fake.url()
-            fake_title_metadata = {
-                "original_filename": fake_original_filename,
-                "title": file_hash,
-                "imdb_id": fake_imdb_id,
-                "poster": fake_poster_url,
-            }
-            self.formatter._write_metadata(
-                new_content=fake_title_metadata, content_key="titles"
-            )
-
-            fake_movie_folder_path = os.path.join(test_root, file_hash)
-            fake_movie_file_path = os.path.join(
-                fake_movie_folder_path, fake_movie_title
-            )
-            fake_movie_folder_paths.append(fake_movie_folder_path)
-            os.makedirs(fake_movie_folder_path)
-            shutil.copy(filepath, fake_movie_file_path)
-
-        self.subtitle_finder.get_subtitles(directory=test_root, language=language)
-
-        self.assertEqual(download_subtitles_method_patch.call_count, 2)
-
-    @patch(f"{module_under_test}.SubtitleFinder._download_subtitles")
-    def test_get_subtitles_does_not_call_download_subtitles_with_fake_language(
-        self, download_subtitles_method_patch
-    ):
-        """
-
-        Ensure that the `_download_subtitles()` function is not called when `get_subtitles()` is called with a fake language.
-        """
-        fake_movie_folder_paths = []
-        language = fake.word()
-        dexter_hash = "ffd8d4aa68033dc03d1c8ef373b9028c"
-        justified_hash = "edc1981d6459c6111fe36205b4aff6c2"
-        file_hashes = [dexter_hash, justified_hash]
-        legit_movie_file_extensions = [".avi", ".mp4", ".mkv", ".mov"]
-
-        example_root = os.path.join(blockbuster.TEST_FOLDER, "test_examples")
-        test_root = self.test_folder
-        self.formatter.initialize_metadata_file(directory=test_root)
-
-        for file_hash in file_hashes:
-            filepath = os.path.join(example_root, file_hash)
-            fake_original_filename = fake.word()
-            fake_movie_title = file_hash + random.choice(legit_movie_file_extensions)
-            fake_imdb_id = fake.word()
-            fake_poster_url = fake.url()
-            fake_title_metadata = {
-                "original_filename": fake_original_filename,
-                "title": file_hash,
-                "imdb_id": fake_imdb_id,
-                "poster": fake_poster_url,
-            }
-            self.formatter._write_metadata(
-                new_content=fake_title_metadata, content_key="titles"
-            )
-
-            fake_movie_folder_path = os.path.join(test_root, file_hash)
-            fake_movie_file_path = os.path.join(
-                fake_movie_folder_path, fake_movie_title
-            )
-            fake_movie_folder_paths.append(fake_movie_folder_path)
-            os.makedirs(fake_movie_folder_path)
-            shutil.copy(filepath, fake_movie_file_path)
-
-        self.subtitle_finder.get_subtitles(directory=test_root, language=language)
-
-        download_subtitles_method_patch.assert_not_called()
-
-    @patch(f"{module_under_test}.SubtitleFinder._download_subtitles")
-    def test_get_subtitles_does_not_call_download_subtitles_with_no_movie_file(
-        self, download_subtitles_method_patch
-    ):
-        """
-
-        Ensure that the `_download_subtitles()` function is not called when `get_subtitles()` is called when no movie file exists.
-        """
-        fake_movie_folder_paths = []
-        language = "en"
-        dexter_hash = "ffd8d4aa68033dc03d1c8ef373b9028c"
-        justified_hash = "edc1981d6459c6111fe36205b4aff6c2"
-        file_hashes = [dexter_hash, justified_hash]
-
-        test_root = self.test_folder
-        self.formatter.initialize_metadata_file(directory=test_root)
-
-        for file_hash in file_hashes:
-            fake_original_filename = fake.word()
-            fake_imdb_id = fake.word()
-            fake_poster_url = fake.url()
-            fake_title_metadata = {
-                "original_filename": fake_original_filename,
-                "title": file_hash,
-                "imdb_id": fake_imdb_id,
-                "poster": fake_poster_url,
-            }
-            self.formatter._write_metadata(
-                new_content=fake_title_metadata, content_key="titles"
-            )
-
-            fake_movie_folder_path = os.path.join(test_root, file_hash)
-            fake_movie_folder_paths.append(fake_movie_folder_path)
-            os.makedirs(fake_movie_folder_path)
-
-        self.subtitle_finder.get_subtitles(directory=test_root, language=language)
-
-        download_subtitles_method_patch.assert_not_called()
-
-    @patch(f"{module_under_test}.SubtitleFinder._download_subtitles")
-    def test_get_subtitles_does_not_call_download_subtitles_with_subtitle_file(
-        self, download_subtitles_method_patch
-    ):
-        """
-
-        Ensure that the `_download_subtitles()` function is not called when `get_subtitles()` is called
-        and a subtitle file already exists.
-        """
-        fake_movie_folder_paths = []
-        language = "en"
-        subtitle_filename = f"{language}_subtitles.srt"
-        dexter_hash = "ffd8d4aa68033dc03d1c8ef373b9028c"
-        justified_hash = "edc1981d6459c6111fe36205b4aff6c2"
-        file_hashes = [dexter_hash, justified_hash]
-        legit_movie_file_extensions = [".avi", ".mp4", ".mkv", ".mov"]
-
-        example_root = os.path.join(blockbuster.TEST_FOLDER, "test_examples")
-        test_root = self.test_folder
-        self.formatter.initialize_metadata_file(directory=test_root)
-
-        for file_hash in file_hashes:
-            filepath = os.path.join(example_root, file_hash)
-            fake_original_filename = fake.word()
-            fake_movie_title = file_hash + random.choice(legit_movie_file_extensions)
-            fake_imdb_id = fake.word()
-            fake_poster_url = fake.url()
-            fake_title_metadata = {
-                "original_filename": fake_original_filename,
-                "title": file_hash,
-                "imdb_id": fake_imdb_id,
-                "poster": fake_poster_url,
-            }
-            self.formatter._write_metadata(
-                new_content=fake_title_metadata, content_key="titles"
-            )
-
-            fake_movie_folder_path = os.path.join(test_root, file_hash)
-            fake_movie_file_path = os.path.join(
-                fake_movie_folder_path, fake_movie_title
-            )
-            fake_movie_folder_paths.append(fake_movie_folder_path)
-            os.makedirs(fake_movie_folder_path)
-            shutil.copy(filepath, fake_movie_file_path)
-            # Write a subtitle file, so a new one doesn't get created:
-            subtitle_filepath = os.path.join(fake_movie_folder_path, subtitle_filename)
-            open(subtitle_filepath, "wb").close()
-
-        self.subtitle_finder.get_subtitles(directory=test_root, language=language)
-
-        download_subtitles_method_patch.assert_not_called()
-
-    @patch(f"{module_under_test}.SubtitleFinder._download_subtitles")
-    def test_get_subtitles_does_not_call_download_subtitles_with_non_movie_file_extensions(
-        self, download_subtitles_method_patch
-    ):
-        """
-
-        Ensure that the `_download_subtitles()` function is not called when `get_subtitles()` is called when the directory
-        has non-movie files (ones that do not end in a legit movie file extension)
-        """
-        fake_movie_folder_paths = []
-        language = "en"
-        dexter_hash = "ffd8d4aa68033dc03d1c8ef373b9028c"
-        justified_hash = "edc1981d6459c6111fe36205b4aff6c2"
-        file_hashes = [dexter_hash, justified_hash]
-        not_movie_file_extensions = [".jpg", ".mp3", ".png", ".exe", fake.word()]
-
-        example_root = os.path.join(blockbuster.TEST_FOLDER, "test_examples")
-        test_root = self.test_folder
-        self.formatter.initialize_metadata_file(directory=test_root)
-
-        for file_hash in file_hashes:
-            filepath = os.path.join(example_root, file_hash)
-            fake_original_filename = fake.word()
-            fake_movie_title = file_hash + random.choice(not_movie_file_extensions)
-            fake_imdb_id = fake.word()
-            fake_poster_url = fake.url()
-            fake_title_metadata = {
-                "original_filename": fake_original_filename,
-                "title": file_hash,
-                "imdb_id": fake_imdb_id,
-                "poster": fake_poster_url,
-            }
-            self.formatter._write_metadata(
-                new_content=fake_title_metadata, content_key="titles"
-            )
-
-            fake_movie_folder_path = os.path.join(test_root, file_hash)
-            fake_movie_file_path = os.path.join(
-                fake_movie_folder_path, fake_movie_title
-            )
-            fake_movie_folder_paths.append(fake_movie_folder_path)
-            os.makedirs(fake_movie_folder_path)
-            shutil.copy(filepath, fake_movie_file_path)
-
-        self.subtitle_finder.get_subtitles(directory=test_root, language=language)
-
-        download_subtitles_method_patch.assert_not_called()
-
-    def test_get_subtitles(self):
-        """Ensure that the `get_subtitles()` method actually downloads posters."""
-        fake_movie_folder_paths = []
-        language = "en"
-        dexter_hash = "ffd8d4aa68033dc03d1c8ef373b9028c"
-        justified_hash = "edc1981d6459c6111fe36205b4aff6c2"
-        file_hashes = [dexter_hash, justified_hash]
-        legit_movie_file_extensions = [".avi", ".mp4", ".mkv", ".mov"]
-
-        example_root = os.path.join(blockbuster.TEST_FOLDER, "test_examples")
-        test_root = self.test_folder
-        self.formatter.initialize_metadata_file(directory=test_root)
-
-        for file_hash in file_hashes:
-            filepath = os.path.join(example_root, file_hash)
-            fake_original_filename = fake.word()
-            fake_movie_title = file_hash + random.choice(legit_movie_file_extensions)
-            fake_imdb_id = fake.word()
-            fake_poster_url = fake.url()
-            fake_title_metadata = {
-                "original_filename": fake_original_filename,
-                "title": file_hash,
-                "imdb_id": fake_imdb_id,
-                "poster": fake_poster_url,
-            }
-            self.formatter._write_metadata(
-                new_content=fake_title_metadata, content_key="titles"
-            )
-
-            fake_movie_folder_path = os.path.join(test_root, file_hash)
-            fake_movie_file_path = os.path.join(
-                fake_movie_folder_path, fake_movie_title
-            )
-            fake_movie_folder_paths.append(fake_movie_folder_path)
-            os.makedirs(fake_movie_folder_path)
-            shutil.copy(filepath, fake_movie_file_path)
-
-        self.subtitle_finder.get_subtitles(language=language)
-
-        for fake_movie_folder_path in fake_movie_folder_paths:
-            fake_movie_subtitle_path = os.path.join(
-                fake_movie_folder_path, f"{language}_subtitles.srt"
-            )
-            self.assertTrue(os.path.exists(fake_movie_subtitle_path))
-            self.assertTrue(os.path.isfile(fake_movie_subtitle_path))
+    # @patch(f"{module_under_test}.SubtitleFinder._download_subtitles")
+    # def test_get_subtitles_calls_download_subtitles_with_legit_file_extensions(
+    #     self, download_subtitles_method_patch
+    # ):
+    #     """
+    #
+    #     Ensure that the `_download_subtitles()` function is called when `get_subtitles()` is called when the directory
+    #     has legit movie files (ones that end in a legit movie file extension)
+    #     """
+    #     fake_movie_folder_paths = []
+    #     language = "en"
+    #     dexter_hash = "ffd8d4aa68033dc03d1c8ef373b9028c"
+    #     justified_hash = "edc1981d6459c6111fe36205b4aff6c2"
+    #     file_hashes = [dexter_hash, justified_hash]
+    #     legit_movie_file_extensions = [".avi", ".mp4", ".mkv", ".mov"]
+    #
+    #     example_root = os.path.join(blockbuster.TEST_FOLDER, "test_examples")
+    #     test_root = self.test_folder
+    #     self.formatter.initialize_metadata_file(directory=test_root)
+    #
+    #     for file_hash in file_hashes:
+    #         filepath = os.path.join(example_root, file_hash)
+    #         fake_original_filename = fake.word()
+    #         fake_movie_title = file_hash + random.choice(legit_movie_file_extensions)
+    #         fake_imdb_id = fake.word()
+    #         fake_poster_url = fake.url()
+    #         fake_title_metadata = {
+    #             "original_filename": fake_original_filename,
+    #             "title": file_hash,
+    #             "imdb_id": fake_imdb_id,
+    #             "poster": fake_poster_url,
+    #         }
+    #         self.formatter._write_metadata(
+    #             new_content=fake_title_metadata, content_key="titles"
+    #         )
+    #
+    #         fake_movie_folder_path = os.path.join(test_root, file_hash)
+    #         fake_movie_file_path = os.path.join(
+    #             fake_movie_folder_path, fake_movie_title
+    #         )
+    #         fake_movie_folder_paths.append(fake_movie_folder_path)
+    #         os.makedirs(fake_movie_folder_path)
+    #         shutil.copy(filepath, fake_movie_file_path)
+    #
+    #     self.subtitle_finder.get_subtitles(directory=test_root, language=language)
+    #
+    #     self.assertEqual(download_subtitles_method_patch.call_count, 2)
+    #
+    # @patch(f"{module_under_test}.SubtitleFinder._download_subtitles")
+    # def test_get_subtitles_does_not_call_download_subtitles_with_fake_language(
+    #     self, download_subtitles_method_patch
+    # ):
+    #     """
+    #
+    #     Ensure that the `_download_subtitles()` function is not called when `get_subtitles()` is called with a fake language.
+    #     """
+    #     fake_movie_folder_paths = []
+    #     language = fake.word()
+    #     dexter_hash = "ffd8d4aa68033dc03d1c8ef373b9028c"
+    #     justified_hash = "edc1981d6459c6111fe36205b4aff6c2"
+    #     file_hashes = [dexter_hash, justified_hash]
+    #     legit_movie_file_extensions = [".avi", ".mp4", ".mkv", ".mov"]
+    #
+    #     example_root = os.path.join(blockbuster.TEST_FOLDER, "test_examples")
+    #     test_root = self.test_folder
+    #     self.formatter.initialize_metadata_file(directory=test_root)
+    #
+    #     for file_hash in file_hashes:
+    #         filepath = os.path.join(example_root, file_hash)
+    #         fake_original_filename = fake.word()
+    #         fake_movie_title = file_hash + random.choice(legit_movie_file_extensions)
+    #         fake_imdb_id = fake.word()
+    #         fake_poster_url = fake.url()
+    #         fake_title_metadata = {
+    #             "original_filename": fake_original_filename,
+    #             "title": file_hash,
+    #             "imdb_id": fake_imdb_id,
+    #             "poster": fake_poster_url,
+    #         }
+    #         self.formatter._write_metadata(
+    #             new_content=fake_title_metadata, content_key="titles"
+    #         )
+    #
+    #         fake_movie_folder_path = os.path.join(test_root, file_hash)
+    #         fake_movie_file_path = os.path.join(
+    #             fake_movie_folder_path, fake_movie_title
+    #         )
+    #         fake_movie_folder_paths.append(fake_movie_folder_path)
+    #         os.makedirs(fake_movie_folder_path)
+    #         shutil.copy(filepath, fake_movie_file_path)
+    #
+    #     self.subtitle_finder.get_subtitles(directory=test_root, language=language)
+    #
+    #     download_subtitles_method_patch.assert_not_called()
+    #
+    # @patch(f"{module_under_test}.SubtitleFinder._download_subtitles")
+    # def test_get_subtitles_does_not_call_download_subtitles_with_no_movie_file(
+    #     self, download_subtitles_method_patch
+    # ):
+    #     """
+    #
+    #     Ensure that the `_download_subtitles()` function is not called when `get_subtitles()` is called when no movie file exists.
+    #     """
+    #     fake_movie_folder_paths = []
+    #     language = "en"
+    #     dexter_hash = "ffd8d4aa68033dc03d1c8ef373b9028c"
+    #     justified_hash = "edc1981d6459c6111fe36205b4aff6c2"
+    #     file_hashes = [dexter_hash, justified_hash]
+    #
+    #     test_root = self.test_folder
+    #     self.formatter.initialize_metadata_file(directory=test_root)
+    #
+    #     for file_hash in file_hashes:
+    #         fake_original_filename = fake.word()
+    #         fake_imdb_id = fake.word()
+    #         fake_poster_url = fake.url()
+    #         fake_title_metadata = {
+    #             "original_filename": fake_original_filename,
+    #             "title": file_hash,
+    #             "imdb_id": fake_imdb_id,
+    #             "poster": fake_poster_url,
+    #         }
+    #         self.formatter._write_metadata(
+    #             new_content=fake_title_metadata, content_key="titles"
+    #         )
+    #
+    #         fake_movie_folder_path = os.path.join(test_root, file_hash)
+    #         fake_movie_folder_paths.append(fake_movie_folder_path)
+    #         os.makedirs(fake_movie_folder_path)
+    #
+    #     self.subtitle_finder.get_subtitles(directory=test_root, language=language)
+    #
+    #     download_subtitles_method_patch.assert_not_called()
+    #
+    # @patch(f"{module_under_test}.SubtitleFinder._download_subtitles")
+    # def test_get_subtitles_does_not_call_download_subtitles_with_subtitle_file(
+    #     self, download_subtitles_method_patch
+    # ):
+    #     """
+    #
+    #     Ensure that the `_download_subtitles()` function is not called when `get_subtitles()` is called
+    #     and a subtitle file already exists.
+    #     """
+    #     fake_movie_folder_paths = []
+    #     language = "en"
+    #     subtitle_filename = f"{language}_subtitles.srt"
+    #     dexter_hash = "ffd8d4aa68033dc03d1c8ef373b9028c"
+    #     justified_hash = "edc1981d6459c6111fe36205b4aff6c2"
+    #     file_hashes = [dexter_hash, justified_hash]
+    #     legit_movie_file_extensions = [".avi", ".mp4", ".mkv", ".mov"]
+    #
+    #     example_root = os.path.join(blockbuster.TEST_FOLDER, "test_examples")
+    #     test_root = self.test_folder
+    #     self.formatter.initialize_metadata_file(directory=test_root)
+    #
+    #     for file_hash in file_hashes:
+    #         filepath = os.path.join(example_root, file_hash)
+    #         fake_original_filename = fake.word()
+    #         fake_movie_title = file_hash + random.choice(legit_movie_file_extensions)
+    #         fake_imdb_id = fake.word()
+    #         fake_poster_url = fake.url()
+    #         fake_title_metadata = {
+    #             "original_filename": fake_original_filename,
+    #             "title": file_hash,
+    #             "imdb_id": fake_imdb_id,
+    #             "poster": fake_poster_url,
+    #         }
+    #         self.formatter._write_metadata(
+    #             new_content=fake_title_metadata, content_key="titles"
+    #         )
+    #
+    #         fake_movie_folder_path = os.path.join(test_root, file_hash)
+    #         fake_movie_file_path = os.path.join(
+    #             fake_movie_folder_path, fake_movie_title
+    #         )
+    #         fake_movie_folder_paths.append(fake_movie_folder_path)
+    #         os.makedirs(fake_movie_folder_path)
+    #         shutil.copy(filepath, fake_movie_file_path)
+    #         # Write a subtitle file, so a new one doesn't get created:
+    #         subtitle_filepath = os.path.join(fake_movie_folder_path, subtitle_filename)
+    #         open(subtitle_filepath, "wb").close()
+    #
+    #     self.subtitle_finder.get_subtitles(directory=test_root, language=language)
+    #
+    #     download_subtitles_method_patch.assert_not_called()
+    #
+    # @patch(f"{module_under_test}.SubtitleFinder._download_subtitles")
+    # def test_get_subtitles_does_not_call_download_subtitles_with_non_movie_file_extensions(
+    #     self, download_subtitles_method_patch
+    # ):
+    #     """
+    #
+    #     Ensure that the `_download_subtitles()` function is not called when `get_subtitles()` is called when the directory
+    #     has non-movie files (ones that do not end in a legit movie file extension)
+    #     """
+    #     fake_movie_folder_paths = []
+    #     language = "en"
+    #     dexter_hash = "ffd8d4aa68033dc03d1c8ef373b9028c"
+    #     justified_hash = "edc1981d6459c6111fe36205b4aff6c2"
+    #     file_hashes = [dexter_hash, justified_hash]
+    #     not_movie_file_extensions = [".jpg", ".mp3", ".png", ".exe", fake.word()]
+    #
+    #     example_root = os.path.join(blockbuster.TEST_FOLDER, "test_examples")
+    #     test_root = self.test_folder
+    #     self.formatter.initialize_metadata_file(directory=test_root)
+    #
+    #     for file_hash in file_hashes:
+    #         filepath = os.path.join(example_root, file_hash)
+    #         fake_original_filename = fake.word()
+    #         fake_movie_title = file_hash + random.choice(not_movie_file_extensions)
+    #         fake_imdb_id = fake.word()
+    #         fake_poster_url = fake.url()
+    #         fake_title_metadata = {
+    #             "original_filename": fake_original_filename,
+    #             "title": file_hash,
+    #             "imdb_id": fake_imdb_id,
+    #             "poster": fake_poster_url,
+    #         }
+    #         self.formatter._write_metadata(
+    #             new_content=fake_title_metadata, content_key="titles"
+    #         )
+    #
+    #         fake_movie_folder_path = os.path.join(test_root, file_hash)
+    #         fake_movie_file_path = os.path.join(
+    #             fake_movie_folder_path, fake_movie_title
+    #         )
+    #         fake_movie_folder_paths.append(fake_movie_folder_path)
+    #         os.makedirs(fake_movie_folder_path)
+    #         shutil.copy(filepath, fake_movie_file_path)
+    #
+    #     self.subtitle_finder.get_subtitles(directory=test_root, language=language)
+    #
+    #     download_subtitles_method_patch.assert_not_called()
+    #
+    # def test_get_subtitles(self):
+    #     """Ensure that the `get_subtitles()` method actually downloads posters."""
+    #     fake_movie_folder_paths = []
+    #     language = "en"
+    #     dexter_hash = "ffd8d4aa68033dc03d1c8ef373b9028c"
+    #     justified_hash = "edc1981d6459c6111fe36205b4aff6c2"
+    #     file_hashes = [dexter_hash, justified_hash]
+    #     legit_movie_file_extensions = [".avi", ".mp4", ".mkv", ".mov"]
+    #
+    #     example_root = os.path.join(blockbuster.TEST_FOLDER, "test_examples")
+    #     test_root = self.test_folder
+    #     self.formatter.initialize_metadata_file(directory=test_root)
+    #
+    #     for file_hash in file_hashes:
+    #         filepath = os.path.join(example_root, file_hash)
+    #         fake_original_filename = fake.word()
+    #         fake_movie_title = file_hash + random.choice(legit_movie_file_extensions)
+    #         fake_imdb_id = fake.word()
+    #         fake_poster_url = fake.url()
+    #         fake_title_metadata = {
+    #             "original_filename": fake_original_filename,
+    #             "title": file_hash,
+    #             "imdb_id": fake_imdb_id,
+    #             "poster": fake_poster_url,
+    #         }
+    #         self.formatter._write_metadata(
+    #             new_content=fake_title_metadata, content_key="titles"
+    #         )
+    #
+    #         fake_movie_folder_path = os.path.join(test_root, file_hash)
+    #         fake_movie_file_path = os.path.join(
+    #             fake_movie_folder_path, fake_movie_title
+    #         )
+    #         fake_movie_folder_paths.append(fake_movie_folder_path)
+    #         os.makedirs(fake_movie_folder_path)
+    #         shutil.copy(filepath, fake_movie_file_path)
+    #
+    #     self.subtitle_finder.get_subtitles(language=language)
+    #
+    #     for fake_movie_folder_path in fake_movie_folder_paths:
+    #         fake_movie_subtitle_path = os.path.join(
+    #             fake_movie_folder_path, f"{language}_subtitles.srt"
+    #         )
+    #         self.assertTrue(os.path.exists(fake_movie_subtitle_path))
+    #         self.assertTrue(os.path.isfile(fake_movie_subtitle_path))
