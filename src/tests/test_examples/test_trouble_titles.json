@@ -1,104 +1,362 @@
 [
-  {
-    "description": "Titles containing numbers.",
-    "examples": [
-      {
-        "original_filename": "12 Monkeys (1995)",
-        "imdb_id": "tt0114746",
-        "title": "Twelve Monkeys",
-        "release_year": "1995"
-      },
-      {
-        "original_filename": "2001 - A Space Odyssey",
-        "imdb_id": "tt0062622",
-        "title": "2001: A Space Odyssey",
-        "release_year": "1968"
-      }
-    ]
-  },
-  {
-    "description": "Titles containing periods.",
-    "examples": [
-      {
-        "original_filename": "G.I.Joe.The.Rise.of.Cobra.2009.HDRip",
-        "imdb_id": "tt1046173",
-        "title": "G.I. Joe: The Rise of Cobra",
-        "release_year": "2009"
-      },
-      {
-        "original_filename": "G.I. Joe Retaliation (2013) [1080p]",
-        "imdb_id": "tt1583421",
-        "title": "G.I. Joe: Retaliation",
-        "release_year": "2013"
-      },
-      {
-        "original_filename": "Fantastic.Mr.Fox.DVDRip.XviD-MOViERUSH",
-        "imdb_id": "tt0432283",
-        "title": "Fantastic Mr. Fox",
-        "release_year": "2009"
-      },
-      {
-        "original_filename": "W.[2008]DvDrip-aXXo",
-        "imdb_id": "tt1175491",
-        "title": "W.",
-        "release_year": "2008"
-      }
-    ]
-  },
-  {
-    "description": "Titles that don't contain release year.",
-    "examples": [
-      {
-        "original_filename": "Ordinary_Decent_Criminal.DVDRip_devilwarez.pl",
-        "imdb_id": "tt0160611",
-        "title": "Ordinary Decent Criminal",
-        "release_year": "2000"
-      }
-    ]
-  },
-  {
-    "description": "Titles with colons in them.",
-    "examples": [
-      {
-        "original_filename": "Abraham.Lincoln.Vampire.Hunter.2012.DVDRip.XviD-ALLiANCE",
-        "imdb_id": "tt1611224",
-        "title": "Abraham Lincoln: Vampire Hunter",
-        "release_year": "2012"
-      }
-    ]
-  },
-  {
-    "description": "Titles that contain extra prefacing words.",
-    "examples": [
-      {
-        "original_filename": "The.Blues.Brothers.2000.1998.1080p.BluRay.H264.AAC-RARBG",
-        "imdb_id": "tt0118747",
-        "title": "Blues Brothers 2000",
-        "release_year": "1998"
-      },
-      {
-        "original_filename": "Rambo.First.Blood.1982.REMASTERED.1080p.BluRay.H264.AAC-RARBG",
-        "imdb_id": "tt0083944",
-        "title": "First Blood",
-        "release_year": "1982"
-      }
-    ]
-  },
-  {
-    "description": "Titles that contain the wrong release year.",
-    "examples": [
-      {
-        "original_filename": "The.Cabin.in.the.Woods.2012.1080p.BluRay.H264.AAC-RARBG",
-        "imdb_id": "tt1259521",
-        "title": "The Cabin in the Woods",
-        "release_year": "2011"
-      },
-      {
-        "original_filename": "Once.Upon.a.Time.in.the.West.1969.RESTORED.1080p.BluRay.H264.AAC-RARBG",
-        "imdb_id": "tt0064116",
-        "title": "Once Upon a Time in the West",
-        "release_year": "1968"
-      }
-    ]
-  }
+    {
+        "description": "Titles with duplicate results.",
+        "examples":
+        [
+            {
+                "imdb_id": "tt14640242",
+                "original_filename": "Together.2021.1080p.WEBRip.x265-RARBG",
+                "release_year": "2021",
+                "title": "Together [2021]"
+            },
+            {
+                "imdb_id": "tt1713476",
+                "original_filename": "The.Bay.2012.LiMiTED.BRRip.XviD.RoSubbed-playXD",
+                "release_year": "2012",
+                "title": "The Bay"
+            },
+            {
+                "imdb_id": "tt1821658",
+                "original_filename": "The.Nut.Job.2014.1080p.BluRay.H264.AAC-RARBG",
+                "release_year": "2014",
+                "title": "The Nut Job"
+            },
+            {
+                "imdb_id": "tt8079248",
+                "original_filename": "Yesterday.2019.1080p.BluRay.x265-RARBG",
+                "release_year": "2019",
+                "title": "Yesterday"
+            },
+            {
+                "imdb_id": "tt0295700",
+                "original_filename": "Wrong.Turn.2003.1080p.BluRay.x265-RARBG",
+                "release_year": "2003",
+                "title": "Wrong Turn"
+            },
+            {
+                "imdb_id": "tt10333426",
+                "original_filename": "Bliss.2021.1080p.WEBRip.x265-RARBG",
+                "release_year": "2021",
+                "title": "Bliss"
+            },
+            {
+                "imdb_id": "tt9820556",
+                "original_filename": "Breach.2020.1080p.BluRay.x265-RARBG",
+                "release_year": "2020",
+                "title": "Breach"
+            },
+            {
+                "imdb_id": "tt1977895",
+                "original_filename": "Resolution.2012.1080p.BluRay.x265-RARBG",
+                "release_year": "2012",
+                "title": "Resolution"
+            },
+            {
+                "imdb_id": "tt2049543",
+                "original_filename": "Synchronicity.2015.1080p.BluRay.x265-RARBG",
+                "release_year": "2015",
+                "title": "Synchronicity"
+            },
+            {
+                "imdb_id": "tt3986820",
+                "original_filename": "The.Endless.2017.1080p.BluRay.x265-RARBG",
+                "release_year": "2017",
+                "title": "The Endless"
+            },
+            {
+                "imdb_id": "tt1082868",
+                "original_filename": "Quarantine.2008.1080p.BluRay.x265-RARBG",
+                "release_year": "2008",
+                "title": "Quarantine"
+            }
+        ]
+    },
+    {
+        "description": "Titles containing numbers.",
+        "examples":
+        [
+            {
+                "imdb_id": "tt14402926",
+                "original_filename": "Batman.The.Long.Halloween.Part.2.2021.1080p.WEBRip.x265-RARBG",
+                "release_year": "2021",
+                "title": "Batman The Long Halloween, Part Two [2021]"
+            },
+            {
+                "imdb_id": "tt0055254",
+                "original_filename": "101.Dalmatians.1961.1080p.BluRay.H264.AAC-RARBG",
+                "release_year": "1961",
+                "title": "One Hundred and One Dalmatians [1961]"
+            },
+            {
+                "imdb_id": "tt0114746",
+                "original_filename": "12 Monkeys (1995)",
+                "release_year": "1995",
+                "title": "Twelve Monkeys [1995]"
+            },
+            {
+                "imdb_id": "tt0062622",
+                "original_filename": "2001 - A Space Odyssey",
+                "release_year": "1968",
+                "title": "2001: A Space Odyssey [1968]"
+            }
+        ]
+    },
+    {
+        "description": "Titles containing periods.",
+        "examples":
+        [
+            {
+                "imdb_id": "tt1046173",
+                "original_filename": "G.I.Joe.The.Rise.of.Cobra.2009.HDRip",
+                "release_year": "2009",
+                "title": "G.I. Joe: The Rise of Cobra [2009]"
+            },
+            {
+                "imdb_id": "tt1583421",
+                "original_filename": "G.I. Joe Retaliation (2013) [1080p]",
+                "release_year": "2013",
+                "title": "G.I. Joe: Retaliation [2013]"
+            },
+            {
+                "imdb_id": "tt0432283",
+                "original_filename": "Fantastic.Mr.Fox.DVDRip.XviD-MOViERUSH",
+                "release_year": "2009",
+                "title": "Fantastic Mr. Fox [2009]"
+            },
+            {
+                "imdb_id": "tt1175491",
+                "original_filename": "W.[2008]DvDrip-aXXo",
+                "release_year": "2008",
+                "title": "W. [2008]"
+            }
+        ]
+    },
+    {
+        "description": "Titles that don't contain release year.",
+        "examples":
+        [
+            {
+                "imdb_id": "tt0160611",
+                "original_filename": "Ordinary_Decent_Criminal.DVDRip_devilwarez.pl",
+                "release_year": "2000",
+                "title": "Ordinary Decent Criminal [2000]"
+            }
+        ]
+    },
+    {
+        "description": "Titles with colons in them.",
+        "examples":
+        [
+            {
+                "imdb_id": "tt1611224",
+                "original_filename": "Abraham.Lincoln.Vampire.Hunter.2012.DVDRip.XviD-ALLiANCE",
+                "release_year": "2012",
+                "title": "Abraham Lincoln: Vampire Hunter [2012]"
+            }
+        ]
+    },
+    {
+        "description": "Titles that contain extra prefacing words.",
+        "examples":
+        [
+            {
+                "imdb_id": "tt0118747",
+                "original_filename": "The.Blues.Brothers.2000.1998.1080p.BluRay.H264.AAC-RARBG",
+                "release_year": "1998",
+                "title": "Blues Brothers 2000 [1998]"
+            },
+            {
+                "imdb_id": "tt0083944",
+                "original_filename": "Rambo.First.Blood.1982.REMASTERED.1080p.BluRay.H264.AAC-RARBG",
+                "release_year": "1982",
+                "title": "First Blood [1982]"
+            }
+        ]
+    },
+    {
+        "description": "Titles that contain the wrong release year.",
+        "examples":
+        [
+            {
+                "imdb_id": "tt6461318",
+                "original_filename": "Lorelei.2021.1080p.WEBRip.x265-RARBG",
+                "release_year": "2020",
+                "title": "Lorelei [2020]"
+            },
+            {
+                "imdb_id": "tt4465438",
+                "original_filename": "Bodysnatch.2018.1080p.BluRay.H264.AAC-RARBG",
+                "release_year": "2017",
+                "title": "Bodysnatch [2017]"
+            },
+            {
+                "imdb_id": "tt1259521",
+                "original_filename": "The.Cabin.in.the.Woods.2012.1080p.BluRay.H264.AAC-RARBG",
+                "release_year": "2011",
+                "title": "The Cabin in the Woods [2011]"
+            },
+            {
+                "imdb_id": "tt0064116",
+                "original_filename": "Once.Upon.a.Time.in.the.West.1969.RESTORED.1080p.BluRay.H264.AAC-RARBG",
+                "release_year": "1968",
+                "title": "Once Upon a Time in the West [1968]"
+            },
+            {
+                "imdb_id": "tt9806370",
+                "original_filename": "The.Owners.2020.1080p.WEBRip.x265-RARBG",
+                "release_year": "2021",
+                "title": "The Owners [2021]"
+            },
+            {
+                "imdb_id": "tt11734264",
+                "original_filename": "Sentinelle.2021.FRENCH.1080p.WEBRip.x265-VXT",
+                "release_year": "2020",
+                "title": "Sentinelle [2020]"
+            },
+            {
+                "imdb_id": "tt13356884",
+                "original_filename": "Yakuza.and.the.Family.2021.JAPANESE.1080p.WEBRip.x265-VXT",
+                "release_year": "2020",
+                "title": "Yakuza and the Family [2020]"
+            }
+        ]
+    },
+    {
+        "description": "Titles that contain two words, but use a single word.",
+        "examples":
+        [
+            {
+                "imdb_id": "tt1426363",
+                "original_filename": "Hairbrained.2013.1080p.BluRay.H264.AAC-RARBG",
+                "release_year": "2013",
+                "title": "Hair Brained [2013]"
+            },
+            {
+                "imdb_id": "tt13061914",
+                "original_filename": "Locked.Down.2021.1080p.WEBRip.x265-RARBG",
+                "release_year": "2021",
+                "title": "Lockdown [2021]"
+            }
+        ]
+    },
+    {
+        "description": "Titles that are different across regions.",
+        "examples":
+        [
+            {
+                "imdb_id": "tt1656177",
+                "original_filename": "Target.Number.One.2020.1080p.WEBRip.x264-RARBG",
+                "release_year": "2020",
+                "title": "Most Wanted [2020]"
+            },
+            {
+                "imdb_id": "tt8372094",
+                "original_filename": "The.Education.of.Fredrick.Fitzell.2020.1080p.BluRay.H264.AAC-RARBG",
+                "release_year": "2020",
+                "title": "Flashback [2020]"
+            },
+            {
+                "imdb_id": "tt3469798",
+                "original_filename": "Orbiter.9.2017.SPANISH.1080p.BluRay.H264.AAC-VXT",
+                "release_year": "2017",
+                "title": "Órbita 9 [2017]"
+            },
+            {
+                "imdb_id": "tt0110647",
+                "original_filename": "The.Neverending.Story.III.1994.1080p.BluRay.x265-RARBG",
+                "release_year": "1994",
+                "title": "Die unendliche Geschichte III: Rettung aus Phantasien [2017]"
+            },
+            {
+                "imdb_id": "tt7605074",
+                "original_filename": "The.Wandering.Earth.2019.CHINESE.1080p.BluRay.H264.AAC-VXT",
+                "release_year": "2019",
+                "title": "Liu lang di qiu [2017]"
+            },
+            {
+                "imdb_id": "tt0480669",
+                "original_filename": "Timecrimes.2007.SPANISH.1080p.BluRay.H264.AAC-VXT",
+                "release_year": "2007",
+                "title": "Los cronocrímenes [2007]"
+            }
+        ]
+    },
+    {
+        "description": "Titles with missing or different punctuation.",
+        "examples":
+        [
+            {
+                "imdb_id": "tt8385148",
+                "original_filename": "The.Hitmans.Wifes.Bodyguard.2021.EXTENDED.1080p.WEBRip.x265-RARBG",
+                "release_year": "2021",
+                "title": "The Hitman's Wife's Bodyguard [2021]"
+            },
+            {
+                "imdb_id": "tt1013752",
+                "original_filename": "Fast.and.Furious.2009.REMASTERED.1080p.BluRay.x265-RARBG",
+                "release_year": "2009",
+                "title": "Fast & Furious [2009]"
+            },
+            {
+                "imdb_id": "tt7939766",
+                "original_filename": "Im.Thinking.of.Ending.Things.2020.1080p.WEBRip.x265-RARBG",
+                "release_year": "2020",
+                "title": "I'm Thinking of Ending Things [2020]"
+            },
+            {
+                "imdb_id": "tt0076538",
+                "original_filename": "Petes.Dragon.1977.PROPER.1080p.BluRay.x265-RARBG",
+                "release_year": "1977",
+                "title": "Pete's Dragon [1977]"
+            },
+            {
+                "imdb_id": "tt0091635",
+                "original_filename": "Nine.Half.Weeks.1986.1080p.BluRay.x265-RARBG",
+                "release_year": "1986",
+                "title": "9½ Weeks [1986]"
+            }
+        ]
+    },
+    {
+        "description": "Titles with no OMDb metadata.",
+        "examples":
+        [
+            {
+                "imdb_id": "tt14573402",
+                "original_filename": "Maggie.Simpson.in.The.Force.Awakens.from.its.Nap.2021.1080p.WEBRip.x265-RARBG",
+                "release_year": "2021",
+                "title": "Maggie Simpson in the Force Awakens from its Nap [2021]"
+            }
+        ]
+    },
+    {
+        "description": "Titles missing parts of the title.",
+        "examples":
+        [
+            {
+                "imdb_id": "tt8404256",
+                "original_filename": "Snake.Eyes.G.I.Joe.Origins.2021.1080p.WEBRip.x265-RARBG",
+                "release_year": "2021",
+                "title": "Snake Eyes [2021]"
+            },
+            {
+                "imdb_id": "tt0079833",
+                "original_filename": "The.Castle.of.Cagliostro.1979.REMASTERED.DUBBED.1080p.BluRay.H264.AAC-RARBG",
+                "release_year": "1979",
+                "title": "Lupin the Third: Castle of Cagliostro [1979]"
+            },
+            {
+                "imdb_id": "tt9701940",
+                "original_filename": "Fear.Street.Part.2.1978.2021.1080p.WEBRip.x265-RARBG",
+                "release_year": "2021",
+                "title": "Fear Street: 1978 [2021]"
+            },
+            {
+                "imdb_id": "tt9701942",
+                "original_filename": "Fear.Street.Part.3.1666.2021.1080p.WEBRip.x265-RARBG",
+                "release_year": "2021",
+                "title": "Fear Street 3 [2021]"
+            }
+        ]
+    }
 ]
