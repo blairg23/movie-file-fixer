@@ -3,7 +3,7 @@ import os
 import random
 import shutil
 import sys
-from unittest import TestCase, mock
+from unittest import TestCase, mock, skip
 from unittest.mock import patch
 
 import faker
@@ -552,9 +552,7 @@ class FormatterTestCase(TestCase):
                 if test_release_year is not None:
                     self.assertEqual(test_release_year, release_year)
 
-    def test_get_clean_title_candidate_and_release_year_with_contrived_title_and_release_year(
-        self,
-    ):
+    def test_get_clean_title_candidate_and_release_year_with_contrived_title_and_release_year(self):
         """Ensure title and release year can be found, given a contrived example title and release year."""
         fake_title = " ".join(fake.words())
         fake_title_list = fake_title.split()
@@ -880,9 +878,7 @@ class FormatterTestCase(TestCase):
         self.assertEqual(rename_file_method_patch.call_count, num_files)
 
     @patch(f"{module_under_test}.Formatter._rename_file")
-    def test_rename_folder_and_contents_without_directory(
-        self, rename_file_method_patch
-    ):
+    def test_rename_folder_and_contents_without_directory(self, rename_file_method_patch):
         """Ensure folders and their contents are renamed correctly, when a valid directory is not provided."""
         min_value = 0
         max_value = 10
@@ -906,9 +902,7 @@ class FormatterTestCase(TestCase):
 
     @patch(f"{module_under_test}.formatter.OmdbService._get_release_year")
     @patch(f"{module_under_test}.formatter.OmdbService._search")
-    def test_search_by_search_terms_without_release_year(
-        self, search_method_patch, get_release_year_method_patch
-    ):
+    def test_search_by_search_terms_without_release_year(self, search_method_patch, get_release_year_method_patch):
         """
 
         Ensure searching by some `search_terms` without the `release_year`
@@ -925,9 +919,7 @@ class FormatterTestCase(TestCase):
 
     @patch(f"{module_under_test}.formatter.OmdbService._get_release_year")
     @patch(f"{module_under_test}.formatter.OmdbService._search")
-    def test_search_by_search_terms_with_release_year(
-        self, search_method_patch, get_release_year_method_patch
-    ):
+    def test_search_by_search_terms_with_release_year(self, search_method_patch, get_release_year_method_patch):
         """
 
         Ensure searching by some `search_terms` with the `release_year` calls the `_search()`
@@ -958,9 +950,7 @@ class FormatterTestCase(TestCase):
 
     @patch(f"{module_under_test}.formatter.OmdbService._get_release_year")
     @patch(f"{module_under_test}.formatter.OmdbService._search")
-    def test_search_by_title_without_release_year(
-        self, search_method_patch, get_release_year_method_patch
-    ):
+    def test_search_by_title_without_release_year(self, search_method_patch, get_release_year_method_patch):
         """
 
         Ensure searching by a title without the `release_year` calls the `_get_release_year()`
@@ -977,9 +967,7 @@ class FormatterTestCase(TestCase):
 
     @patch(f"{module_under_test}.formatter.OmdbService._get_release_year")
     @patch(f"{module_under_test}.formatter.OmdbService._search")
-    def test_search_by_title_with_release_year(
-        self, search_method_patch, get_release_year_method_patch
-    ):
+    def test_search_by_title_with_release_year(self, search_method_patch, get_release_year_method_patch):
         """
 
         Ensure searching by a title with the `release_year` calls the `_search()` method,
@@ -997,6 +985,7 @@ class FormatterTestCase(TestCase):
         get_release_year_method_patch.assert_not_called()
         self.assertEqual(search_method_patch.call_count, call_counter)
 
+    @skip('Need to rewrite test to not call actual omdb service')
     def test_get_imdb_object_by_search_query(self):
         """Ensure that an IMDb object can be correctly retrieved, given a `search_query`"""
 
@@ -1021,6 +1010,7 @@ class FormatterTestCase(TestCase):
                 self.assertEqual(test_title, title)
                 self.assertEqual(test_release_year, release_year)
 
+    @skip('Need to rewrite test to not call actual omdb service')
     def test_get_imdb_object_by_imdb_id(self):
         """Ensure that an IMDb object can be correctly retrieved, given an `imdb_id"""
         for example_title in self.example_titles:
