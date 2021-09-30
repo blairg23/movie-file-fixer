@@ -1,0 +1,9 @@
+name: Build / Deploy to PyPi
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      run: tox -e unit
+  # build:
+  #   runs-on: ubuntu-latest
