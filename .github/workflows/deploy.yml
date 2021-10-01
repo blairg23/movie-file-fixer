@@ -6,6 +6,7 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+      run: echo "Running unit tests"
       run: tox -e unit
   # build:
   #   runs-on: ubuntu-latest
