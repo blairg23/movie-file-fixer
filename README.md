@@ -4,7 +4,7 @@ PyPI](https://img.shields.io/pypi/v/movie-file-fixer?style=for-the-badge&logo=py
 [![PyPI Status](https://img.shields.io/pypi/status/movie-file-fixer?style=for-the-badge&logo=pypi&label=Status)](https://pypi.org/project/movie-file-fixer/)
 [![Supported Python
 Versions](https://img.shields.io/pypi/pyversions/movie-file-fixer?style=for-the-badge&logo=pypi)](https://pypi.org/project/movie-file-fixer/)
-[![Build](https://img.shields.io/travis/com/blairg23/movie-file-fixer?style=for-the-badge&logo=travis)](https://travis-ci.com/blairg23/movie-file-fixer)
+[![.github/workflows/deploy.yml](https://github.com/blairg23/movie-file-fixer/actions/workflows/deploy.yml/badge.svg)](https://github.com/blairg23/movie-file-fixer/actions/workflows/deploy.yml)
 [![Coverage](https://img.shields.io/coveralls/github/blairg23/movie-file-fixer?style=for-the-badge&logo=coverage)](https://coveralls.io/github/blairg23/movie-file-fixer)
 [![License](https://img.shields.io/pypi/l/movie-file-fixer?style=for-the-badge&logo=pypi)](https://github.com/blairg23/movie-file-fixer)
 [![Code style:
