@@ -143,6 +143,18 @@
             }
         ]
     },
+        {
+        "description": "Titles that contain a malformed release year.",
+        "examples":
+        [
+            {
+                "imdb_id": "tt5278832",
+                "original_filename": "The.Lure.20015.SUBBED.1080p.WEB-DL.DD5.1.H264-FGT",
+                "release_year": "2015",
+                "title": "The Lure [2015]"
+            }
+        ]
+    },
     {
         "description": "Titles with colons in them.",
         "examples":
