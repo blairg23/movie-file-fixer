@@ -48,6 +48,7 @@ jobs:
       with:
         OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }} 
       run: | 
+        env
         tox -e unit
 
   # build:
