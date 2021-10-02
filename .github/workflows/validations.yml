@@ -26,9 +26,10 @@ jobs:
         tox -e lint
     
   unit-tests:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.platform }}
     strategy:
       matrix:
+        platform: [ubuntu-latest, macos-latest, windows-latest]
         python-version: [3.6, 3.7, 3.8, 3.9]
 
     steps:
@@ -44,10 +45,10 @@ jobs:
         pip install tox tox-gh-actions
 
     - name: unit tests
+      with:
+        OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }} 
       run: | 
         tox -e unit
-      env:
-        OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }} 
 
   # build:
   #   runs-on: ubuntu-latest
