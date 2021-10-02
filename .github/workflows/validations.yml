@@ -1,0 +1,18 @@
+name: Code Validation
+on:
+  pull_request:
+    branches: [ master ]
+jobs:
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: | 
+          pip install pip --upgrade
+          pip install tox
+    
+    - name: tox lint
+      run: | tox -e lint
+
+  # build:
+  #   runs-on: ubuntu-latest
