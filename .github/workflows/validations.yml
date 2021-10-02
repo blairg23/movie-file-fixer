@@ -5,15 +5,25 @@ on:
 jobs:
   linting:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+
     steps:
-      - name: Install dependencies
-        run: | 
-          pip install pip --upgrade
-          pip install tox
-    
-      - name: tox lint
-        run: | 
-          tox -e lint
+    - uses: actions/checkout@v1
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: | 
+        pip install pip --upgrade
+        pip install tox
+  
+    - name: tox lint
+      run: | 
+        tox -e lint
 
   # build:
   #   runs-on: ubuntu-latest
