@@ -12,7 +12,8 @@ jobs:
           pip install tox
     
       - name: tox lint
-        run: | tox -e lint
+        run: | 
+          tox -e lint
 
   # build:
   #   runs-on: ubuntu-latest
