@@ -4,10 +4,11 @@ on:
     branches: [ master ]
 jobs:
   linting:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.platform }}
     strategy:
       matrix:
-        python-version: [3.6, 3.7, 3.8, 3.9]
+        platform: [ubuntu-latest]
+        python-version: [3.9]
 
     steps:
     - uses: actions/checkout@v1
@@ -21,9 +22,36 @@ jobs:
         pip install pip --upgrade
         pip install tox tox-gh-actions
   
-    - name: tox lint
+    - name: lint
       run: | 
         tox -e lint
+    
+  unit-tests:
+    runs-on: ${{ matrix.platform }}
+    needs: linting
+    strategy:
+      matrix:
+        platform: [ubuntu-latest]
+        python-version: [3.9]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: | 
+        pip install pip --upgrade
+        pip install tox tox-gh-actions
+
+    - name: unit tests
+      env:
+        OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }} 
+      run: | 
+        env
+        tox -e unit
 
   # build:
   #   runs-on: ubuntu-latest
