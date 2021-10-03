@@ -25,3 +25,8 @@ jobs:
     - name: build / deploy
       run: | 
         tox
+
+    - name: coveralls
+      run: |
+        pip install coveralls
+        coveralls
