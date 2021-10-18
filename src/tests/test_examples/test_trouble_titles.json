@@ -294,6 +294,18 @@
         ]
     },
     {
+        "description": "Titles that have changed, but still show up as original version in OMDb.",
+        "examples":
+        [
+            {
+                "imdb_id": "tt7631568",
+                "original_filename": "The.Devil.to.Pay.2019.PROPER.1080p.WEBRip.x264-RARBG",
+                "release_year": "2019",
+                "title": "Reckoning [2019]"
+            }
+        ]
+    },
+    {
         "description": "Titles with missing or different punctuation.",
         "examples":
         [
