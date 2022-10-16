@@ -9,10 +9,13 @@ import shutil
 
 
 class Folderizer:
-    def __init__(self, directory, metadata_filename="metadata.json", verbose=False):
+    def __init__(
+        self, directory, metadata_filename="metadata.json", dry_run=False, verbose=False
+    ):
         self._directory = directory
         self._metadata_filename = metadata_filename
         self._verbose = verbose
+        self._dry_run = dry_run
         self._action_counter = 0
 
         if self._verbose:
@@ -63,7 +66,7 @@ class Folderizer:
             metadata_filename = self._metadata_filename
 
         for filename in filenames:
-            if filename != self._metadata_filename:
+            if filename != metadata_filename:
                 old_filepath = os.path.join(directory, filename)
                 stripped_filename, file_ext = os.path.splitext(
                     filename
@@ -78,7 +81,9 @@ class Folderizer:
                         print(f'[{self._action_counter}] [CREATED FOLDER] "{filename}"')
                         self._action_counter += 1
 
-                shutil.move(old_filepath, new_filepath)
+                if not self._dry_run:
+                    shutil.move(old_filepath, new_filepath)
+
                 if self._verbose:
                     print(
                         f'[{self._action_counter}] [MOVED FILE] "{filename}" -> [FOLDER] "{filename}"'
@@ -154,8 +159,13 @@ class Folderizer:
                                 f"[{self._action_counter}] [MOVING FILE] {old_filepath} -> [FOLDER] {new_filepath}\n"
                             )
                             self._action_counter += 1
-                        shutil.move(old_filepath, new_filepath)
-                    shutil.rmtree(os.path.join(root, folder))
+
+                        if not self._dry_run:
+                            shutil.move(old_filepath, new_filepath)
+
+                    if not self._dry_run:
+                        shutil.rmtree(os.path.join(root, folder))
+
                     if self._verbose:
                         print(
                             f"[{self._action_counter}] [FOLDER] {os.path.join(root, folder)} [REMOVED]\n"
