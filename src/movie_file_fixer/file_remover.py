@@ -21,10 +21,12 @@ class FileRemover:
             ".png",
             ".exe",
         ],
+        dry_run=False,
         verbose=False,
     ):
         self._directory = directory
         self._file_extensions = file_extensions
+        self._dry_run = dry_run
         self._verbose = verbose
         self._action_counter = 0
 
@@ -53,7 +55,9 @@ class FileRemover:
                 filename, extension = os.path.splitext(current_file)
 
                 if extension in file_extensions:
-                    os.remove(os.path.join(os.getcwd(), root, current_file))
+                    if not self._dry_run:
+                        os.remove(os.path.join(os.getcwd(), root, current_file))
+
                     if self._verbose:
                         print("[RESULT: REMOVED]\n")
                 else:
