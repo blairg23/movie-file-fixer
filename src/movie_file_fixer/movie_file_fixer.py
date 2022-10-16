@@ -45,6 +45,7 @@ def main():
             metadata_filename=args.metadata_filename,
             language=args.language,
             result_type=args.result_type,
+            dry_run=args.dry_run,
             verbose=args.verbose,
         )
         movie_file_fixer.folderize()
@@ -116,6 +117,13 @@ def parse_args(args):
         help="Set this flag to use a utility function.",
     )
     parser.add_argument(
+        "--dry_run",
+        "-x",
+        action="store_true",
+        default=False,
+        help="Set this flag to run in dry-run or no-op mode.",
+    )
+    parser.add_argument(
         "--util_name",
         "-n",
         type=str,
@@ -144,6 +152,7 @@ class MovieFileFixer:
         language="en",
         result_type="movie",
         util="title_fixer",
+        dry_run=False,
         verbose=False,
     ):
         default_file_extensions = [
@@ -164,17 +173,24 @@ class MovieFileFixer:
         self._language = language
         self._result_type = result_type
         self._util = util
+        self._dry_run = dry_run
         self._verbose = verbose
 
     def folderize(
-        self, directory=None, metadata_filename=None, folder_name="subs", verbose=None
+        self,
+        directory=None,
+        metadata_filename=None,
+        folder_name="subs",
+        dry_run=None,
+        verbose=None,
     ):
         """
 
         :param str directory: The directory of single files to folderize.
         :param str metadata_filename: The metadata file to ignore when folderizing.
         :param str folder_name: Folder to unfolderize files from.
-        :param bool verbose: Whether or not to activate verbose mode.
+        :param bool dry_run: Run this function in no-op mode.
+        :param bool verbose: Whether to activate verbose mode.
         :return: None
 
         1. Place all single files in folders of the same name.
@@ -186,21 +202,28 @@ class MovieFileFixer:
         if metadata_filename is None:
             metadata_filename = self._metadata_filename
 
+        if dry_run is None:
+            dry_run = self._dry_run
+
         if verbose is None:
             verbose = self._verbose
 
         folderizer = Folderizer(
-            directory=directory, metadata_filename=metadata_filename, verbose=verbose
+            directory=directory,
+            metadata_filename=metadata_filename,
+            dry_run=dry_run,
+            verbose=verbose,
         )
         folderizer.folderize()
         folderizer.unfolderize(folder_name=folder_name)
 
-    def cleanup(self, directory=None, file_extensions=None, verbose=None):
+    def cleanup(self, directory=None, file_extensions=None, dry_run=None, verbose=None):
         """
 
         :param str directory: The directory of movie folders to clean.
         :param list file_extensions: A list of file extensions to remove.
-        :param bool verbose: Whether or not to activate verbose mode.
+        :param bool dry_run: Run this function in no-op mode.
+        :param bool verbose: Whether to activate verbose mode.
         :return: None
 
         2. Remove all non-movie files, based on a list of "bad" extensions (i.e., .nfo, .txt, etc)
@@ -211,20 +234,27 @@ class MovieFileFixer:
         if file_extensions is None:
             file_extensions = self._file_extensions
 
+        if dry_run is None:
+            dry_run = self._dry_run
+
         if verbose is None:
             verbose = self._verbose
 
         file_remover = FileRemover(
-            directory=directory, file_extensions=file_extensions, verbose=verbose
+            directory=directory,
+            file_extensions=file_extensions,
+            dry_run=dry_run,
+            verbose=verbose,
         )
         file_remover.remove_files()
 
-    def format(self, directory=None, result_type=None, verbose=None):
+    def format(self, directory=None, result_type=None, dry_run=None, verbose=None):
         """
 
         :param str directory: The directory of movie folders to format.
         :param str result_type: What type of IMDb object you want returned. Valid Options: [`movie`, `series`, `episode`]
-        :param bool verbose: Whether or not to activate verbose mode.
+        :param bool dry_run: Run this function in no-op mode.
+        :param bool verbose: Whether to activate verbose mode.
         :return: None
 
         3. Pull the names of all folders and decide what the title is, based on movie titles in OMDb API.
@@ -236,20 +266,29 @@ class MovieFileFixer:
         if verbose is None:
             verbose = self._verbose
 
+        if dry_run is None:
+            dry_run = self._dry_run
+
         if result_type is None:
             result_type = self._result_type
 
         formatter = Formatter(
-            directory=directory, result_type=result_type, verbose=verbose
+            directory=directory,
+            result_type=result_type,
+            dry_run=dry_run,
+            verbose=verbose,
         )
         formatter.format()
 
-    def get_posters(self, directory=None, metadata_filename=None, verbose=None):
+    def get_posters(
+        self, directory=None, metadata_filename=None, dry_run=None, verbose=None
+    ):
         """
 
         :param str directory: The directory of movie folders to get posters for.
         :param str metadata_filename: The metadata file to get the poster URL from.
-        :param bool verbose: Whether or not to activate verbose mode.
+        :param bool dry_run: Run this function in no-op mode.
+        :param bool verbose: Whether to activate verbose mode.
         :return: None
 
         4. Download the movie poster and name the file poster.<extension>
@@ -261,23 +300,35 @@ class MovieFileFixer:
         if metadata_filename is None:
             metadata_filename = self._metadata_filename
 
+        if dry_run is None:
+            dry_run = self._dry_run
+
         if verbose is None:
             verbose = self._verbose
 
         poster_finder = PosterFinder(
-            directory=directory, metadata_filename=metadata_filename, verbose=verbose
+            directory=directory,
+            metadata_filename=metadata_filename,
+            dry_run=dry_run,
+            verbose=verbose,
         )
         poster_finder.get_posters()
 
     def get_subtitles(
-        self, directory=None, metadata_filename=None, language=None, verbose=None
+        self,
+        directory=None,
+        metadata_filename=None,
+        language=None,
+        dry_run=None,
+        verbose=None,
     ):
         """
 
         :param str directory: The directory of movie folders to get subtitles for.
         :param str metadata_filename: The metadata file to get movie paths from.
         :param str language: The two-character language code for the subtitle language to retrieve.
-        :param bool verbose: Whether or not to activate verbose mode.
+        :param bool dry_run: Run this function in no-op mode.
+        :param bool verbose: Whether to activate verbose mode.
         :return: None
 
         5. Download the movie subtitles and name the file <language>_subtitles.srt
@@ -291,6 +342,9 @@ class MovieFileFixer:
         if language is None:
             language = self._language
 
+        if dry_run is None:
+            dry_run = self._dry_run
+
         if verbose is None:
             verbose = self._verbose
 
@@ -298,16 +352,20 @@ class MovieFileFixer:
             directory=directory,
             metadata_filename=metadata_filename,
             language=language,
+            dry_run=dry_run,
             verbose=verbose,
         )
         subtitle_finder.get_subtitles()
 
-    def title_fixer(self, directory=None, metadata_filename=None, verbose=None):
+    def title_fixer(
+        self, directory=None, metadata_filename=None, dry_run=None, verbose=None
+    ):
         """
 
         :param str directory: The directory of movie folders to fix titles in.
         :param str metadata_filename: The metadata file to get `titles` metadata from.
-        :param bool verbose: Whether or not to activate verbose mode.
+        :param bool dry_run: Run this function in no-op mode.
+        :param bool verbose: Whether to activate verbose mode.
         :return None:
 
         Given a directory and metadata file, will use the `original_filename` and `imdb_id`
@@ -318,6 +376,9 @@ class MovieFileFixer:
 
         if metadata_filename is None:
             metadata_filename = self._metadata_filename
+
+        if dry_run is None:
+            dry_run = self._dry_run
 
         if verbose is None:
             verbose = self._verbose
@@ -376,13 +437,21 @@ class MovieFileFixer:
         with open(metadata_filepath, "w+") as outfile:
             json.dump(metadata, outfile, indent=4)
 
-    def run(self, directory=None, metadata_filename=None, util=None, verbose=None):
+    def run(
+        self,
+        directory=None,
+        metadata_filename=None,
+        util=None,
+        dry_run=None,
+        verbose=None,
+    ):
 
         """
         :param str directory: The directory of movie folders to run the given `util` on.
         :param str metadata_filename: The metadata file to get metadata from.
         :param str util: The name of the utility function to run.
-        :param bool verbose: Whether or not to activate verbose mode.
+        :param bool dry_run: Run this function in no-op mode.
+        :param bool verbose: Whether to activate verbose mode.
         :return None:
 
         Runs stand-alone utility functions.
@@ -398,15 +467,19 @@ class MovieFileFixer:
         if metadata_filename is None:
             metadata_filename = self._metadata_filename
 
-        if verbose is None:
-            verbose = self._verbose
-
         if util is None:
             util = self._util
+
+        if dry_run is None:
+            dry_run = self._dry_run
+
+        if verbose is None:
+            verbose = self._verbose
 
         if util == "title_fixer":
             self.title_fixer(
                 directory=directory,
                 metadata_filename=metadata_filename,
+                dry_run=dry_run,
                 verbose=verbose,
             )

@@ -17,11 +17,13 @@ class SubtitleFinder:
         directory=None,
         metadata_filename="metadata.json",
         language="en",
+        dry_run=False,
         verbose=False,
     ):
         self._directory = directory
         self._metadata_filename = metadata_filename
         self._language = language
+        self._dry_run = dry_run
         self._verbose = verbose
         self._action_counter = 0
 
@@ -130,6 +132,8 @@ class SubtitleFinder:
         This method searches the SubDB API for the given subtitles by `hashcode` and returns all available languages
         the subtitle exists in.
         """
+        response = None
+
         if self._verbose:
             print(
                 f'[{self._action_counter}] [SEARCHING] [SUBTITLE] for [HASHCODE] "{hashcode}"\n'
@@ -137,7 +141,9 @@ class SubtitleFinder:
             self._action_counter += 1
 
         payload = {"action": "search", "hash": hashcode}
-        response = self._download(payload=payload)
+
+        if not self._dry_run:
+            response = self._download(payload=payload)
 
         return response
 
@@ -150,6 +156,8 @@ class SubtitleFinder:
 
         This method downloads subtitles from the SubDB API, given the specified `hashcode` and `language`.
         """
+        response = None
+
         if self._verbose:
             print(
                 f'[{self._action_counter}] [DOWNLOADING] [SUBTITLE] for [HASHCODE] "{hashcode}"\n'
@@ -157,7 +165,9 @@ class SubtitleFinder:
             self._action_counter += 1
 
         payload = {"action": "download", "hash": hashcode, "language": language}
-        response = self._download(payload=payload)
+
+        if not self._dry_run:
+            response = self._download(payload=payload)
 
         return response
 
@@ -203,8 +213,9 @@ class SubtitleFinder:
                         subtitles_available = None
                         hashcode = self._get_hash(filepath=movie_file_path)
                         response = self._search_subtitles(hashcode=hashcode)
-                        if response.status_code == 200:
-                            subtitles_available = response.text
+                        if not self._dry_run:
+                            if response.status_code == 200:
+                                subtitles_available = response.text
 
                         if (
                             subtitles_available not in ["", None, " "]
@@ -218,26 +229,31 @@ class SubtitleFinder:
                             response = self._download_subtitles(
                                 language=language, hashcode=hashcode
                             )
-                            if response.status_code == 200:
-                                subtitles = response.text
 
-                                if self._verbose:
-                                    print("[INFO] [DOWNLOAD COMPLETE]\n")
-                                    print(
-                                        f'[WRITING SUBTITLE FILE] "{language}_subtitles.srt" at [FILEPATH] "{subtitle_path}"\n'
-                                    )
+                            if not self._dry_run:
+                                if response.status_code == 200:
+                                    subtitles = response.text
 
-                                with open(
-                                    subtitle_path, "w+", encoding="UTF-8"
-                                ) as outfile:
-                                    outfile.writelines(subtitles)
                                     if self._verbose:
-                                        print("[WRITE COMPLETE]")
+                                        print("[INFO] [DOWNLOAD COMPLETE]\n")
+                                        print(
+                                            f'[WRITING SUBTITLE FILE] "{language}_subtitles.srt" at [FILEPATH] "{subtitle_path}"\n'
+                                        )
+
+                                    with open(
+                                        subtitle_path, "w+", encoding="UTF-8"
+                                    ) as outfile:
+                                        outfile.writelines(subtitles)
+                                        if self._verbose:
+                                            print("[WRITE COMPLETE]")
+                                else:
+                                    print(
+                                        f'[ERROR] [RESPONSE STATUS CODE] "{response.status_code}".\n'
+                                        f'[SUBTITLE] for [MOVIE FILE] "{movie_file_path}" [MAY NOT EXIST]\n'
+                                    )
                             else:
-                                print(
-                                    f'[ERROR] [RESPONSE STATUS CODE] "{response.status_code}".\n'
-                                    f'[SUBTITLE] for [MOVIE FILE] "{movie_file_path}" [MAY NOT EXIST]\n'
-                                )
+                                print("[DRY MODE ACTIVATED, SUBTITLE NOT DOWNLOADED]\n")
+                                self._action_counter += 1
                         else:
                             if self._verbose:
                                 print(

@@ -18,11 +18,13 @@ class Formatter:
         directory=None,
         metadata_filename="metadata.json",
         result_type=None,
+        dry_run=False,
         verbose=False,
     ):
         self._directory = directory
         self._metadata_filename = metadata_filename
         self._result_type = result_type
+        self._dry_run = dry_run
         self._verbose = verbose
         self._action_counter = 0
 
@@ -304,7 +306,9 @@ class Formatter:
                 counter=counter + 1,
             )
         else:
-            os.rename(old_filepath, new_filepath)
+            if not self._dry_run:
+                os.rename(old_filepath, new_filepath)
+
             if self._verbose:
                 print(
                     f'[RENAMING] from [FILEPATH] "{old_filepath}" to [FILEPATH] "{new_filepath}"\n'
@@ -330,7 +334,10 @@ class Formatter:
         # Rename the folder:
         original_filepath = os.path.join(directory, original_name)
         new_filepath = os.path.join(directory, new_name)
-        os.rename(src=original_filepath, dst=new_filepath)
+
+        if not self._dry_run:
+            os.rename(src=original_filepath, dst=new_filepath)
+
         if self._verbose:
             print(
                 f'[RENAMED] [FILEPATH] "{original_filepath}" to [FILEPATH] "{new_filepath}"\n'
