@@ -16,7 +16,7 @@ and creates a title directory called "contents.json", which also contains poster
 4. [PosterFinder] Reads that "contents.json" file and downloads the poster for each title.
 
 5. [SubtitleFinder] Reads the "contents.json" file and downloads the subtitle for each title.
-
+w
 """
 
 import argparse
