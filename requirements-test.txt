@@ -6,7 +6,7 @@
 #
 attrs==22.1.0
     # via pytest
-colorama==0.4.5
+colorama==0.4.6
     # via
     #   pytest
     #   tox
@@ -14,6 +14,8 @@ coverage[toml]==6.5.0
     # via pytest-cov
 distlib==0.3.6
     # via virtualenv
+exceptiongroup==1.0.0
+    # via pytest
 faker==15.1.1
     # via -r requirements-test.in
 filelock==3.8.0
@@ -33,14 +35,12 @@ pluggy==1.0.0
     #   pytest
     #   tox
 py==1.11.0
-    # via
-    #   pytest
-    #   tox
+    # via tox
 pyfakefs==5.0.0
     # via -r requirements-test.in
 pyparsing==3.0.9
     # via packaging
-pytest==7.1.3
+pytest==7.2.0
     # via
     #   -r requirements-test.in
     #   pytest-cov
@@ -57,7 +57,7 @@ tomli==2.0.1
     #   coverage
     #   pytest
     #   tox
-tox==3.26.0
+tox==3.27.0
     # via -r requirements-test.in
-virtualenv==20.16.5
+virtualenv==20.16.6
     # via tox
