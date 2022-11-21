@@ -3,6 +3,7 @@
 
 ### Custom ###
 archive/drivers/*
+src/tests/test_input/
 
 ### Linux ###
 *~

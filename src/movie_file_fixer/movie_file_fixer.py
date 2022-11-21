@@ -29,6 +29,7 @@ from movie_file_fixer.folderizer import Folderizer
 from movie_file_fixer.formatter import Formatter
 from movie_file_fixer.poster_finder import PosterFinder
 from movie_file_fixer.subtitle_finder import SubtitleFinder
+from utils import OmdbService
 
 
 def main():
@@ -383,7 +384,9 @@ class MovieFileFixer:
         if verbose is None:
             verbose = self._verbose
 
-        formatter = Formatter(directory=directory, verbose=verbose)
+        omdb_service = OmdbService(verbose=verbose)
+
+        formatter = Formatter(directory=directory, dry_run=dry_run, verbose=verbose)
 
         metadata = formatter.initialize_metadata_file(
             directory=directory, metadata_filename=metadata_filename
@@ -407,7 +410,7 @@ class MovieFileFixer:
                 if original_filename in all_folders:
                     # Use the IMDb ID to find the IMDb object metadata:
                     imdb_id = title_data.get("imdb_id")
-                    imdb_object = formatter.get_imdb_object(
+                    imdb_object = omdb_service.get_imdb_object(
                         search_query="", imdb_id=imdb_id
                     )
                     metadata["metadata"].append(imdb_object)

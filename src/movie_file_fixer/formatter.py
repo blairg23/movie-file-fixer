@@ -207,11 +207,12 @@ class Formatter:
         # Check that the `content_key` exists:
         if contents_file.get(content_key) is not None:
             # Open file for writing:
-            with open(metadata_filepath, mode="w") as outfile:
-                # Append the new data to the titles index list:
-                contents_file[content_key].append(new_content)
-                # Write that updated list to the existing file:
-                json.dump(contents_file, outfile, indent=4)
+            if not self._dry_run:
+                with open(metadata_filepath, mode="w") as outfile:
+                    # Append the new data to the titles index list:
+                    contents_file[content_key].append(new_content)
+                    # Write that updated list to the existing file:
+                    json.dump(contents_file, outfile, indent=4)
         else:
             raise KeyError(content_key)
 
@@ -337,6 +338,8 @@ class Formatter:
 
         if not self._dry_run:
             os.rename(src=original_filepath, dst=new_filepath)
+        else:
+            print(f"[DRY RUN: [RENAMING] [FOLDER NAME] '{original_name}' and [CONTENTS] to [NEW NAME] '{new_name}'\n")
 
         if self._verbose:
             print(
