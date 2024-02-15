@@ -4,6 +4,18 @@
         "examples":
         [
             {
+                "imdb_id": "tt9812474",
+                "original_filename": "Lamb.2021.ICELANDIC.1080p.WEBRip.x265-VXT",
+                "release_year": "2021",
+                "title": "Lamb [2021]"
+            },
+            {
+                "imdb_id": "tt11990460",
+                "original_filename": "Lockdown.2021.1080p.WEBRip.x264-RARBG",
+                "release_year": "2021",
+                "title": "Lockdown [2021]"
+            },
+            {
                 "imdb_id": "tt14640242",
                 "original_filename": "Together.2021.1080p.WEBRip.x265-RARBG",
                 "release_year": "2021",
@@ -143,7 +155,7 @@
             }
         ]
     },
-        {
+    {
         "description": "Titles that contain a malformed release year.",
         "examples":
         [
@@ -298,10 +310,34 @@
         "examples":
         [
             {
+                "imdb_id": "tt1217637",
+                "original_filename": "Anything.for.Her.2008.FRENCH.1080p.BluRay.x265-VXT",
+                "release_year": "2008",
+                "title": "Pour Elle [2008]"
+            },
+            {
+                "imdb_id": "tt0074102",
+                "original_filename": "In.The.Realm.Of.The.Senses.1976.JAPANESE.1080p.BluRay.H264.AAC-VXT",
+                "release_year": "1976",
+                "title": "Ai no korîda [1976]"
+            },
+            {
+                "imdb_id": "tt1217637",
+                "original_filename": "Along.Came.the.Devil.2018.1080p.BluRay.H264.AAC-RARBG",
+                "release_year": "2019",
+                "title": "Tell Me Your Name [2019]"
+            },
+            {
                 "imdb_id": "tt7631568",
                 "original_filename": "The.Devil.to.Pay.2019.PROPER.1080p.WEBRip.x264-RARBG",
                 "release_year": "2019",
                 "title": "Reckoning [2019]"
+            },
+            {
+                "imdb_id": "tt4651466",
+                "original_filename": "Joe.Bell.2020.1080p.BluRay.x265-RARBG",
+                "release_year": "2020",
+                "title": "Good Joe Bell [2020]"
             }
         ]
     },
