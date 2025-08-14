@@ -10,7 +10,7 @@ charset-normalizer==2.1.1
     # via requests
 fuzzywuzzy==0.18.0
     # via -r requirements.in
-idna==3.4
+idna==3.7
     # via requests
 levenshtein==0.20.7
     # via python-levenshtein
