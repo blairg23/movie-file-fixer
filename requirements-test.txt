@@ -6,19 +6,15 @@
 #
 attrs==22.1.0
     # via pytest
-colorama==0.4.6
-    # via
-    #   pytest
-    #   tox
 coverage[toml]==6.5.0
     # via pytest-cov
-distlib==0.3.6
+distlib==0.4.0
     # via virtualenv
 exceptiongroup==1.0.0
     # via pytest
 faker==15.1.1
     # via -r requirements-test.in
-filelock==3.8.0
+filelock==3.19.1
     # via
     #   tox
     #   virtualenv
@@ -28,7 +24,7 @@ packaging==21.3
     # via
     #   pytest
     #   tox
-platformdirs==2.5.2
+platformdirs==4.4.0
     # via virtualenv
 pluggy==1.0.0
     # via
@@ -59,5 +55,7 @@ tomli==2.0.1
     #   tox
 tox==3.27.0
     # via -r requirements-test.in
-virtualenv==20.16.6
+typing-extensions==4.15.0
+    # via virtualenv
+virtualenv==20.36.1
     # via tox
